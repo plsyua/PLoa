@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:zloa.net)",
+      "WebFetch(domain:ibb.co)",
+      "WebFetch(domain:imgur.com)",
+      "Bash(node:*)",
+      "WebFetch(domain:developer-lostark.game.onstove.com)",
+      "WebFetch(domain:lostarkcodex.com)",
+      "WebFetch(domain:lostark.fandom.com)",
+      "Bash(rm:*)",
+      "WebFetch(domain:lostark.game.onstove.com)",
+      "Bash(npm run dev:*)",
+      "Bash(curl:*)",
+      "Bash(npm run build:*)"
+    ],
+    "deny": []
+  }
+}

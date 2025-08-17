@@ -1,0 +1,1197 @@
+Throttling
+Clients are limited to 100 requests per minute. Exceeding this quota results in a 429 response until the quota is reset. The quota is automatically renewed every minute, so your application should resume working after a minute once the limit is reached.
+
+
+Throttling metadata in the response header
+429 responses are probably meaningless for you and you may feel frustrated. Throttle your client application then! these metadata below will come in handy for you.
+X-RateLimit-Limit : Request per minute (int)
+X-RateLimit-Remaining : The number of available requests for your client. (int)
+X-RateLimit-Reset : The epoch time for the next quota refresh. (long)
+
+---
+
+SAGE GUIDE
+This guide describes how to interact with the Lostark Open APIs. It is intended for software developers and walks you through implementation details and sample code.
+
+Basic HTTP
+Making a valid HTTP request to the Lostark Open API services involves three parts:
+
+
+1. Set the correct HTTP verb.
+2. Set application/json in the 'accept' header and if required, the 'content-type' header as well.
+3. Set the bearer token in the authorization header
+
+Remember, your JWT must always be included with every API request. Specify it in the authorization header.
+
+
+curl example
+curl -X 'GET' 'https://developer-lostark.game.onstove.com/exmaple/api' 
+-H "accept: application/json" 
+-H "authorization: bearer your_JWT"
+
+Javascript example
+var xmlHttpRequest = new XMLHttpRequest();
+xmlHttpRequest.open("GET", "https://developer-lostark.game.onstove.com/exmaple/api", true);
+xmlHttpRequest.setRequestHeader('accept', 'application/json');
+xmlHttpRequest.setRequestHeader('authorization', 'bearer your_JWT');
+xmlHttpRequest.onreadystatechange = () => { };
+xmlHttpRequest.send();
+
+The Lostark Open API GET Request Example
+GET /guilds/rankings API takes a 'serverName' string as a request parameter. Since it is a query string, compose your request URL as follows:
+
+
+Query string parameter curl example
+curl -X 'GET' 'https://developer-lostark.game.onstove.com/guilds/rankings?serverName=%EB%A3%A8%ED%8E%98%EC%98%A8'
+-H 'accept: application/json'
+-H 'authorization: bearer your_JWT
+Query string parameter Javascript example
+var xmlHttpRequest = new XMLHttpRequest();
+xmlHttpRequest.open("GET", "https://developer-lostark.game.onstove.com/guilds/rankings?serverName=%EB%A3%A8%ED%8E%98%EC%98%A8", true);
+xmlHttpRequest.setRequestHeader('accept', 'application/json');
+xmlHttpRequest.setRequestHeader('authorization', 'bearer your_JWT');
+xmlHttpRequest.onreadystatechange = () => { };
+xmlHttpRequest.send();
+
+GET /armories/characters/{characterName}/profiles API takes a 'characterName' string as a request parameter. Since it is a path string, you need to compose your request URL like this below
+
+
+Path parameter curl example
+curl -X 'GET' 'https://developer-lostark.game.onstove.com/armories/characters/coolguy/profiles'
+-H 'accept: application/json'
+-H 'authorization: bearer your_JWT'
+Path parameter Javascript example
+var xmlHttpRequest = new XMLHttpRequest();
+xmlHttpRequest.open("GET", "https://developer-lostark.game.onstove.com/armories/characters/coolguy/profiles", true);
+xmlHttpRequest.setRequestHeader('accept', 'application/json');
+xmlHttpRequest.setRequestHeader('authorization', 'bearer your_JWT');
+xmlHttpRequest.onreadystatechange = () => { };
+xmlHttpRequest.send();
+
+Lostark Open API POST Request Example
+POST /auction/items API requires a 'requestAuctionItems' object as a POST body. You can specify an object body with -d in curl.
+
+
+POST Body curl example
+curl -X 'POST' 'https://developer-lostark.game.onstove.com/markets/items'
+  -H 'accept: application/json'
+  -H 'authorization: bearer your_JWT'
+  -H 'Content-Type: application/json'
+  -d '{
+  "CategoryCode": 20000
+}'
+POST Body Javascript example
+var xmlHttpRequest = new XMLHttpRequest();
+xmlHttpRequest.open("POST", "https://developer-lostark.game.onstove.com/markets/items", true);
+xmlHttpRequest.setRequestHeader('accept', 'application/json');
+xmlHttpRequest.setRequestHeader('authorization', 'bearer your_JWT');
+xmlHttpRequest.setRequestHeader('content-Type', 'application/json');
+xmlHttpRequest.onreadystatechange = () => { };
+xmlHttpRequest.send(JSON.stringify({"CategoryCode" : 20000}));
+API Errors
+The Lostark Open API returns basic HTTP errors. See this table below.
+
+Code	Description
+200	
+OK
+
+401	
+Unauthorized
+
+403	
+Forbidden
+
+404	
+Not Found
+
+415	
+Unsupported Media Type
+
+429	
+Rate Limit Exceeded
+
+500	
+Internal Server Error
+
+502	
+Bad Gateway
+
+503	
+Service Unavailable
+
+504	
+Gateway Timeout
+
+API Requests during Maintenance Hours
+During maintenance, the Maintenance page will be displayed across the website, and your requests will return a 503 Service Unavailable HTTP status code. It is advisable to refrain from further requests or adjust the request interval upon encountering this status code.
+
+Inefficient API Requests
+Ensure your request quota is utilized effectively! Due to throttling, it's essential for your application to implement a robust caching strategy. Efficient management of in-game data is crucial; for certain datasets, you may only need to call the API once a day or even once a week. For instance:
+
+GET /news/events
+GET /auctions/options
+GET /markets/options
+The response data for these APIs typically remains static unless unexpected maintenance that alters the current resources or response model. Exceeding your quota by continuously generating requests will result in application throttling, necessitating a wait for quota refresh. It is advisable to refrain from excessive polling with microsecond intervals or redundant requests triggered by each user interaction.
+
+API Request Limit
+We facilitate client request rate management by providing access to counters and timestamps. These response headers indicate the number of requests allowed per minute, the remaining requests, and the time of the next quota refresh:
+
+
+Reference reponse header
+Response header key	Response header value	Desc
+X-RateLimit-Limit	100	Request per minute
+X-RateLimit-Remaining	15	The number of available requests for your client.
+X-RateLimit-Reset	1668659557	The UNIX timestamp for the next refresh of your quota.
+API Status
+We have 5 api status.
+ means the server is trying to get the status metadata.
+ means the server is not operational.
+ means the server is partically functional.
+ means the server is fully operational.
+ means the server is under maintenance.
+
+API Versioning
+Be sure to check changelog often to stay updated.
+# https://developer-lostark.game.onstove.com/changelog
+
+We increment versions when we:
+
+Add new endpoints
+Remove endpoints
+Make incompatible API changes
+
+Deprecation
+API endpoints, properties/fields in the response data, and parameters can all be deprecated for various reasons. Unfortunately, we may not always inform you in advance due to sudden changes in game data.
+
+---
+
+News
+
+GET
+/news/notices
+Returns a list of notices.
+
+Parameters
+Name	Description
+
+searchText # Name
+string
+(query)
+
+The key for searching title # Description
+searchText # 직접 입력
+
+type
+string
+(query)
+
+The type of Notice
+Available values : 공지, 점검, 상점, 이벤트
+
+Responses
+Response content type
+application/json
+
+Example Value
+[
+  {
+    "Title": "string",
+    "Date": "2025-07-14T03:56:20.966Z",
+    "Link": "string",
+    "Type": "공지"
+  }
+]
+
+---
+
+GET
+/news/events
+Returns a list of events on progress.
+
+Parameters
+No parameters
+
+Responses
+Response content type
+application/json
+
+Example Value
+[
+  {
+    "Title": "발키리 UPDATE",
+    "Thumbnail": "https://cdn-lostark.game.onstove.com/uploadfiles/banner/17f68a8a0e7d4ef18df51497c964d986.jpg",
+    "Link": "https://lostark.game.onstove.com/Promotion/Update/250625",
+    "StartDate": "2025-06-25T06:00:00",
+    "EndDate": "2025-10-15T06:00:00",
+    "RewardDate": null
+  },
+  {
+    "Title": "HOT SUMMER, PC방 PARTY TIME",
+    "Thumbnail": "https://cdn-lostark.game.onstove.com/uploadfiles/banner/70fa8bfb63794447a5375fc90e74ef2c.jpg",
+    "Link": "https://lostark.game.onstove.com/Promotion/PcRoom/250625",
+    "StartDate": "2025-06-25T06:00:00",
+    "EndDate": "2025-09-03T06:00:00",
+    "RewardDate": "2025-09-10T06:00:59.403"
+  }
+]
+
+---
+
+GET
+/news/alarms
+Returns a list of alarm items.
+
+Parameters
+No parameters
+
+Responses
+Response content type
+application/json
+
+Example Value
+{
+  "RequirePolling": true,
+  "Alarms": [
+    {
+      "AlarmType": "All",
+      "Contents": "string",
+      "StartDate": "2025-07-14T04:06:10.715Z",
+      "EndDate": "null"
+    }
+  ]
+}
+
+RequirePolling	boolean
+true : It is recommended to perform polling at intervals of at least 30 seconds.
+false : Do nothing.
+
+---
+
+Characters
+
+
+GET
+/characters/{characterName}/siblings
+Returns all character profiles for an account.
+
+Parameters
+Name	Description
+
+characterName * # Name
+string
+(path)
+
+The name of the character # Description
+characterName # 직접 입력
+
+Responses
+Response content type
+application/json
+
+Example Value
+[
+  {
+    "ServerName": "string",
+    "CharacterName": "string",
+    "CharacterLevel": 0,
+    "CharacterClassName": "string",
+    "ItemAvgLevel": "string"
+  }
+]
+
+---
+
+Armories
+
+
+GET
+/armories/characters/{characterName}
+Returns a summary of profile information by a character name.
+
+Parameters
+Name	Description
+
+characterName *
+string
+(path)
+
+The name of the character
+characterName
+
+filters
+string
+(query)
+
+Filtering the Data e.g., profiles+equipment+avatars+combat-skills+engravings+cards+gems+colosseums+collectibles+arkpassive
+filters
+
+Responses
+Response content type
+application/json
+
+Example Value
+{}
+
+---
+
+GET
+/armories/characters/{characterName}/profiles
+Returns a summary of the basic stats by a character name.
+
+Parameters
+Name	Description
+
+characterName *
+string
+(path)
+
+The name of the character
+characterName
+
+Responses
+Response content type
+application/json
+
+Example Value
+{
+  "CharacterImage": "string",
+  "ExpeditionLevel": 0,
+  "PvpGradeName": "string",
+  "TownLevel": null,
+  "TownName": "string",
+  "Title": "string",
+  "GuildMemberGrade": "string",
+  "GuildName": "string",
+  "UsingSkillPoint": 0,
+  "TotalSkillPoint": 0,
+  "Stats": [
+    {
+      "Type": "string",
+      "Value": "string",
+      "Tooltip": [
+        "string"
+      ]
+    }
+  ],
+  "Tendencies": [
+    {
+      "Type": "string",
+      "Point": 0,
+      "MaxPoint": 0
+    }
+  ],
+  "CombatPower": "string",
+  "Decorations": {
+    "Symbol": "string",
+    "Emblems": [
+      "string"
+    ]
+  },
+  "ServerName": "string",
+  "CharacterName": "string",
+  "CharacterLevel": 0,
+  "CharacterClassName": "string",
+  "ItemAvgLevel": "string"
+}
+
+---
+
+GET
+/armories/characters/{characterName}/equipment
+Returns a summary of the items equipped by a character name.
+
+Parameters
+Name	Description
+
+characterName *
+string
+(path)
+
+The name of the character
+characterName
+
+Responses
+Response content type
+application/json
+
+Example Value
+[
+  {
+    "Type": "string",
+    "Name": "string",
+    "Icon": "string",
+    "Grade": "string",
+    "Tooltip": "string"
+  }
+]
+
+---
+
+GET
+/armories/characters/{characterName}/avatars
+Returns a summary of the avatars equipped by a character name.
+
+Parameters
+Name	Description
+
+characterName *
+string
+(path)
+
+The name of the character
+characterName
+
+Responses
+Response content type
+application/json
+
+Example Value
+[
+  {
+    "Type": "string",
+    "Name": "string",
+    "Icon": "string",
+    "Grade": "string",
+    "IsSet": true,
+    "IsInner": true,
+    "Tooltip": "string"
+  }
+]
+
+---
+
+GET
+/armories/characters/{characterName}/combat-skills
+Returns a summary of the combat skills by a character name.
+
+Parameters
+Name	Description
+
+characterName *
+string
+(path)
+
+The name of the character
+characterName
+
+Responses
+Response content type
+application/json
+
+Example Value
+[
+  {
+    "Name": "string",
+    "Icon": "string",
+    "Level": 0,
+    "Type": "string",
+    "SkillType": 0,
+    "Tripods": [
+      {
+        "Tier": 0,
+        "Slot": 0,
+        "Name": "string",
+        "Icon": "string",
+        "IsSelected": true,
+        "Tooltip": "string"
+      }
+    ],
+    "Rune": {
+      "Name": "string",
+      "Icon": "string",
+      "Grade": "string",
+      "Tooltip": "string"
+    },
+    "Tooltip": "string"
+  }
+]
+
+---
+
+GET
+/armories/characters/{characterName}/engravings
+Returns a summary of the engravings equipped by a character name.
+
+Parameters
+Name	Description
+
+characterName *
+string
+(path)
+
+The name of the character
+characterName
+
+Responses
+Response content type
+application/json
+
+Example Value # 실제 사용시 Engravings, Effects는 null 반환, ArkPassiveEffects만 값 반환
+{
+  "Engravings": [ 
+    {
+      "Slot": 0,
+      "Name": "string",
+      "Icon": "string",
+      "Tooltip": "string"
+    }
+  ],
+  "Effects": [ 
+    {
+      "Icon": "string",
+      "Name": "string",
+      "Description": "string"
+    }
+  ],
+  "ArkPassiveEffects": [ 
+    {
+      "AbilityStoneLevel": null,
+      "Grade": "string",
+      "Level": 0,
+      "Name": "string",
+      "Description": "string"
+    }
+  ]
+}
+
+---
+
+GET
+/armories/characters/{characterName}/cards
+Returns a summary of the cards equipped by a character name.
+
+Parameters
+Name	Description
+
+characterName *
+string
+(path)
+
+The name of the character
+characterName
+
+Responses
+Response content type
+application/json
+
+Example Value
+{
+  "Cards": [
+    {
+      "Slot": 0,
+      "Name": "string",
+      "Icon": "string",
+      "AwakeCount": 0,
+      "AwakeTotal": 0,
+      "Grade": "string",
+      "Tooltip": "string"
+    }
+  ],
+  "Effects": [
+    {
+      "Index": 0,
+      "CardSlots": [
+        0
+      ],
+      "Items": [
+        {
+          "Name": "string",
+          "Description": "string"
+        }
+      ]
+    }
+  ]
+}
+
+---
+
+GET
+/armories/characters/{characterName}/gems
+Returns a summary of the gems equipped by a character name.
+
+Parameters
+Name	Description
+
+characterName *
+string
+(path)
+
+The name of the character
+characterName
+
+Responses
+Response content type
+application/json
+
+Example Value
+{
+  "Gems": [
+    {
+      "Slot": 0,
+      "Name": "string",
+      "Icon": "string",
+      "Level": 0,
+      "Grade": "string",
+      "Tooltip": "string"
+    }
+  ],
+  "Effects": {
+    "Description": "string",
+    "Skills": [
+      {
+        "GemSlot": 0,
+        "Name": "string",
+        "Description": [
+          "string"
+        ],
+        "Option": "string",
+        "Icon": "string",
+        "Tooltip": "string"
+      }
+    ]
+  }
+}
+
+---
+
+GET
+/armories/characters/{characterName}/colosseums
+Returns a summary of the proving grounds by a character name.
+
+Parameters
+Name	Description
+
+characterName *
+string
+(path)
+
+The name of the character
+characterName
+
+Responses
+Response content type
+application/json
+
+Example Value
+{
+  "Rank": 0,
+  "PreRank": 0,
+  "Exp": 0,
+  "Colosseums": [
+    {
+      "SeasonName": "string",
+      "Competitive": {
+        "Rank": 0,
+        "RankName": "string",
+        "RankIcon": "string",
+        "RankLastMmr": 0,
+        "PlayCount": 0,
+        "VictoryCount": 0,
+        "LoseCount": 0,
+        "TieCount": 0,
+        "KillCount": 0,
+        "AceCount": 0,
+        "DeathCount": 0
+      },
+      "TeamDeathmatch": {
+        "AssistCount": 0,
+        "PlayCount": 0,
+        "VictoryCount": 0,
+        "LoseCount": 0,
+        "TieCount": 0,
+        "KillCount": 0,
+        "AceCount": 0,
+        "DeathCount": 0
+      },
+      "TeamElimination": {
+        "FirstWinCount": 0,
+        "SecondWinCount": 0,
+        "ThirdWinCount": 0,
+        "FirstPlayCount": 0,
+        "SecondPlayCount": 0,
+        "ThirdPlayCount": 0,
+        "AllKillCount": 0,
+        "PlayCount": 0,
+        "VictoryCount": 0,
+        "LoseCount": 0,
+        "TieCount": 0,
+        "KillCount": 0,
+        "AceCount": 0,
+        "DeathCount": 0
+      },
+      "CoOpBattle": {
+        "PlayCount": 0,
+        "VictoryCount": 0,
+        "LoseCount": 0,
+        "TieCount": 0,
+        "KillCount": 0,
+        "AceCount": 0,
+        "DeathCount": 0
+      },
+      "OneDeathmatch": {
+        "KillCount": 0,
+        "DeathCount": 0,
+        "AllKillCount": 0,
+        "OutDamage": 0,
+        "InDamage": 0,
+        "FirstWinCount": 0,
+        "SecondWinCount": 0,
+        "ThirdWinCount": 0,
+        "FirstPlayCount": 0,
+        "SecondPlayCount": 0,
+        "ThirdPlayCount": 0
+      },
+      "OneDeathmatchRank": {
+        "KillCount": 0,
+        "DeathCount": 0,
+        "AllKillCount": 0,
+        "OutDamage": 0,
+        "InDamage": 0,
+        "FirstWinCount": 0,
+        "SecondWinCount": 0,
+        "ThirdWinCount": 0,
+        "FirstPlayCount": 0,
+        "SecondPlayCount": 0,
+        "ThirdPlayCount": 0
+      }
+    }
+  ]
+}
+
+---
+
+GET
+/armories/characters/{characterName}/collectibles
+Returns a summary of the collectibles by a character name.
+
+Parameters
+Name	Description
+
+characterName *
+string
+(path)
+
+The name of the character
+characterName
+
+Responses
+Response content type
+application/json
+
+Example Value
+[
+  {
+    "Type": "string",
+    "Icon": "string",
+    "Point": 0,
+    "MaxPoint": 0,
+    "CollectiblePoints": [
+      {
+        "PointName": "string",
+        "Point": 0,
+        "MaxPoint": 0
+      }
+    ]
+  }
+]
+
+---
+
+GET
+/armories/characters/{characterName}/arkpassive
+Returns a summary of the basic stats by a character name.
+
+Parameters
+Name	Description
+
+characterName *
+string
+(path)
+
+The name of the character
+characterName
+
+Responses
+Response content type
+application/json
+
+Example Value
+{
+  "IsArkPassive": true,
+  "Points": [
+    {
+      "Name": "string",
+      "Value": 0,
+      "Tooltip": "string",
+      "Description": "string"
+    }
+  ],
+  "Effects": [
+    {
+      "Name": "string",
+      "Description": "string",
+      "Icon": "string",
+      "ToolTip": "string"
+    }
+  ]
+}
+
+---
+
+Auctions
+
+
+GET
+/auctions/options
+Returns search options for the auction house.
+
+Parameters
+No parameters
+
+Responses
+Response content type
+application/json
+
+Example Value
+{
+  "MaxItemLevel": 0,
+  "ItemGradeQualities": [
+    0
+  ],
+  "SkillOptions": [
+    {
+      "Value": 0,
+      "Class": "string",
+      "Text": "string",
+      "IsSkillGroup": true,
+      "Tripods": [
+        {
+          "Value": 0,
+          "Text": "string",
+          "IsGem": true,
+          "Tiers": [
+            0
+          ]
+        }
+      ]
+    }
+  ],
+  "EtcOptions": [
+    {
+      "Value": 0,
+      "Text": "string",
+      "Tiers": [
+        0
+      ],
+      "EtcSubs": [
+        {
+          "Value": 0,
+          "Text": "string",
+          "Class": "string",
+          "Categorys": [
+            0
+          ],
+          "Tiers": [
+            0
+          ],
+          "EtcValues": [
+            {
+              "DisplayValue": "string",
+              "Value": 0,
+              "IsPercentage": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "Categories": [
+    {
+      "Subs": [
+        {
+          "Code": 0,
+          "CodeName": "string"
+        }
+      ],
+      "Code": 0,
+      "CodeName": "string"
+    }
+  ],
+  "ItemGrades": [
+    "string"
+  ],
+  "ItemTiers": [
+    0
+  ],
+  "Classes": [
+    "string"
+  ]
+}
+
+---
+
+POST
+/auctions/items
+Returns all active auctions with search options.
+
+Parameters
+Name	Description
+
+requestAuctionItems *
+object
+(body)
+
+The search options for the auction house
+Example Value
+{
+  "ItemLevelMin": 0,
+  "ItemLevelMax": 0,
+  "ItemGradeQuality": null,
+  "ItemUpgradeLevel": null,
+  "ItemTradeAllowCount": null,
+  "SkillOptions": [
+    {
+      "FirstOption": null,
+      "SecondOption": null,
+      "MinValue": null,
+      "MaxValue": null
+    }
+  ],
+  "EtcOptions": [
+    {
+      "FirstOption": null,
+      "SecondOption": null,
+      "MinValue": null,
+      "MaxValue": null
+    }
+  ],
+  "Sort": "BIDSTART_PRICE",
+  "CategoryCode": 0,
+  "CharacterClass": "string",
+  "ItemTier": null,
+  "ItemGrade": "string",
+  "ItemName": "string",
+  "PageNo": 0,
+  "SortCondition": "ASC"
+}
+
+Parameter content type
+application/json
+
+Responses
+Response content type
+application/json
+
+Example Value
+{
+  "PageNo": 0,
+  "PageSize": 0,
+  "TotalCount": 0,
+  "Items": [
+    {
+      "Name": "string",
+      "Grade": "string",
+      "Tier": 0,
+      "Level": null,
+      "Icon": "string",
+      "GradeQuality": null,
+      "AuctionInfo": {
+        "StartPrice": 0,
+        "BuyPrice": null,
+        "BidPrice": 0,
+        "EndDate": "2025-07-14T04:26:07.350Z",
+        "BidCount": 0,
+        "BidStartPrice": 0,
+        "IsCompetitive": true,
+        "TradeAllowCount": 0,
+        "UpgradeLevel": null
+      },
+      "Options": [
+        {
+          "Type": "None",
+          "OptionName": "string",
+          "OptionNameTripod": "string",
+          "Value": 0,
+          "IsPenalty": true,
+          "ClassName": "string",
+          "IsValuePercentage": true
+        }
+      ]
+    }
+  ]
+}
+
+---
+
+Markets
+
+
+GET
+/markets/options
+Returns search options for the market.
+
+Parameters
+No parameters
+
+Responses
+Response content type
+application/json
+
+Example Value
+{
+  "Categories": [
+    {
+      "Subs": [
+        {
+          "Code": 0,
+          "CodeName": "string"
+        }
+      ],
+      "Code": 0,
+      "CodeName": "string"
+    }
+  ],
+  "ItemGrades": [
+    "string"
+  ],
+  "ItemTiers": [
+    0
+  ],
+  "Classes": [
+    "string"
+  ]
+}
+
+---
+
+GET
+/markets/items/{itemId}
+Returns a market item by ID.
+
+Parameters
+Name	Description
+
+itemId *
+integer($int64)
+(path)
+
+The ID of the item
+itemId
+
+Responses
+Response content type
+application/json
+
+Example Value
+[
+  {
+    "Name": "string",
+    "TradeRemainCount": null,
+    "BundleCount": 0,
+    "Stats": [
+      {
+        "Date": "string",
+        "AvgPrice": 0,
+        "TradeCount": 0
+      }
+    ],
+    "ToolTip": "string"
+  }
+]
+
+---
+
+POST
+/markets/items
+Returns all active market items with search options.
+
+Parameters
+Name	Description
+
+requestMarketItems *
+object
+(body)
+
+The search options for the market
+Example Value
+{
+  "Sort": "GRADE",
+  "CategoryCode": 0,
+  "CharacterClass": "string",
+  "ItemTier": null,
+  "ItemGrade": "string",
+  "ItemName": "string",
+  "PageNo": 0,
+  "SortCondition": "ASC"
+}
+Parameter content type
+application/json
+
+Responses
+Response content type
+application/json
+
+Example Value
+{
+  "PageNo": 0,
+  "PageSize": 0,
+  "TotalCount": 0,
+  "Items": [
+    {
+      "Id": 0,
+      "Name": "string",
+      "Grade": "string",
+      "Icon": "string",
+      "BundleCount": 0,
+      "TradeRemainCount": null,
+      "YDayAvgPrice": 0,
+      "RecentPrice": 0,
+      "CurrentMinPrice": 0
+    }
+  ]
+}
+
+---
+
+GameContents
+
+
+GET
+/gamecontents/calendar
+Returns a list of Calendar this week.
+
+Parameters
+No parameters
+
+Responses
+Response content type
+application/json
+
+Example Value
+[
+  {
+    "CategoryName": "string",
+    "ContentsName": "string",
+    "ContentsIcon": "string",
+    "MinItemLevel": 0,
+    "StartTimes": [
+      "2025-07-14T04:31:24.234Z"
+    ],
+    "Location": "string",
+    "RewardItems": [
+      {
+        "ItemLevel": 0,
+        "Items": [
+          {
+            "Name": "string",
+            "Icon": "string",
+            "Grade": "string",
+            "StartTimes": [
+              "2025-07-14T04:31:24.234Z"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

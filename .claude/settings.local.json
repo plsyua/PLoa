@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run dev:*)",
+      "Bash(ls:*)",
+      "Bash(chmod:*)",
+      "Bash(rm:*)",
+      "Bash(npm install:*)",
+      "Bash(sudo apt:*)",
+      "Bash(sudo apt install:*)",
+      "WebFetch(domain:iloa.gg)",
+      "WebFetch(domain:kloa.gg)",
+      "Bash(npm run lint)",
+      "WebFetch(domain:cdn-lostark.game.onstove.com)",
+      "mcp__ide__getDiagnostics",
+      "Bash(npm run build:*)",
+      "Bash(node:*)",
+      "Bash(curl:*)",
+      "Bash(pkill:*)",
+      "mcp__context7__resolve-library-id",
+      "Bash(npm uninstall:*)",
+      "Bash(find:*)",
+      "Bash(npm run lint:*)",
+      "Bash(mv:*)",
+      "WebFetch(domain:lostark.game.onstove.com)"
+    ],
+    "deny": []
+  }
+}

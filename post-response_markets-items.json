@@ -1,0 +1,138 @@
+
+/* post value
+
+curl -X 'POST' \
+  'https://developer-lostark.game.onstove.com/markets/items' \
+  -H 'accept: application/json' \
+  -H 'authorization: bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IktYMk40TkRDSTJ5NTA5NWpjTWk5TllqY2lyZyIsImtpZCI6IktYMk40TkRDSTJ5NTA5NWpjTWk5TllqY2lyZyJ9.eyJpc3MiOiJodHRwczovL2x1ZHkuZ2FtZS5vbnN0b3ZlLmNvbSIsImF1ZCI6Imh0dHBzOi8vbHVkeS5nYW1lLm9uc3RvdmUuY29tL3Jlc291cmNlcyIsImNsaWVudF9pZCI6IjEwMDAwMDAwMDAwMTU5NTYifQ.fOc6qiM5XMOEb-PdpWHv-c-Z1-s0T5EqFHHOsffnBhQODGBDKyYcgvn4ehblVViQRz6cpHaO8AwjhSKOTFkX3BAAJrPdkMYSgupvYMbAS1DERAmX6Hm_5gScTndrwac08FlKkujonFHQ__3V1TyGKrzI74Xkl209oEc1Xit7drgpHzMFGbMD5EzJ9e6pb3EBhcfyldCT5tPEmxsg-m4Sw33hWxaETYRLnTgzSmy6_5Qw6rqLLETgEsYruRY1V_HLD3yOwYjOxThR2DLpU671n5Ktovy-6roHkuMWJCBob9U8oxMRchgAa7lSVm4WvPT7xoLk_yN-KQtQTLH5gUeGxg' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "Sort": "GRADE",
+  "CategoryCode": 40000,
+  "CharacterClass": "",
+  "ItemTier": null,
+  "ItemGrade": "유물",
+  "ItemName": "각인서",
+  "PageNo": 1,
+  "SortCondition": "ASC"
+}'
+
+*/
+
+{
+  "PageNo": 1,
+  "PageSize": 10,
+  "TotalCount": 43,
+  "Items": [
+    {
+      "Id": 65201405,
+      "Name": "탈출의 명수 각인서",
+      "Grade": "유물",
+      "Icon": "https://cdn-lostark.game.onstove.com/efui_iconatlas/use/use_9_25.png",
+      "BundleCount": 1,
+      "TradeRemainCount": 0,
+      "YDayAvgPrice": 43.1,
+      "RecentPrice": 12,
+      "CurrentMinPrice": 12
+    },
+    {
+      "Id": 65202305,
+      "Name": "강화 방패 각인서",
+      "Grade": "유물",
+      "Icon": "https://cdn-lostark.game.onstove.com/efui_iconatlas/use/use_9_25.png",
+      "BundleCount": 1,
+      "TradeRemainCount": 0,
+      "YDayAvgPrice": 47.4,
+      "RecentPrice": 31,
+      "CurrentMinPrice": 26
+    },
+    {
+      "Id": 65200705,
+      "Name": "굳은 의지 각인서",
+      "Grade": "유물",
+      "Icon": "https://cdn-lostark.game.onstove.com/efui_iconatlas/use/use_9_25.png",
+      "BundleCount": 1,
+      "TradeRemainCount": 0,
+      "YDayAvgPrice": 86.7,
+      "RecentPrice": 43,
+      "CurrentMinPrice": 30
+    },
+    {
+      "Id": 65202005,
+      "Name": "여신의 가호 각인서",
+      "Grade": "유물",
+      "Icon": "https://cdn-lostark.game.onstove.com/efui_iconatlas/use/use_9_25.png",
+      "BundleCount": 1,
+      "TradeRemainCount": 0,
+      "YDayAvgPrice": 47.2,
+      "RecentPrice": 41,
+      "CurrentMinPrice": 43
+    },
+    {
+      "Id": 65201805,
+      "Name": "실드관통 각인서",
+      "Grade": "유물",
+      "Icon": "https://cdn-lostark.game.onstove.com/efui_iconatlas/use/use_9_25.png",
+      "BundleCount": 1,
+      "TradeRemainCount": 0,
+      "YDayAvgPrice": 54,
+      "RecentPrice": 60,
+      "CurrentMinPrice": 55
+    },
+    {
+      "Id": 65202605,
+      "Name": "부러진 뼈 각인서",
+      "Grade": "유물",
+      "Icon": "https://cdn-lostark.game.onstove.com/efui_iconatlas/use/use_9_25.png",
+      "BundleCount": 1,
+      "TradeRemainCount": 0,
+      "YDayAvgPrice": 80.8,
+      "RecentPrice": 50,
+      "CurrentMinPrice": 55
+    },
+    {
+      "Id": 65201605,
+      "Name": "불굴 각인서",
+      "Grade": "유물",
+      "Icon": "https://cdn-lostark.game.onstove.com/efui_iconatlas/use/use_9_25.png",
+      "BundleCount": 1,
+      "TradeRemainCount": 0,
+      "YDayAvgPrice": 86.9,
+      "RecentPrice": 78,
+      "CurrentMinPrice": 66
+    },
+    {
+      "Id": 65202705,
+      "Name": "번개의 분노 각인서",
+      "Grade": "유물",
+      "Icon": "https://cdn-lostark.game.onstove.com/efui_iconatlas/use/use_9_25.png",
+      "BundleCount": 1,
+      "TradeRemainCount": 0,
+      "YDayAvgPrice": 100.7,
+      "RecentPrice": 73,
+      "CurrentMinPrice": 66
+    },
+    {
+      "Id": 65202405,
+      "Name": "강령술 각인서",
+      "Grade": "유물",
+      "Icon": "https://cdn-lostark.game.onstove.com/efui_iconatlas/use/use_9_25.png",
+      "BundleCount": 1,
+      "TradeRemainCount": 0,
+      "YDayAvgPrice": 81.6,
+      "RecentPrice": 50,
+      "CurrentMinPrice": 71
+    },
+    {
+      "Id": 65200105,
+      "Name": "약자 무시 각인서",
+      "Grade": "유물",
+      "Icon": "https://cdn-lostark.game.onstove.com/efui_iconatlas/use/use_9_25.png",
+      "BundleCount": 1,
+      "TradeRemainCount": 0,
+      "YDayAvgPrice": 106.3,
+      "RecentPrice": 94,
+      "CurrentMinPrice": 80
+    }
+  ]
+}
