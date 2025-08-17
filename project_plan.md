@@ -194,12 +194,19 @@ PLoa/
 
 ### 프론트엔드 (현재)
 - **Framework:** React 19.1.0
-- **Build Tool:** Vite 7.0.0
+- **Build Tool:** Vite 5.4.0
 - **Styling:** TailwindCSS 3.4.17
 - **Icons:** Lucide React 0.525.0
 - **Charts:** Recharts 3.1.0
 - **HTTP Client:** Axios 1.10.0
 - **Routing:** React Router DOM 7.6.3
+- **HTML Parser:** html-react-parser 5.2.5
+
+### 프록시 서버 (현재)
+- **Framework:** Express 4.21.2
+- **HTTP Client:** Axios 1.11.0
+- **CORS:** cors 2.8.5
+- **Dev Tool:** nodemon 3.1.10
 
 ### 백엔드 (계획)
 - **Framework:** Spring Boot 3.x
@@ -211,7 +218,9 @@ PLoa/
 ## 개발 환경 및 배포
 
 ### 개발 환경
-- **OS:** WSL2 Ubuntu
+- **Node.js:** v21.7.3
+- **npm:** 10.5.0
+- **OS:** WSL2 Ubuntu (Linux 6.6.87.2-microsoft-standard-WSL2)
 - **IDE:** VS Code
 - **Package Manager:** npm
 - **Version Control:** Git

@@ -22,7 +22,9 @@
       "Bash(find:*)",
       "Bash(npm run lint:*)",
       "Bash(mv:*)",
-      "WebFetch(domain:lostark.game.onstove.com)"
+      "WebFetch(domain:lostark.game.onstove.com)",
+      "WebSearch",
+      "Bash(npm:*)"
     ],
     "deny": []
   }

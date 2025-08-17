@@ -34,16 +34,18 @@ PLoa is a Lost Ark AI-based data analysis platform that helps users with market 
 
 ## Architecture
 
-The project is structured as a **React application** located in `PLoa/`:
-- **Frontend**: React 19.1.0 + Vite + TailwindCSS + Lucide React icons
-- **API Integration**: Direct calls to Lost Ark Open API using axios
+The project is structured as a **React application** located in `PLoa/ploa-frontend/`:
+- **Frontend**: React 19.1.0 + Vite 5.4.0 + TailwindCSS 3.4.17 + Lucide React 0.525.0
+- **API Integration**: Direct calls to Lost Ark Open API using axios 1.10.0
 - **State Management**: React hooks (useState, useEffect)
-- **Styling**: TailwindCSS with dark theme design
-- **Charts**: Recharts for data visualization
-- **Routing**: React Router DOM (v7.6.3)
+- **Styling**: TailwindCSS with light/dark theme design
+- **Charts**: Recharts 3.1.0 for data visualization
+- **Routing**: React Router DOM 7.6.3
+- **HTML Parsing**: html-react-parser 5.2.5
 
 ## Development Commands
 
+**React Frontend (ploa-frontend/):**
 ```bash
 # Development server
 npm run dev
@@ -57,6 +59,22 @@ npm run lint
 # Preview production build
 npm run preview
 ```
+
+**Proxy Server (root/):**
+```bash
+# Start proxy server
+npm start
+
+# Development with auto-restart
+npm run dev
+```
+
+## Development Environment
+
+- **Node.js**: v21.7.3
+- **npm**: 10.5.0
+- **OS**: WSL2 Ubuntu (Linux 6.6.87.2-microsoft-standard-WSL2)
+- **Platform**: Windows with WSL integration
 
 ## Lost Ark Open API Integration
 
