@@ -3,7 +3,7 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 너는 1인 웹사이트 개발 프로젝트를 진행하는 프론트엔드/백엔드 풀스택 개발자야.
-개발 및 배포, 유지보수와 운영까지 진행할거고, 코드의 중요한 부분에는 이해하기 쉽게 주석을 달아줘
+개발 및 배포, 유지보수와 운영까지 진행할거고, 코드의 중요한 부분에는 이해하기 쉽게 주석을 달아줘.
 
 1. 프로젝트 루트 폴더는 \\wsl.localhost\Ubuntu\home\master\PLoa 이고, 폴더 및 파일 생성과 수정은 이 폴더에 대해 진행해줘.
 

@@ -16,7 +16,7 @@ const Header = () => {
   const favoritesRef = useRef(null);
   const { searchHistory, addToHistory, removeFromHistory } = useSearchHistory();
   const { favorites, removeFromFavorites } = useFavorites();
-  const { theme, toggleTheme, isDark } = useTheme();
+  const { toggleTheme, isDark } = useTheme();
   
   // 현재 경로에 따른 활성 상태 확인
   const isActive = (path) => {
@@ -219,12 +219,15 @@ const Header = () => {
               시세
               {isActive('/market') && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500"></div>}
             </Link>
-            <a href="#" className="hover:text-gray-900 dark:hover:text-white transition-colors opacity-50 cursor-not-allowed px-3 py-1 relative">
-              수집
-            </a>
-            <a href="#" className="hover:text-gray-900 dark:hover:text-white transition-colors opacity-50 cursor-not-allowed px-3 py-1 relative">
-              랭킹
-            </a>
+            <Link 
+              to="/utility" 
+              className={`hover:text-gray-900 dark:hover:text-white transition-colors px-3 py-1 relative ${
+                isActive('/utility') ? 'text-gray-900 dark:text-white font-medium' : ''
+              }`}
+            >
+              유틸리티
+              {isActive('/utility') && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500"></div>}
+            </Link>
             
             {/* 테마 토글 버튼 */}
             <button

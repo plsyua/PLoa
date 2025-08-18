@@ -178,31 +178,6 @@ export const CollectiblesSkeleton = () => (
 );
 
 // 원정대 스켈레톤
-export const RosterSkeleton = () => (
-  <div className="space-y-6">
-    {[...Array(3)].map((_, i) => (
-      <div key={i}>
-        <div className="flex items-center gap-2 mb-3">
-          <SkeletonText width="w-20 h-5" />
-          <SkeletonText width="w-8 h-4" />
-        </div>
-        <div className="grid grid-cols-3 gap-4">
-          {[...Array(6)].map((_, j) => (
-            <SkeletonCard key={j} className="p-3">
-              <div className="flex items-center gap-3">
-                <SkeletonAvatar size="w-10 h-10" />
-                <div className="flex-1 space-y-1">
-                  <SkeletonText width="w-3/4" />
-                  <SkeletonText width="w-1/2 h-3" />
-                </div>
-              </div>
-            </SkeletonCard>
-          ))}
-        </div>
-      </div>
-    ))}
-  </div>
-);
 
 // 시장 아이템 목록 스켈레톤
 export const MarketItemsSkeleton = () => (
@@ -241,6 +216,5 @@ export default {
   EngravingsSkeleton,
   SkillsSkeleton,
   CollectiblesSkeleton,
-  RosterSkeleton,
   MarketItemsSkeleton
 };

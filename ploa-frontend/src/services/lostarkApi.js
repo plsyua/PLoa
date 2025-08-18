@@ -1,11 +1,15 @@
 import axios from 'axios';
 
+// 개발 환경에서는 Vite 프록시 사용, 프로덕션에서는 직접 API 호출
+const isDevelopment = import.meta.env.DEV;
 const API_KEY = import.meta.env.VITE_LOSTARK_API_KEY;
 const API_URL = import.meta.env.VITE_LOSTARK_API_URL;
 
 const lostarkApi = axios.create({
-  baseURL: API_URL,
-  headers: {
+  baseURL: isDevelopment ? '/api' : API_URL,
+  headers: isDevelopment ? {
+    'accept': 'application/json',
+  } : {
     'authorization': `bearer ${API_KEY}`,
     'accept': 'application/json',
   },

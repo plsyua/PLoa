@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import MarketPrice from './pages/MarketPrice';
 import Dashboard from './pages/Dashboard';
 import CharacterDetail from './pages/CharacterDetail';
-import Roster from './pages/Roster';
+import Utility from './pages/Utility';
 
 function App() {
   return (
@@ -18,8 +18,8 @@ function App() {
           {/* 시세 분석 페이지 */}
           <Route path="/market" element={<MarketPrice />} />
           
-          {/* 원정대 페이지 */}
-          <Route path="/roster" element={<Roster />} />
+          {/* 유틸리티 페이지 */}
+          <Route path="/utility" element={<Utility />} />
           
           {/* 404 페이지는 메인 대시보드로 리다이렉트 */}
           <Route path="*" element={<Navigate to="/" replace />} />

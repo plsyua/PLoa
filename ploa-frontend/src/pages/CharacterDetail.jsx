@@ -23,8 +23,7 @@ import {
   GemsSkeleton, 
   EngravingsSkeleton, 
   SkillsSkeleton, 
-  CollectiblesSkeleton, 
-  RosterSkeleton 
+  CollectiblesSkeleton
 } from '../components/common/SkeletonLoader';
 import { getGradeTextColor, getMarketGradeStyle, getGradeBorderColor } from '../utils/formatters';
 import { getGemDisplayInfo, calculateGemStats, getGemTypeBorderColor } from '../utils/gemUtils';
@@ -39,7 +38,7 @@ import { shortenAccessoryEffect, shouldShortenAccessory } from '../utils/accesso
 const CharacterDetail = () => {
   const { characterName } = useParams();
   const navigate = useNavigate();
-  const { isFavorite, addToFavorites, removeFromFavorites, updateFavorite } = useFavorites();
+  const { isFavorite, addToFavorites, removeFromFavorites } = useFavorites();
   
   const [loading, setLoading] = useState(false);
   const [characterData, setCharacterData] = useState(null);
@@ -923,7 +922,7 @@ const CharacterDetail = () => {
         case 'collectibles':
           return <CollectiblesSkeleton />;
         case 'roster':
-          return <RosterSkeleton />;
+          return <LoadingSpinner size="lg" text="원정대 정보를 불러오는 중..." />;
         default:
           return (
             <div className="py-12">
