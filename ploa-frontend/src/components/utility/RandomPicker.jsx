@@ -79,7 +79,7 @@ const RandomPicker = () => {
       {/* 미리 설정된 항목들 */}
       <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          🎯 빠른 설정
+          빠른 설정
         </h3>
         <div className="flex flex-wrap gap-3">
           <button
@@ -107,7 +107,7 @@ const RandomPicker = () => {
       <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-            📝 항목
+            항목
           </h3>
           <div className="flex gap-2">
             <button
@@ -198,7 +198,6 @@ const RandomPicker = () => {
           <li>• 제비뽑기할 항목들을 입력하세요</li>
           <li>• 빠른 설정 버튼으로 미리 준비된 항목들을 사용할 수 있습니다</li>
           <li>• 추가 버튼으로 더 많은 항목을 추가할 수 있습니다</li>
-          <li>• 제비뽑기 시작 버튼을 클릭하면 랜덤으로 선택됩니다</li>
         </ul>
       </div>
     </div>

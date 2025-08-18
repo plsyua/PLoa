@@ -2,8 +2,7 @@ import { useState } from 'react';
 import Header from '../components/layout/Header';
 import AuctionCalculator from '../components/utility/AuctionCalculator';
 import RandomPicker from '../components/utility/RandomPicker';
-import Roulette from '../components/utility/Roulette';
-import { Calculator, Gift, RotateCw } from 'lucide-react';
+import { Calculator, Gift } from 'lucide-react';
 
 const Utility = () => {
   const [activeTab, setActiveTab] = useState('auction');
@@ -48,17 +47,6 @@ const Utility = () => {
               <Gift size={16} />
               제비뽑기
             </button>
-            <button
-              onClick={() => setActiveTab('roulette')}
-              className={`py-2 px-1 border-b-2 font-medium text-sm flex items-center gap-2 ${
-                activeTab === 'roulette'
-                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
-              }`}
-            >
-              <RotateCw size={16} />
-              룰렛
-            </button>
           </nav>
         </div>
 
@@ -66,7 +54,6 @@ const Utility = () => {
         <div>
           {activeTab === 'auction' && <AuctionCalculator />}
           {activeTab === 'random' && <RandomPicker />}
-          {activeTab === 'roulette' && <Roulette />}
         </div>
       </div>
     </div>

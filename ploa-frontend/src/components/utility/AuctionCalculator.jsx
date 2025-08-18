@@ -1,28 +1,71 @@
-import { useState } from 'react';
-import { Calculator, Users, DollarSign, TrendingUp } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { Calculator, Users } from 'lucide-react';
 
 const AuctionCalculator = () => {
   const [itemValue, setItemValue] = useState('');
   const [partySize, setPartySize] = useState(8);
   const [results, setResults] = useState(null);
 
-  const calculateAuction = () => {
+  const calculateAuction = useCallback(() => {
     if (!itemValue || itemValue <= 0) return;
 
     const value = parseInt(itemValue);
-    const goldPerPerson = Math.floor(value / partySize);
-    const remainder = value % partySize;
-    const winnerPays = goldPerPerson * (partySize - 1);
-    const profitPerPerson = goldPerPerson - (value - winnerPays) / partySize;
+    
+    // 손익분기점 계산: 입찰자 이득 = 다른 사람들 이득이 되는 지점
+    // (아이템가치 × 0.95) - 입찰가 = 입찰가 × 0.95 ÷ (파티원수 - 1)
+    // 풀이: breakEvenBid = (value * 0.95) / (1 + 0.95 / (partySize - 1))
+    const breakEvenPoint = Math.floor((value * 0.95) / (1 + (0.95 / (partySize - 1))));
+    
+    // 최대 실용 입찰가: 다른 사람들이 상회 입찰할 유인이 없는 최대 입찰가
+    // 조건: (아이템시세 × 0.95) - (입찰가×1.1) ≤ (입찰가 × 0.95) ÷ (파티원수-1)
+    // 정리: 입찰가 × (1.1 + 0.95/(파티원수-1)) ≤ 아이템시세 × 0.95
+    // 입찰가 ≤ (아이템시세 × 0.95) / (1.1 + 0.95/(파티원수-1))
+    const maxPracticalBid = Math.floor((value * 0.95) / (1.1 + (0.95 / (partySize - 1))));
+    
+    // 손익분기점 기준 상대적 비율 (유리한 옵션만)
+    const bidMargins = [0, -5, -10, -15, -20]; // 손익분기점 대비 %
+    
+    const allBidOptions = bidMargins.map(margin => {
+      const bidAmount = Math.floor(breakEvenPoint * (1 + margin / 100));
+      
+      // 분배금 = 입찰가 × 0.95 ÷ (파티원수 - 1) - 입찰자는 분배금 못 받음
+      const distributionPerPerson = Math.floor((bidAmount * 0.95) / (partySize - 1));
+      
+      // 판매차익 = (아이템가치 × 0.95) - 입찰가 (판매 시 5% 수수료 제외)
+      const saleProfit = Math.floor(value * 0.95) - bidAmount;
+      
+      // 상대적 이득 = 판매차익 - 분배금 (다른 사람들 대비 얼마나 더/덜 받는지)
+      const relativeAdvantage = saleProfit - distributionPerPerson;
+      
+      return {
+        margin,
+        bidAmount,
+        distributionPerPerson,
+        saleProfit,
+        relativeAdvantage,
+        saleCommission: Math.floor(value * 0.05) // 판매 수수료
+      };
+    });
+
+    // 10% 상회 입찰 제한을 만족하는 옵션만 필터링
+    const bidOptions = allBidOptions.filter(option => option.bidAmount <= maxPracticalBid);
 
     setResults({
       itemValue: value,
-      goldPerPerson,
-      remainder,
-      winnerPays,
-      profitPerPerson: Math.floor(profitPerPerson)
+      bidOptions,
+      breakEvenPoint,
+      maxPracticalBid
     });
-  };
+  }, [itemValue, partySize]);
+
+  // 아이템 시세 입력 및 파티 인원 변경 시 자동 계산
+  useEffect(() => {
+    if (itemValue >= 50) {
+      calculateAuction();
+    } else {
+      setResults(null); // 50골드 미만일 때는 결과 숨김
+    }
+  }, [itemValue, partySize, calculateAuction]);
 
   return (
     <div className="space-y-6">
@@ -35,7 +78,7 @@ const AuctionCalculator = () => {
           경매 계산기
         </h2>
         <p className="text-gray-600 dark:text-gray-400">
-          아이템 경매에서 최적의 분배 금액을 계산합니다
+          입찰 시 손익분기점, 안전 입찰가를 계산합니다
         </p>
       </div>
 
@@ -49,9 +92,11 @@ const AuctionCalculator = () => {
             </label>
             <input
               type="number"
+              min="0"
+              step="1"
               value={itemValue}
               onChange={(e) => setItemValue(e.target.value)}
-              placeholder="금액 입력"
+              placeholder="50골드 이상 입력"
               className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
@@ -102,49 +147,48 @@ const AuctionCalculator = () => {
           </div>
         </div>
 
-        {/* 계산 버튼 */}
-        <div className="mt-6">
-          <button
-            onClick={calculateAuction}
-            disabled={!itemValue || itemValue <= 0}
-            className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
-          >
-            <TrendingUp size={20} />
-            경매 계산하기
-          </button>
-        </div>
       </div>
 
       {/* 결과 표시 */}
       {results && (
-        <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-lg p-6 border border-green-200 dark:border-green-700">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            계산 결과
-          </h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-              <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">입찰 금액</div>
-              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                {results.winnerPays.toLocaleString()}G
-              </div>
-            </div>
+        <div className="space-y-6">
+          {/* 기본 정보 */}
+          <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg p-6 border border-blue-200 dark:border-blue-700">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              계산 결과
+            </h3>
             
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-              <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">1인당 분배 금액</div>
-              <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                {results.goldPerPerson.toLocaleString()}G
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">최근 거래가</div>
+                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                  {results.itemValue.toLocaleString()}G
+                </div>
+              </div>
+              
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">판매 수수료 (5%)</div>
+                <div className="text-2xl font-bold text-red-600 dark:text-red-400">
+                  -{results.bidOptions[0].saleCommission.toLocaleString()}G
+                </div>
+              </div>
+              
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">손익분기점</div>
+                <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+                  {results.breakEvenPoint.toLocaleString()}G
+                </div>
+              </div>
+              
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">안전 입찰가</div>
+                <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                  {results.maxPracticalBid.toLocaleString()}G
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-700">
-            <p className="text-sm text-yellow-800 dark:text-yellow-200">
-              💡 <strong>설명:</strong> 낙찰자는 {results.winnerPays.toLocaleString()}G를 지불하고, 
-              나머지 {partySize - 1}명은 각각 {results.goldPerPerson.toLocaleString()}G를 받습니다.
-              {results.remainder > 0 && ` (나머지 ${results.remainder}G는 별도 처리)`}
-            </p>
-          </div>
         </div>
       )}
 
@@ -154,10 +198,9 @@ const AuctionCalculator = () => {
           📖 사용법
         </h3>
         <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-2">
-          <li>• 경매에서 낙찰받을 아이템의 시세를 입력하세요</li>
-          <li>• 파티 인원 수를 선택하세요</li>
-          <li>• 계산 결과에 따라 골드를 분배하세요</li>
-          <li>• 낙찰자는 표시된 금액을 지불하고, 나머지 파티원은 분배금을 받습니다</li>
+          <li>• 경매할 아이템의 현재 시세를 입력하세요</li>
+          <li>• 파티 인원 수를 선택하세요 (4명/8명/16명)</li>
+          <li>• 손익분기점 이상 입찰 시 다른 사람들보다 손해를 봅니다</li>
         </ul>
       </div>
     </div>
