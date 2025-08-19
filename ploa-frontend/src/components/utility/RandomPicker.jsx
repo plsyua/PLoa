@@ -8,6 +8,8 @@ const RandomPicker = () => {
   const [showModal, setShowModal] = useState(false);
 
   const addItem = () => {
+    // 최대 16개까지만 추가 가능
+    if (items.length >= 16) return;
     setItems([...items, '']);
   };
 
@@ -64,7 +66,7 @@ const RandomPicker = () => {
         setItems(['모험 섬', '카오스게이트', '필드 보스', '태초의 섬']);
         break;
       case 'food':
-        setItems(['치킨', '패스트푸드', '분식', '한식', '중식', '일식']);
+        setItems(['치킨', '햄부기', '분식', '한식', '중식', '일식']);
         break;
       case 'party4':
         setItems(['1파티 1번', '1파티 2번', '1파티 3번', '1파티 4번']);
@@ -173,7 +175,8 @@ const RandomPicker = () => {
             </button>
             <button
               onClick={addItem}
-              className="px-6 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors text-base flex items-center gap-2"
+              disabled={items.length >= 16}
+              className="px-6 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded hover:bg-blue-200 dark:hover:bg-blue-900/50 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors text-base flex items-center gap-2"
             >
               <Plus size={18} />
               추가
@@ -249,7 +252,7 @@ const RandomPicker = () => {
         <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-2">
           <li>• 제비뽑기할 항목들을 입력하세요</li>
           <li>• 빠른 설정 버튼으로 미리 준비된 항목들을 사용할 수 있습니다</li>
-          <li>• 추가 버튼으로 더 많은 항목을 추가할 수 있습니다</li>
+          <li>• 추가 버튼으로 더 많은 항목을 추가할 수 있습니다 (최대 16개)</li>
         </ul>
       </div>
     </div>

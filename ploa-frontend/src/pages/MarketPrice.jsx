@@ -8,7 +8,7 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
 import GradeTag from '../components/ui/GradeTag';
 import { MarketItemsSkeleton } from '../components/common/SkeletonLoader';
-import { getMarketGradeStyle, getGradeBorderColor } from '../utils/formatters';
+import { getMarketGradeStyle, getGradeBorderColor, getGradeTextColor } from '../utils/formatters';
 
 const MarketPrice = () => {
   // 검색 관련 상태
@@ -38,6 +38,10 @@ const MarketPrice = () => {
   const [itemTooltipData, setItemTooltipData] = useState(null); // API 툴팁 데이터
   const [tooltipLoading, setTooltipLoading] = useState(false);  // 툴팁 로딩 상태
 
+  // 급상승 아이템 관련 상태
+  const [topIncreaseItems, setTopIncreaseItems] = useState([]);
+  const [topIncreaseLoading, setTopIncreaseLoading] = useState(false);
+
   // 컴포넌트 마운트 시 거래소 옵션 로드 및 초기 검색
   useEffect(() => {
     loadMarketOptions();
@@ -47,6 +51,7 @@ const MarketPrice = () => {
   useEffect(() => {
     if (marketOptions) {
       handleSearch(); // 강화 재료 카테고리로 초기 검색
+      loadTopIncreaseItems(); // 급상승 아이템 로드
     }
   }, [marketOptions]);
 
@@ -218,6 +223,25 @@ const parseHtmlTooltip = (htmlText) => {
     return new Intl.NumberFormat('ko-KR').format(Math.floor(price));
   };
 
+  // 1주일 평균 가격 계산
+  const calculateWeeklyAverage = (priceHistory) => {
+    if (!priceHistory || !priceHistory.Stats || priceHistory.Stats.length === 0) {
+      return 0;
+    }
+    
+    // 최근 7일간의 데이터 중 AvgPrice가 0보다 큰 데이터만 필터링
+    const validPrices = priceHistory.Stats
+      .slice(0, 7) // 최근 7일
+      .filter(stat => stat.AvgPrice > 0)
+      .map(stat => stat.AvgPrice);
+    
+    if (validPrices.length === 0) return 0;
+    
+    // 평균 계산
+    const average = validPrices.reduce((sum, price) => sum + price, 0) / validPrices.length;
+    return average;
+  };
+
   // 가격 변동 표시 로직
   const getPriceChangeDisplay = (current, yesterday, recent) => {
     if (!current || current === 0) {
@@ -244,6 +268,69 @@ const parseHtmlTooltip = (htmlText) => {
       hasChange: Math.abs(percent) > 0.1, // 0.1% 이상만 변동으로 간주
       isIncrease: current > comparePrice
     };
+  };
+
+  // 가격 상승률 상위 아이템 추출 (배열 기반)
+  const getTopPriceIncreaseItems = (items, count = 5) => {
+    if (!items || items.length === 0) return [];
+    
+    return items
+      .map(item => ({
+        ...item,
+        changeInfo: getPriceChangeDisplay(item.CurrentMinPrice, item.YDayAvgPrice, item.RecentPrice)
+      }))
+      .filter(item => item.changeInfo.hasChange && item.changeInfo.isIncrease && item.changeInfo.percent >= 5 && item.changeInfo.percent < 99 && item.CurrentMinPrice > 15) // 5% 이상 99% 미만 상승, 15골드 초과
+      .sort((a, b) => b.changeInfo.percent - a.changeInfo.percent)
+      .slice(0, count);
+  };
+
+  // 전체 강화재료에서 급상승 아이템 로드 (여러 페이지)
+  const loadTopIncreaseItems = async () => {
+    setTopIncreaseLoading(true);
+    
+    try {
+      const allItems = [];
+      const pagesToLoad = 10; // 처음 10페이지 (약 100개 아이템)
+      
+      console.log(`급상승 아이템 분석 시작: ${pagesToLoad}페이지 로딩...`);
+      
+      // 여러 페이지 순차적으로 로드
+      for (let page = 1; page <= pagesToLoad; page++) {
+        const searchOptions = {
+          Sort: "RECENT_PRICE",
+          CategoryCode: 90000, // 생활
+          ItemGrade: '',
+          CharacterClass: '',
+          ItemName: '',
+          PageNo: page,
+          SortCondition: "ASC"
+          // PageSize 제거 - API에서 지원하지 않을 수 있음
+        };
+        
+        const result = await searchMarketItems(searchOptions);
+        if (result.Items && result.Items.length > 0) {
+          allItems.push(...result.Items);
+          console.log(`페이지 ${page}: ${result.Items.length}개 아이템 추가 (총 ${allItems.length}개)`);
+        } else {
+          console.log(`페이지 ${page}: 데이터 없음, 로딩 중단`);
+          break; // 더 이상 데이터가 없으면 중단
+        }
+      }
+      
+      console.log(`급상승 아이템 분석: 총 ${allItems.length}개 생활 아이템 확인`);
+      
+      // 상위 5개 급상승 아이템 추출
+      const topItems = getTopPriceIncreaseItems(allItems, 5);
+      setTopIncreaseItems(topItems);
+      
+      console.log(`급상승 아이템 ${topItems.length}개 발견:`, topItems.map(item => `${item.Name} +${item.changeInfo.percent.toFixed(1)}%`));
+      
+    } catch (error) {
+      console.error('급상승 아이템 로드 실패:', error);
+      setTopIncreaseItems([]);
+    } finally {
+      setTopIncreaseLoading(false);
+    }
   };
 
   // 아이템 등급별 색상
@@ -346,6 +433,74 @@ const parseHtmlTooltip = (htmlText) => {
           </form>
         </div>
 
+        {/* 가격 급상승 아이템 섹션 */}
+        {(topIncreaseLoading || topIncreaseItems.length > 0) && (
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 mb-6">
+            <div className="flex items-center gap-2 mb-3">
+              <h3 className="text-lg font-semibold text-red-700 dark:text-red-300">
+                생활 가격 급상승 아이템 {topIncreaseItems.length > 0 ? `(상위 ${topIncreaseItems.length}개, 5% 이상)` : ''}
+              </h3>
+              {topIncreaseLoading && (
+                <div className="ml-auto">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-red-500"></div>
+                </div>
+              )}
+            </div>
+            
+            {topIncreaseLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
+                {Array.from({length: 5}).map((_, index) => (
+                  <div key={`skeleton-${index}`} className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-red-200 dark:border-red-700">
+                    <div className="animate-pulse">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-6 h-6 bg-gray-300 dark:bg-gray-600 rounded"></div>
+                        <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded flex-1"></div>
+                      </div>
+                      <div className="text-center">
+                        <div className="h-4 bg-red-200 dark:bg-red-800 rounded mb-1"></div>
+                        <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded"></div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : topIncreaseItems.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
+                {topIncreaseItems.map((item, index) => (
+                  <div
+                    key={`increase-${item.Id}-${index}`}
+                    onClick={() => loadPriceHistory(item)}
+                    className="bg-white dark:bg-gray-800 rounded-lg p-3 cursor-pointer hover:shadow-md transition-all border border-red-200 dark:border-red-700 hover:border-red-300 dark:hover:border-red-600"
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-6 h-6 bg-gray-600 rounded border overflow-hidden flex-shrink-0">
+                        {item.Icon && (
+                          <img src={item.Icon} alt={item.Name} className="w-full h-full object-cover" />
+                        )}
+                      </div>
+                      <h4 className={`font-medium text-xs truncate ${getGradeTextColor(item.Grade)}`}>
+                        {item.Name}
+                      </h4>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-red-600 dark:text-red-400 font-bold text-sm">
+                        🔥 +{item.changeInfo.percent.toFixed(1)}%
+                      </div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400">
+                        {formatPrice(item.CurrentMinPrice)}G
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+                현재 5% 이상 상승한 생활 아이템이 없습니다
+              </div>
+            )}
+          </div>
+        )}
+
         {/* 검색 결과 */}
         <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
           {/* 아이템 목록 - 3/5 공간 차지 (60%) */}
@@ -409,7 +564,7 @@ const parseHtmlTooltip = (htmlText) => {
 
                       {/* 아이템 정보 */}
                       <div className="flex-1 min-w-0">
-                        <h4 className={`font-medium text-sm truncate ${getMarketGradeStyle(item.Grade).split(' ')[0]}`}>
+                        <h4 className={`font-medium text-sm truncate ${getGradeTextColor(item.Grade)}`}>
                           {item.Name}
                         </h4>
                         <div className="flex items-center gap-2 text-xs">
@@ -438,6 +593,15 @@ const parseHtmlTooltip = (htmlText) => {
                           {item.YDayAvgPrice > 0 && (
                             <span>어제: {formatPrice(item.YDayAvgPrice)}G</span>
                           )}
+                          {/* 선택된 아이템의 1주일 평균 표시 */}
+                          {isSelected && priceHistory && (() => {
+                            const weeklyAvg = calculateWeeklyAverage(priceHistory);
+                            return weeklyAvg > 0 ? (
+                              <span className="text-blue-600 dark:text-blue-400 font-medium">
+                                1주일 평균: {formatPrice(weeklyAvg)}G
+                              </span>
+                            ) : null;
+                          })()}
                           {item.RecentPrice > 0 && item.RecentPrice !== item.CurrentMinPrice && (
                             <span>최근: {formatPrice(item.RecentPrice)}G</span>
                           )}
@@ -475,7 +639,7 @@ const parseHtmlTooltip = (htmlText) => {
                       {/* 아이템 이름 (Element_000) */}
                       {itemTooltipData.Element_000?.value && (
                         <div className="text-center">
-                          <h4 className={`font-semibold text-sm ${getMarketGradeStyle(hoveredItem.Grade).split(' ')[0]}`}>
+                          <h4 className={`font-semibold text-sm ${getGradeTextColor(hoveredItem.Grade)}`}>
                             {parseHtmlTooltip(itemTooltipData.Element_000.value)}
                           </h4>
                         </div>
@@ -554,6 +718,17 @@ const parseHtmlTooltip = (htmlText) => {
                           </div>
                         )}
 
+                        {/* 1주일 평균 (선택된 아이템일 때만 표시) */}
+                        {selectedItem?.Id === hoveredItem.Id && priceHistory && (() => {
+                          const weeklyAvg = calculateWeeklyAverage(priceHistory);
+                          return weeklyAvg > 0 ? (
+                            <div className="flex justify-between">
+                              <span className="text-gray-400">1주일 평균:</span>
+                              <span className="text-blue-400 font-medium">{formatPrice(weeklyAvg)}G</span>
+                            </div>
+                          ) : null;
+                        })()}
+
                         {hoveredItem.TradeRemainCount !== null && (
                           <div className="flex justify-between">
                             <span className="text-gray-400">거래 가능:</span>
@@ -588,7 +763,7 @@ const parseHtmlTooltip = (htmlText) => {
                           )}
                         </div>
                         <div>
-                          <h4 className={`font-semibold text-sm ${getMarketGradeStyle(hoveredItem.Grade).split(' ')[0]}`}>
+                          <h4 className={`font-semibold text-sm ${getGradeTextColor(hoveredItem.Grade)}`}>
                             {hoveredItem.Name}
                           </h4>
                           <div className={`text-xs px-2 py-1 rounded border ${getMarketGradeStyle(hoveredItem.Grade)}`}>
@@ -682,7 +857,20 @@ const parseHtmlTooltip = (htmlText) => {
                   <h4 className="text-gray-900 dark:text-white font-medium text-sm">{selectedItem.Name}</h4>
                   <p className="text-xs text-gray-600 dark:text-gray-400">최근 14일 가격 변동</p>
                   <div className="mt-2 text-xs text-gray-700 dark:text-gray-300">
-                    <p>현재 최저가: {formatPrice(selectedItem.CurrentMinPrice)}G</p>
+                    <div className="flex items-center gap-4">
+                      <span>현재 최저가: {formatPrice(selectedItem.CurrentMinPrice)}G</span>
+                      {(() => {
+                        const weeklyAvg = calculateWeeklyAverage(priceHistory);
+                        return weeklyAvg > 0 ? (
+                          <>
+                            <span className="text-gray-400">|</span>
+                            <span className="text-blue-600 dark:text-blue-400">
+                              1주일 평균: {formatPrice(weeklyAvg)}G
+                            </span>
+                          </>
+                        ) : null;
+                      })()}
+                    </div>
                     {selectedItem.TradeRemainCount !== null && (
                       <p>거래 가능: {selectedItem.TradeRemainCount}회</p>
                     )}

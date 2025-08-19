@@ -57,9 +57,9 @@ export const GRADE_COLORS = {
     border: 'border-green-400'
   },
   '일반': {
-    text: 'text-gray-600 dark:text-gray-400',
-    bg: 'bg-gray-600/30',
-    border: 'border-gray-400'
+    text: 'text-gray-800 dark:text-gray-100',
+    bg: 'bg-gray-700/50',
+    border: 'border-gray-500'
   }
 };
 
