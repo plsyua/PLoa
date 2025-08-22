@@ -24,27 +24,27 @@ const Utility = () => {
 
         {/* 탭 네비게이션 */}
         <div className="border-b border-gray-200 dark:border-gray-700 mb-8">
-          <nav className="-mb-px flex space-x-8">
+          <nav className="flex gap-4 justify-start py-6">
             <button
               onClick={() => setActiveTab('auction')}
-              className={`py-2 px-1 border-b-2 font-medium text-sm flex items-center gap-2 ${
+              className={`py-3 px-6 rounded-lg font-semibold text-base flex items-center gap-3 transition-all duration-200 shadow-sm border-2 ${
                 activeTab === 'auction'
-                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
+                  ? 'bg-blue-600 text-white border-blue-600 shadow-lg scale-105'
+                  : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400 hover:shadow-md'
               }`}
             >
-              <Calculator size={16} />
+              <Calculator size={20} />
               경매 계산기
             </button>
             <button
               onClick={() => setActiveTab('random')}
-              className={`py-2 px-1 border-b-2 font-medium text-sm flex items-center gap-2 ${
+              className={`py-3 px-6 rounded-lg font-semibold text-base flex items-center gap-3 transition-all duration-200 shadow-sm border-2 ${
                 activeTab === 'random'
-                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
+                  ? 'bg-blue-600 text-white border-blue-600 shadow-lg scale-105'
+                  : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400 hover:shadow-md'
               }`}
             >
-              <Gift size={16} />
+              <Gift size={20} />
               제비뽑기
             </button>
           </nav>
