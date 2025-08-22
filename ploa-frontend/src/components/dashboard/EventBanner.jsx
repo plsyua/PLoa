@@ -129,7 +129,7 @@ const EventBanner = () => {
             onClick={() => window.open(currentEvent.link, '_blank')}
             className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
           >
-            이벤트 참여하기
+            이벤트 바로가기
             <ArrowRight size={16} />
           </button>
         </div>
