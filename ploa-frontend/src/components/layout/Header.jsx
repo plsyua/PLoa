@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Search, Clock, X, Star, ChevronDown, Sun, Moon } from 'lucide-react';
+import { Search, Clock, X, Star, ChevronDown, Sun, Moon, User } from 'lucide-react';
 import useSearchHistory from '../../hooks/useSearchHistory';
 import useFavorites from '../../hooks/useFavorites';
 import useTheme from '../../hooks/useTheme';
+import { getIcon } from '../../utils/icons';
 
 const Header = () => {
   const location = useLocation();
@@ -14,7 +15,7 @@ const Header = () => {
   const searchInputRef = useRef(null);
   const dropdownRef = useRef(null);
   const favoritesRef = useRef(null);
-  const { searchHistory, addToHistory, removeFromHistory } = useSearchHistory();
+  const { searchHistory, removeFromHistory } = useSearchHistory();
   const { favorites, removeFromFavorites } = useFavorites();
   const { toggleTheme, isDark } = useTheme();
   
@@ -45,16 +46,13 @@ const Header = () => {
   }, []);
   
   // 캐릭터 검색 처리
-  const handleSearch = (e, characterName = null) => {
+  const handleSearch = (e, characterData = null) => {
     if (e) e.preventDefault();
     
-    const targetName = characterName || searchTerm.trim();
+    const targetName = typeof characterData === 'string' ? characterData : characterData?.name || searchTerm.trim();
     if (!targetName) return;
     
-    // 검색 기록에 추가
-    addToHistory(targetName);
-    
-    // 페이지 이동
+    // 페이지 이동 (검색 기록은 성공한 검색에서만 추가)
     navigate(`/character/${encodeURIComponent(targetName)}`);
     setSearchTerm('');
     setShowDropdown(false);
@@ -120,29 +118,54 @@ const Header = () => {
                     즐겨찾기가 없습니다
                   </div>
                 ) : (
-                  favorites.map((favorite, index) => (
-                    <div
-                      key={index}
-                      onClick={() => handleFavoriteClick(favorite.name)}
-                      className="flex items-center justify-between px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-sm border-b border-gray-200 dark:border-gray-700 last:border-b-0"
-                    >
-                      <div className="flex flex-col">
-                        <span className="text-gray-900 dark:text-white font-medium">{favorite.name}</span>
-                        {(favorite.serverName || favorite.className) && (
-                          <span className="text-xs text-gray-500 dark:text-gray-400">
-                            {[favorite.serverName, favorite.className].filter(Boolean).join(' • ')}
-                            {favorite.itemLevel > 0 && ` • ${favorite.itemLevel}`}
-                          </span>
-                        )}
-                      </div>
-                      <button
-                        onClick={(e) => handleRemoveFavorite(e, favorite.name)}
-                        className="text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                  favorites.map((favorite, index) => {
+                    const classIcon = getIcon('CHARACTER', favorite.className);
+                    return (
+                      <div
+                        key={index}
+                        onClick={() => handleFavoriteClick(favorite.name)}
+                        className="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-sm border-b border-gray-200 dark:border-gray-700 last:border-b-0"
                       >
-                        <X size={14} />
-                      </button>
-                    </div>
-                  ))
+                        {/* 캐릭터 아이콘 */}
+                        <div className="w-8 h-8 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center border border-gray-400 dark:border-gray-500 overflow-hidden flex-shrink-0">
+                          {classIcon ? (
+                            <img 
+                              src={classIcon} 
+                              alt={favorite.className}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                                e.target.nextElementSibling.style.display = 'flex';
+                              }}
+                            />
+                          ) : null}
+                          <User 
+                            className="w-4 h-4 text-gray-600 dark:text-gray-300" 
+                            style={{ display: classIcon ? 'none' : 'flex' }}
+                          />
+                        </div>
+                        
+                        {/* 캐릭터 정보 */}
+                        <div className="flex-1 min-w-0">
+                          <div className="text-gray-900 dark:text-white font-medium truncate">{favorite.name}</div>
+                          {(favorite.serverName || favorite.className) && (
+                            <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                              {[favorite.serverName, favorite.className].filter(Boolean).join(' • ')}
+                              {favorite.itemLevel > 0 && ` • ${favorite.itemLevel}`}
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* 제거 버튼 */}
+                        <button
+                          onClick={(e) => handleRemoveFavorite(e, favorite.name)}
+                          className="text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 transition-colors flex-shrink-0"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    );
+                  })
                 )}
               </div>
             )}
@@ -177,12 +200,10 @@ const Header = () => {
                   <div
                     key={index}
                     onClick={() => handleSearch(null, characterName)}
-                    className="flex items-center justify-between px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+                    className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
                   >
-                    <div className="flex items-center gap-2">
-                      <Clock size={14} className="text-gray-400 dark:text-gray-500" />
-                      <span>{characterName}</span>
-                    </div>
+                    <Clock size={14} />
+                    <span className="flex-1">{characterName}</span>
                     <button
                       onClick={(e) => handleRemoveHistory(e, characterName)}
                       className="text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"

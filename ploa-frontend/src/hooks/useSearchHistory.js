@@ -80,6 +80,36 @@ const useSearchHistory = () => {
   };
 
   /**
+   * 검색 기록의 닉네임을 정확한 닉네임으로 업데이트
+   * @param {string} oldName - 기존 닉네임 (대소문자 부정확)
+   * @param {string} correctName - 정확한 닉네임
+   */
+  const updateCharacterName = (oldName, correctName) => {
+    if (!oldName || !correctName || oldName === correctName) {
+      return;
+    }
+
+    setSearchHistory(prevHistory => {
+      const index = prevHistory.findIndex(name => name.toLowerCase() === oldName.toLowerCase());
+      if (index === -1) {
+        return prevHistory;
+      }
+
+      const newHistory = [...prevHistory];
+      newHistory[index] = correctName;
+
+      // 로컬스토리지에 저장
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(newHistory));
+      } catch (error) {
+        console.error('검색 기록 저장 실패:', error);
+      }
+
+      return newHistory;
+    });
+  };
+
+  /**
    * 모든 검색 기록 초기화
    */
   const clearHistory = () => {
@@ -95,7 +125,8 @@ const useSearchHistory = () => {
     searchHistory,
     addToHistory,
     removeFromHistory,
-    clearHistory
+    clearHistory,
+    updateCharacterName
   };
 };
 

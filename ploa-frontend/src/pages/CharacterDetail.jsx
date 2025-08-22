@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Search, User, Star, Package, Zap, Map, Crown, ChevronDown, ChevronUp } from 'lucide-react';
 import useFavorites from '../hooks/useFavorites';
+import useSearchHistory from '../hooks/useSearchHistory';
 import { 
   getCharacterProfile, 
   getCharacterEquipment, 
@@ -38,11 +39,13 @@ import { shortenAccessoryEffect, shouldShortenAccessory } from '../utils/accesso
 const CharacterDetail = () => {
   const { characterName } = useParams();
   const navigate = useNavigate();
-  const { isFavorite, addToFavorites, removeFromFavorites } = useFavorites();
+  const { isFavorite, addToFavorites, removeFromFavorites, updateCharacterName: updateFavoriteCharacterName } = useFavorites();
+  const { updateCharacterName, addToHistory } = useSearchHistory();
   
   const [loading, setLoading] = useState(false);
   const [characterData, setCharacterData] = useState(null);
   const [error, setError] = useState('');
+  const [actualCharacterName, setActualCharacterName] = useState(null); // API에서 받은 정확한 캐릭터명
   
   // 탭 관련 상태
   const [activeTab, setActiveTab] = useState('equipment');
@@ -84,13 +87,36 @@ const CharacterDetail = () => {
       const profile = await getCharacterProfile(characterName);
       setCharacterData(profile);
       
+      // 대소문자 정확성 검증 및 URL 정규화
+      const apiCharacterName = profile.CharacterName;
+      setActualCharacterName(apiCharacterName); // 정확한 캐릭터명 상태 저장
+      
+      if (apiCharacterName && apiCharacterName !== characterName) {
+        // 검색 기록의 닉네임을 정확한 닉네임으로 업데이트
+        updateCharacterName(characterName, apiCharacterName);
+        
+        // 즐겨찾기의 닉네임도 정확한 닉네임으로 업데이트
+        updateFavoriteCharacterName(characterName, apiCharacterName);
+        
+        // 컴포넌트 재마운트 없이 브라우저 URL만 업데이트
+        const newUrl = `/character/${encodeURIComponent(apiCharacterName)}`;
+        window.history.replaceState(null, '', newUrl);
+        
+        // 리다이렉트 시에는 검색 기록에 추가하지 않고 계속 진행
+      } else {
+        // 검색이 성공하고 리다이렉트가 필요없는 경우에만 검색 기록에 추가
+        addToHistory(apiCharacterName || characterName);
+      }
+      
       // 장비탭과 아크패시브 데이터를 강제로 로드 (전투력 색상 판단을 위해 arkPassive 필요)
-      loadTabData('equipment', characterName, true);
-      loadTabData('engravings', characterName, true);
-      loadTabData('gems', characterName, true);
-      loadTabData('arkpassive', characterName, true);
-      loadTabData('skills', characterName, true);
-      loadTabData('roster', characterName, true); // 원정대 데이터 로드
+      // 실제 캐릭터명을 사용하여 데이터 로드
+      const targetName = apiCharacterName || characterName;
+      loadTabData('equipment', targetName, true);
+      loadTabData('engravings', targetName, true);
+      loadTabData('gems', targetName, true);
+      loadTabData('arkpassive', targetName, true);
+      loadTabData('skills', targetName, true);
+      loadTabData('roster', targetName, true); // 원정대 데이터 로드
     } catch (error) {
       console.error('캐릭터 검색 실패:', error);
       console.error('Error details:', {
@@ -112,17 +138,19 @@ const CharacterDetail = () => {
 
   // 즐겨찾기 토글 함수
   const handleFavoriteToggle = () => {
-    const isCurrentlyFavorite = isFavorite(characterName);
+    // 정확한 캐릭터명 사용 (API에서 받은 실제 닉네임)
+    const targetCharacterName = actualCharacterName || characterName;
+    const isCurrentlyFavorite = isFavorite(targetCharacterName);
     
     if (isCurrentlyFavorite) {
-      removeFromFavorites(characterName);
+      removeFromFavorites(targetCharacterName);
     } else {
       // 캐릭터 정보가 있으면 추가 정보와 함께 저장
       const serverName = characterData?.ServerName || '';
       const className = characterData?.CharacterClassName || '';
       const itemLevel = characterData?.ItemAvgLevel ? parseFloat(characterData.ItemAvgLevel.replace(',', '')) : 0;
       
-      addToFavorites(characterName, serverName, className, itemLevel);
+      addToFavorites(targetCharacterName, serverName, className, itemLevel);
     }
   };
 
@@ -1149,7 +1177,9 @@ const CharacterDetail = () => {
 
         return (
           <div className="space-y-6">
-            {Object.entries(charactersByServer).map(([serverName, characters]) => (
+            {Object.entries(charactersByServer)
+              .sort(([, charactersA], [, charactersB]) => charactersB.length - charactersA.length)
+              .map(([serverName, characters]) => (
               <div key={serverName} className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
                 <div className="flex items-center gap-3 mb-4">
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white">{serverName}</h3>
@@ -1346,14 +1376,14 @@ const CharacterDetail = () => {
                     <button
                       onClick={handleFavoriteToggle}
                       className={`${
-                        isFavorite(characterName)
+                        isFavorite(actualCharacterName || characterName)
                           ? 'bg-yellow-600/80 hover:bg-yellow-600 text-white'
                           : 'bg-gray-600/80 hover:bg-gray-600 text-gray-300 hover:text-white'
-                      } px-3 py-1.5 text-sm rounded transition-colors flex items-center gap-1.5 backdrop-blur-sm`}
+                      } px-3 py-2 text-sm rounded transition-colors flex items-center gap-1.5 backdrop-blur-sm`}
                     >
                       <Star 
                         className="w-3.5 h-3.5" 
-                        fill={isFavorite(characterName) ? "currentColor" : "none"}
+                        fill={isFavorite(actualCharacterName || characterName) ? "currentColor" : "none"}
                       />
                     </button>
                     
@@ -1361,7 +1391,7 @@ const CharacterDetail = () => {
                     <button
                       onClick={handleSearch}
                       disabled={loading}
-                      className="bg-blue-600/80 hover:bg-blue-600 text-white px-3 py-1.5 text-sm rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 backdrop-blur-sm"
+                      className="bg-blue-600/80 hover:bg-blue-600 text-white px-3 py-2 text-sm rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 backdrop-blur-sm"
                     >
                       <Search className="w-3.5 h-3.5" />
                       갱신

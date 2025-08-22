@@ -195,13 +195,53 @@ const useFavorites = () => {
     });
   };
 
+  /**
+   * 즐겨찾기의 캐릭터 닉네임을 정확한 닉네임으로 업데이트
+   * @param {string} oldName - 기존 닉네임 (대소문자 부정확)
+   * @param {string} correctName - 정확한 닉네임
+   */
+  const updateCharacterName = (oldName, correctName) => {
+    if (!oldName || !correctName || oldName === correctName) {
+      return;
+    }
+
+    setFavorites(prevFavorites => {
+      const favoriteIndex = prevFavorites.findIndex(fav => fav.name.toLowerCase() === oldName.toLowerCase());
+      if (favoriteIndex === -1) {
+        return prevFavorites;
+      }
+
+      const newFavorites = [...prevFavorites];
+      newFavorites[favoriteIndex] = {
+        ...newFavorites[favoriteIndex],
+        name: correctName,
+        timestamp: Date.now()
+      };
+
+      // 로컬스토리지 업데이트
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(newFavorites));
+        
+        // 커스텀 이벤트 발생으로 다른 컴포넌트에 변경사항 알림
+        window.dispatchEvent(new CustomEvent(CUSTOM_EVENT, { 
+          detail: { type: 'nameUpdate', oldName, correctName } 
+        }));
+      } catch (error) {
+        console.error('즐겨찾기 닉네임 업데이트 실패:', error);
+      }
+
+      return newFavorites;
+    });
+  };
+
   return {
     favorites,
     addToFavorites,
     removeFromFavorites,
     isFavorite,
     clearFavorites,
-    updateFavorite
+    updateFavorite,
+    updateCharacterName
   };
 };
 
