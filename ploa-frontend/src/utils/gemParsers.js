@@ -123,15 +123,9 @@ export const parseGemTooltip = (tooltip, gem = null) => {
     try {
       tooltipData = JSON.parse(tooltip);
     } catch (jsonError) {
-      console.warn('보석 툴팁 JSON 파싱 실패:', jsonError);
       return result;
     }
 
-    // 전체 구조 로그 (디버깅용)
-    if (import.meta.env?.DEV) {
-      console.log('보석 툴팁 전체 구조:', tooltipData);
-      console.log('Element 키들:', Object.keys(tooltipData));
-    }
 
     // 모든 Element들을 순회하며 보석 효과 찾기
     let effectText = null;
@@ -146,9 +140,6 @@ export const parseGemTooltip = (tooltip, gem = null) => {
           if (text.includes('[') && text.includes(']') && (text.includes('피해') || text.includes('재사용') || text.includes('지원 효과'))) {
             effectText = text;
             foundElement = key;
-            if (import.meta.env?.DEV) {
-              console.log(`보석 효과 발견 - ${key}:`, text);
-            }
             break;
           }
         }
@@ -203,9 +194,6 @@ export const parseGemTooltip = (tooltip, gem = null) => {
               result.effects = Array.from(effectsSet);
               result.isValid = true;
               
-              if (import.meta.env?.DEV) {
-                console.log(`지원 보석 효과 발견 - ${key}:`, skillNames, result.effects);
-              }
               
               // 기존 로직을 건너뛰기 위해 특별 처리
               return result;
@@ -286,25 +274,9 @@ export const parseGemTooltip = (tooltip, gem = null) => {
         
         result.isValid = !!(result.skillName && result.jobClass && result.effects.length > 0);
         
-        if (import.meta.env?.DEV) {
-          console.log('파싱 결과:', {
-            jobClass: result.jobClass,
-            skillName: result.skillName,
-            effects: result.effects,
-            isValid: result.isValid,
-            htmlVersion: convertedHtml
-          });
-        }
       }
     }
     
-    // 파싱 실패 시 로깅 (개발 환경에서만)
-    if (!result.isValid && import.meta.env?.DEV) {
-      console.warn('보석 툴팁 파싱 실패:', { 
-        foundElement,
-        effectText: effectText || 'Not found'
-      });
-    }
 
     // 보석 타입 분류 (효과 내용을 기반으로)
     if (result.effects.length > 0) {
