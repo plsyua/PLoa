@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Calculator, Users } from 'lucide-react';
+import { Calculator, Users, Copy, Check } from 'lucide-react';
 
 const AuctionCalculator = () => {
   const [itemValue, setItemValue] = useState('');
   const [partySize, setPartySize] = useState(8);
   const [results, setResults] = useState(null);
+  const [copiedSafePrice, setCopiedSafePrice] = useState(false);
 
   const calculateAuction = useCallback(() => {
     if (!itemValue || itemValue <= 0) return;
@@ -66,6 +67,26 @@ const AuctionCalculator = () => {
       setResults(null); // 50골드 미만일 때는 결과 숨김
     }
   }, [itemValue, partySize, calculateAuction]);
+
+  // 클립보드 복사 함수
+  const copyToClipboard = async (value) => {
+    try {
+      await navigator.clipboard.writeText(value.toString());
+      setCopiedSafePrice(true);
+      setTimeout(() => setCopiedSafePrice(false), 2000);
+    } catch (err) {
+      console.error('복사 실패:', err);
+      // 복사 실패 시 폴백: 텍스트 선택
+      const textArea = document.createElement('textarea');
+      textArea.value = value.toString();
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopiedSafePrice(true);
+      setTimeout(() => setCopiedSafePrice(false), 2000);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -180,12 +201,34 @@ const AuctionCalculator = () => {
                 </div>
               </div>
               
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">안전 입찰가</div>
-                <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                  {results.maxPracticalBid.toLocaleString()}G
+              <button
+                onClick={() => copyToClipboard(results.maxPracticalBid)}
+                className={`bg-white dark:bg-gray-800 rounded-lg p-4 border transition-all duration-200 text-left w-full group hover:shadow-md ${
+                  copiedSafePrice 
+                    ? 'border-green-500 bg-green-50 dark:bg-green-900/20' 
+                    : 'border-gray-200 dark:border-gray-700 hover:border-purple-400'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">안전 입찰가 (클릭 복사)</div>
+                    <div className={`text-2xl font-bold transition-colors ${
+                      copiedSafePrice 
+                        ? 'text-green-600 dark:text-green-400'
+                        : 'text-purple-600 dark:text-purple-400'
+                    }`}>
+                      {results.maxPracticalBid.toLocaleString()}G
+                    </div>
+                  </div>
+                  <div className={`transition-colors ${
+                    copiedSafePrice 
+                      ? 'text-green-500'
+                      : 'text-gray-400 group-hover:text-purple-500'
+                  }`}>
+                    {copiedSafePrice ? <Check size={20} /> : <Copy size={20} />}
+                  </div>
                 </div>
-              </div>
+              </button>
             </div>
           </div>
 
