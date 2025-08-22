@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Search, TrendingUp, TrendingDown, BarChart3, RefreshCw, Settings } from 'lucide-react';
 import { getMarketOptions, searchMarketItems, getItemPriceHistory } from '../services/lostarkApi';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ComposedChart } from 'recharts';
@@ -42,40 +42,13 @@ const MarketPrice = () => {
   const [topIncreaseItems, setTopIncreaseItems] = useState([]);
   const [topIncreaseLoading, setTopIncreaseLoading] = useState(false);
 
-  // 컴포넌트 마운트 시 거래소 옵션 로드 및 초기 검색
-  useEffect(() => {
-    loadMarketOptions();
-  }, []);
-
-  // 거래소 옵션 로드 완료 후 초기 검색 실행
-  useEffect(() => {
-    if (marketOptions) {
-      handleSearch(); // 강화 재료 카테고리로 초기 검색
-      loadTopIncreaseItems(); // 급상승 아이템 로드
-    }
-  }, [marketOptions]);
-
-  // 거래소 검색 옵션 불러오기 (카테고리, 등급, 클래스 목록 등)
-  const loadMarketOptions = async () => {
-    try {
-      const options = await getMarketOptions();
-      setMarketOptions(options);
-    } catch (error) {
-      console.error('거래소 옵션 로드 실패:', error);
-    }
-  };
-
   // 검색 실행 함수
-  const handleSearch = async (e = null, page = 1) => {
+  const handleSearch = useCallback(async (e = null, page = 1) => {
     // 폼 이벤트가 있다면 기본 동작 방지
     if (e) e.preventDefault();
     
-    console.log(`=== 검색 시작 ===`);
-    console.log(`페이지: ${page}, 카테고리: ${selectedCategory}, 등급: ${selectedGrade}, 클래스: ${selectedClass}`);
-    
     // 새로운 검색이면 기존 데이터 초기화
     if (e || page === 1) {
-      console.log('기존 데이터 초기화');
       setMarketItems([]);
       setSelectedItem(null);
       setPriceHistory(null);
@@ -96,13 +69,11 @@ const MarketPrice = () => {
         SortCondition: "ASC"
       };
 
-      console.log('검색 옵션:', searchOptions);
       
       // API 호출
       const result = await searchMarketItems(searchOptions);
       let items = result.Items || [];
       
-      console.log(`API 원본 결과: ${items.length}개 아이템`);
       
       // 결과 설정
       setMarketItems(items);
@@ -117,11 +88,106 @@ const MarketPrice = () => {
     } finally {
       setLoading(false);
     }
+  }, [selectedCategory, selectedGrade, selectedClass, searchTerm]);
+
+  // 전체 강화재료에서 급상승 아이템 로드 (여러 페이지)
+  const loadTopIncreaseItems = useCallback(async () => {
+    setTopIncreaseLoading(true);
+    
+    try {
+      const allItems = [];
+      const pagesToLoad = 10; // 처음 10페이지 (약 100개 아이템)
+      
+      
+      // 여러 페이지 순차적으로 로드
+      for (let page = 1; page <= pagesToLoad; page++) {
+        const searchOptions = {
+          Sort: "RECENT_PRICE",
+          CategoryCode: 90000, // 생활
+          ItemGrade: '',
+          CharacterClass: '',
+          ItemName: '',
+          PageNo: page,
+          SortCondition: "ASC"
+          // PageSize 제거 - API에서 지원하지 않을 수 있음
+        };
+        
+        const result = await searchMarketItems(searchOptions);
+        if (result.Items && result.Items.length > 0) {
+          allItems.push(...result.Items);
+        } else {
+          break; // 더 이상 데이터가 없으면 중단
+        }
+      }
+      
+      
+      // 상위 5개 급상승 아이템 추출
+      const topItems = getTopPriceIncreaseItems(allItems, 5);
+      setTopIncreaseItems(topItems);
+      
+      
+    } catch (error) {
+      console.error('급상승 아이템 로드 실패:', error);
+      setTopIncreaseItems([]);
+    } finally {
+      setTopIncreaseLoading(false);
+    }
+  }, []); // 의존성 없음 - 고정된 검색 옵션 사용
+
+  // 컴포넌트 마운트 시 거래소 옵션 로드 및 초기 검색
+  useEffect(() => {
+    loadMarketOptions();
+  }, []);
+
+  // 거래소 옵션 로드 완료 후 초기 검색 실행
+  useEffect(() => {
+    if (marketOptions) {
+      // 초기 검색 (강화 재료 카테고리로 고정)
+      const initialSearch = async () => {
+        setLoading(true);
+        try {
+          const searchOptions = {
+            Sort: "RECENT_PRICE",
+            CategoryCode: 90000, // 강화 재료 (고정)
+            ItemGrade: '',
+            CharacterClass: '',
+            ItemName: '',
+            PageNo: 1,
+            SortCondition: "ASC"
+          };
+          
+          const result = await searchMarketItems(searchOptions);
+          const items = result.Items || [];
+          
+          setMarketItems(items);
+          setTotalCount(result.TotalCount || 0);
+          setCurrentPage(1);
+        } catch (error) {
+          console.error('초기 검색 실패:', error);
+          setMarketItems([]);
+          setTotalCount(0);
+        } finally {
+          setLoading(false);
+        }
+      };
+      
+      initialSearch();
+      loadTopIncreaseItems(); // 급상승 아이템 로드
+    }
+  }, [marketOptions, loadTopIncreaseItems]);
+
+  // 거래소 검색 옵션 불러오기 (카테고리, 등급, 클래스 목록 등)
+  const loadMarketOptions = async () => {
+    try {
+      const options = await getMarketOptions();
+      setMarketOptions(options);
+    } catch (error) {
+      console.error('거래소 옵션 로드 실패:', error);
+    }
   };
 
   // 페이지 변경 시 - API 호출로 해당 페이지 데이터 가져오기
   const handlePageChange = (newPage) => {
-    console.log(`페이지 변경: ${currentPage} → ${newPage}`);
     handleSearch(null, newPage);
   };
 
@@ -132,7 +198,6 @@ const MarketPrice = () => {
     
     try {
       const history = await getItemPriceHistory(item.Id);
-      console.log('가격 히스토리 원본:', history);
       
       if (history && history.length > 0) {
         // 🔥 실제 거래 데이터가 있는 아이템을 우선 선택
@@ -154,10 +219,7 @@ const MarketPrice = () => {
         }
         
         setPriceHistory(selectedHistory);
-        console.log('선택된 가격 히스토리:', selectedHistory);
-        console.log('TradeRemainCount:', selectedHistory.TradeRemainCount);
       } else {
-        console.log('가격 히스토리 없음');
         setPriceHistory(null);
       }
     } catch (error) {
@@ -282,55 +344,6 @@ const parseHtmlTooltip = (htmlText) => {
       .filter(item => item.changeInfo.hasChange && item.changeInfo.isIncrease && item.changeInfo.percent >= 5 && item.changeInfo.percent < 99 && item.CurrentMinPrice > 15) // 5% 이상 99% 미만 상승, 15골드 초과
       .sort((a, b) => b.changeInfo.percent - a.changeInfo.percent)
       .slice(0, count);
-  };
-
-  // 전체 강화재료에서 급상승 아이템 로드 (여러 페이지)
-  const loadTopIncreaseItems = async () => {
-    setTopIncreaseLoading(true);
-    
-    try {
-      const allItems = [];
-      const pagesToLoad = 10; // 처음 10페이지 (약 100개 아이템)
-      
-      console.log(`급상승 아이템 분석 시작: ${pagesToLoad}페이지 로딩...`);
-      
-      // 여러 페이지 순차적으로 로드
-      for (let page = 1; page <= pagesToLoad; page++) {
-        const searchOptions = {
-          Sort: "RECENT_PRICE",
-          CategoryCode: 90000, // 생활
-          ItemGrade: '',
-          CharacterClass: '',
-          ItemName: '',
-          PageNo: page,
-          SortCondition: "ASC"
-          // PageSize 제거 - API에서 지원하지 않을 수 있음
-        };
-        
-        const result = await searchMarketItems(searchOptions);
-        if (result.Items && result.Items.length > 0) {
-          allItems.push(...result.Items);
-          console.log(`페이지 ${page}: ${result.Items.length}개 아이템 추가 (총 ${allItems.length}개)`);
-        } else {
-          console.log(`페이지 ${page}: 데이터 없음, 로딩 중단`);
-          break; // 더 이상 데이터가 없으면 중단
-        }
-      }
-      
-      console.log(`급상승 아이템 분석: 총 ${allItems.length}개 생활 아이템 확인`);
-      
-      // 상위 5개 급상승 아이템 추출
-      const topItems = getTopPriceIncreaseItems(allItems, 5);
-      setTopIncreaseItems(topItems);
-      
-      console.log(`급상승 아이템 ${topItems.length}개 발견:`, topItems.map(item => `${item.Name} +${item.changeInfo.percent.toFixed(1)}%`));
-      
-    } catch (error) {
-      console.error('급상승 아이템 로드 실패:', error);
-      setTopIncreaseItems([]);
-    } finally {
-      setTopIncreaseLoading(false);
-    }
   };
 
   // 아이템 등급별 색상
@@ -484,7 +497,7 @@ const parseHtmlTooltip = (htmlText) => {
                     </div>
                     <div className="text-center">
                       <div className="text-red-600 dark:text-red-400 font-bold text-sm">
-                        🔥 +{item.changeInfo.percent.toFixed(1)}%
+                        +{item.changeInfo.percent.toFixed(1)}%
                       </div>
                       <div className="text-xs text-gray-600 dark:text-gray-400">
                         {formatPrice(item.CurrentMinPrice)}G
