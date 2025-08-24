@@ -18,6 +18,7 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
 import CollectiblesProgress from '../components/character/CollectiblesProgress';
 import WeeklyGoldCalculator from '../components/character/WeeklyGoldCalculator';
+import CharacterStats from '../components/character/CharacterStats';
 import { 
   CharacterProfileSkeleton, 
   EquipmentSkeleton, 
@@ -1290,7 +1291,7 @@ const CharacterDetail = () => {
         {characterData && (
           <div className="space-y-6">
             {/* 캐릭터 프로필 헤더 - 게임 스타일 */}
-            <div className="relative h-60 bg-black rounded-lg overflow-hidden">
+            <div className="relative h-72 bg-black rounded-lg overflow-hidden">
               {/* 캐릭터 배경 이미지 */}
               <div className="absolute inset-0">
                 {characterData.CharacterImage ? (
@@ -1307,8 +1308,8 @@ const CharacterDetail = () => {
 <div className="absolute inset-0 p-6 flex flex-col">
                 {/* 상단 정보 */}
                 <div className="flex justify-between items-start">
-                  <div>
-                    <div className="flex gap-2 mb-1">
+                  <div className="flex items-center gap-3">
+                    <div className="flex gap-2">
                       <span className="bg-gray-700/80 text-white px-2 py-1 rounded text-xs font-medium backdrop-blur-sm">
                         {characterData.ServerName}
                       </span>
@@ -1316,88 +1317,94 @@ const CharacterDetail = () => {
                         {characterData.CharacterClassName}
                       </span>
                     </div>
+                    
+                    {/* 즐겨찾기 & 갱신 버튼 */}
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={handleFavoriteToggle}
+                        className={`${
+                          isFavorite(actualCharacterName || characterName)
+                            ? 'bg-yellow-600/80 hover:bg-yellow-600 text-white'
+                            : 'bg-gray-600/80 hover:bg-gray-600 text-gray-300 hover:text-white'
+                        } px-2 py-1.5 text-xs rounded transition-colors flex items-center gap-1 backdrop-blur-sm`}
+                      >
+                        <Star 
+                          className="w-3 h-3" 
+                          fill={isFavorite(actualCharacterName || characterName) ? "currentColor" : "none"}
+                        />
+                      </button>
+                      
+                      <button
+                        onClick={handleSearch}
+                        disabled={loading}
+                        className="bg-blue-600/80 hover:bg-blue-600 text-white px-2 py-1 text-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 backdrop-blur-sm"
+                      >
+                        <Search className="w-3 h-3" />
+                        갱신
+                      </button>
+                    </div>
                   </div>
                   
                   {/* 우측 스탯 */}
-                  <div className="w-60">
-                    <div className="flex text-base mb-0.5">
+                  <div className="w-80 px-4">
+                    <div className="flex text-base mb-0.5 justify-between">
                       <span className="text-gray-400">아이템</span>
-                      <span className="text-white ml-auto">
+                      <span className="text-white">
                         {characterData.ItemAvgLevel || '0'}
                       </span>
                     </div>
-                    <div className="flex text-base mb-0.5">
+                    <div className="flex text-base mb-0.5 justify-between">
                       <span className="text-gray-400">전투력</span>
-                      <span className={`font-bold ml-auto ${getCombatPowerColor(arkPassiveData)}`}>
+                      <span className={`font-bold ${getCombatPowerColor(arkPassiveData)}`}>
                         {characterData.CombatPower || '0'}
                       </span>
                     </div>
-                    <div className="flex text-base mb-0.5">
+                    <div className="flex text-base mb-0.5 justify-between">
                       <span className="text-gray-400">레벨</span>
-                      <span className="text-white ml-auto">Lv.{characterData.CharacterLevel || '0'}</span>
+                      <span className="text-white">Lv.{characterData.CharacterLevel || '0'}</span>
                     </div>
                     {/* 빈 공간 - 적당한 간격 */}
                     <div className="mb-3"></div>
                     
                     {/* 영지 정보 */}
                     {characterData.TownName && characterData.TownName !== '영지 없음' && (
-                      <div className="flex text-base mb-0.5">
+                      <div className="flex text-base mb-0.5 justify-between">
                         <span className="text-gray-400">영지</span>
-                        <span className="text-white ml-auto">{characterData.TownName}</span>
+                        <span className="text-white">{characterData.TownName}</span>
                       </div>
                     )}
                     
                     {/* PVP 정보 */}
                     {characterData.PvpGradeName && characterData.PvpGradeName !== '등급 없음' && (
-                      <div className="flex text-base mb-0.5">
+                      <div className="flex text-base mb-0.5 justify-between">
                         <span className="text-gray-400">PVP</span>
-                        <span className="text-white ml-auto">{characterData.PvpGradeName}</span>
+                        <span className="text-white">{characterData.PvpGradeName}</span>
                       </div>
                     )}
+                    
                   </div>
                 </div>
                 
                 {/* 하단 정보 */}
-                <div className="mt-auto flex justify-between items-end">
-                  <div>
-                    {/* 길드명 (캐릭터 이름 위) */}
-                    {characterData.GuildName && characterData.GuildName !== '길드 없음' && (
-                      <div className="mb-1">
-                        <span className="bg-blue-600/80 text-white px-2 py-1 rounded text-sm font-medium backdrop-blur-sm">
-                          {characterData.GuildName}
-                        </span>
-                      </div>
-                    )}
-                    <h1 className="text-2xl font-bold text-white mb-2">{characterData.CharacterName}</h1>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    {/* 즐겨찾기 버튼 */}
-                    <button
-                      onClick={handleFavoriteToggle}
-                      className={`${
-                        isFavorite(actualCharacterName || characterName)
-                          ? 'bg-yellow-600/80 hover:bg-yellow-600 text-white'
-                          : 'bg-gray-600/80 hover:bg-gray-600 text-gray-300 hover:text-white'
-                      } px-3 py-2 text-sm rounded transition-colors flex items-center gap-1.5 backdrop-blur-sm`}
-                    >
-                      <Star 
-                        className="w-3.5 h-3.5" 
-                        fill={isFavorite(actualCharacterName || characterName) ? "currentColor" : "none"}
-                      />
-                    </button>
-                    
-                    {/* 갱신 버튼 */}
-                    <button
-                      onClick={handleSearch}
-                      disabled={loading}
-                      className="bg-blue-600/80 hover:bg-blue-600 text-white px-3 py-2 text-sm rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 backdrop-blur-sm"
-                    >
-                      <Search className="w-3.5 h-3.5" />
-                      갱신
-                    </button>
+                <div className="mt-auto flex justify-end">
+                  {/* 캐릭터 스탯 표시 */}
+                  <div className="bg-black/20 backdrop-blur-sm rounded-lg p-4 w-80">
+                    <CharacterStats characterData={characterData} />
                   </div>
                 </div>
+              </div>
+              
+              {/* 캐릭터명/길드명 좌측 하단 고정 */}
+              <div className="absolute bottom-6 left-6">
+                {/* 길드명 (캐릭터 이름 위) */}
+                {characterData.GuildName && characterData.GuildName !== '길드 없음' && (
+                  <div className="mb-1">
+                    <span className="bg-blue-600/80 text-white px-2 py-1 rounded text-sm font-medium backdrop-blur-sm">
+                      {characterData.GuildName}
+                    </span>
+                  </div>
+                )}
+                <h1 className="text-2xl font-bold text-white mb-2">{characterData.CharacterName}</h1>
               </div>
             </div>
 
