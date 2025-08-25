@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Calculator, Users, Copy, Check } from 'lucide-react';
+import { Users, Copy, Check } from 'lucide-react';
 
 const AuctionCalculator = () => {
   const [itemValue, setItemValue] = useState('');
@@ -92,9 +92,6 @@ const AuctionCalculator = () => {
     <div className="space-y-6">
       {/* 계산기 헤더 */}
       <div className="text-center">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full mb-4">
-          <Calculator size={32} className="text-blue-600 dark:text-blue-400" />
-        </div>
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
           경매 계산기
         </h2>

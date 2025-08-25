@@ -87,9 +87,6 @@ const RandomPicker = () => {
     <div className="space-y-6">
       {/* 제비뽑기 헤더 */}
       <div className="text-center">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-full mb-4">
-          <Gift size={32} className="text-purple-600 dark:text-purple-400" />
-        </div>
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
           제비뽑기
         </h2>
