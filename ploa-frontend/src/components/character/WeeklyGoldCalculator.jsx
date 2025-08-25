@@ -23,7 +23,12 @@ const RAID_DATA = [
   { id: '2nd_abrel_normal', name: '2막: 아브렐슈드 노말', itemLevel: 1670, gold: 21500 },
   { id: '2nd_abrel_hard', name: '2막: 아브렐슈드 하드', itemLevel: 1690, gold: 30500 },
   { id: '3rd_mordum_normal', name: '3막: 모르둠 노말', itemLevel: 1680, gold: 28000 },
-  { id: '3rd_mordum_hard', name: '3막: 모르둠 하드', itemLevel: 1700, gold: 38000 }
+  { id: '3rd_mordum_hard', name: '3막: 모르둠 하드', itemLevel: 1700, gold: 38000 },
+  { id: '4th_armoche_normal', name: '4막: 아르모체 노말', itemLevel: 1700, gold: 33000 },
+  { id: '4th_armoche_hard', name: '4막: 아르모체 하드', itemLevel: 1720, gold: 42000 },
+  { id: '5th_kazeroth_normal', name: '종막: 카제로스 노말', itemLevel: 1710, gold: 40000 },
+  { id: '5th_kazeroth_hard', name: '종막: 카제로스 하드', itemLevel: 1730, gold: 52000 }
+
 ];
 
 // 레이드 연계 관계 정의 (부모 -> 자식)
@@ -37,7 +42,10 @@ const NORMAL_HARD_PAIRS = {
   'ekidna_normal': 'ekidna_hard',
   'aegir_normal': 'aegir_hard',
   '2nd_abrel_normal': '2nd_abrel_hard',
-  '3rd_mordum_normal': '3rd_mordum_hard'
+  '3rd_mordum_normal': '3rd_mordum_hard',
+  '4th_armoche_normal': '4th_armoche_hard',
+  '5th_kazeroth_normal': '5th_kazeroth_hard'
+
 };
 
 // 테스트용 더미 데이터
