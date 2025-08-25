@@ -197,65 +197,6 @@ export const RAID_DATA = {
       }
     ]
   },
-  kayangel: {
-    id: 'kayangel',
-    name: '카양겔',
-    category: '어비스 던전',
-    iconUrl: kayangelIcon,
-    difficulty: ['normal', 'hard'],
-    gates: [
-      {
-        gateId: 1,
-        name: '1관문',
-        materials: [
-          { name: '파괴강석', quantity: { normal: 210 }, category: '강화재료' },
-          { name: '정제된 파괴강석', quantity: { hard: 70 }, category: '강화재료' },
-          { name: '수호강석', quantity: { normal: 420 }, category: '강화재료' },
-          { name: '정제된 수호강석', quantity: { hard: 140 }, category: '강화재료' },
-          { name: '경이로운 명예의 돌파석', quantity: { normal: 10 }, category: '강화재료' },
-          { name: '찬란한 명예의 돌파석', quantity: { hard: 3 }, category: '강화재료' },
-          { name: '명예의 파편', quantity: { normal: 3290, hard: 3400 }, category: '강화재료' },
-          { name: '관조의 빛무리', quantity: { hard: 1 }, category: '고유' },
-          { name: '시련의 빛', quantity: { normal: 11, hard: 14 }, category: '고유' },
-        ],
-        moreRewardCost: { normal: 180, hard: 225 }
-      },
-      {
-        gateId: 2,
-        name: '2관문',
-        materials: [
-          { name: '파괴강석', quantity: { normal: 260 }, category: '강화재료' },
-          { name: '정제된 파괴강석', quantity: { hard: 800 }, category: '강화재료' },
-          { name: '수호강석', quantity: { normal: 520 }, category: '강화재료' },
-          { name: '정제된 수호강석', quantity: { hard: 160 }, category: '강화재료' },
-          { name: '경이로운 명예의 돌파석', quantity: { normal: 11 }, category: '강화재료' },
-          { name: '찬란한 명예의 돌파석', quantity: { hard: 4 }, category: '강화재료' },
-          { name: '명예의 파편', quantity: { normal: 3310, hard: 3400 }, category: '강화재료' },
-          { name: '관조의 빛무리', quantity: { normal: 1, hard: 1 }, category: '고유' },
-          { name: '시련의 빛', quantity: { normal: 12, hard: 16 }, category: '고유' },
-        ],
-        moreRewardCost: { normal: 200, hard: 350 }
-      },
-      {
-        gateId: 3,
-        name: '3관문',
-        materials: [
-          { name: '파괴강석', quantity: { normal: 310 }, category: '강화재료' },
-          { name: '정제된 파괴강석', quantity: { hard: 110 }, category: '강화재료' },
-          { name: '수호강석', quantity: { normal: 620 }, category: '강화재료' },
-          { name: '정제된 수호강석', quantity: { hard: 220 }, category: '강화재료' },
-          { name: '경이로운 명예의 돌파석', quantity: { normal: 15 }, category: '강화재료' },
-          { name: '찬란한 명예의 돌파석', quantity: { hard: 6 }, category: '강화재료' },
-          { name: '명예의 파편', quantity: { normal: 4990, hard: 5100 }, category: '강화재료' },
-          { name: '관조의 빛무리', quantity: { normal: 2, hard: 3 }, category: '고유' },
-          { name: '시련의 빛', quantity: { normal: 17, hard: 20 }, category: '고유' },
-          { name: '심화 돌파석', quantity: { normal: 8 }, category: '고유' },
-          { name: '농축 돌파석', quantity: { hard: 5 }, category: '고유' },
-        ],
-        moreRewardCost: { normal: 270, hard: 500 }
-      }
-    ]
-  },
   illiakan: {
     id: 'illiakan',
     name: '일리아칸',
@@ -299,53 +240,6 @@ export const RAID_DATA = {
           { name: '농축 돌파석', quantity: { normal: 7, hard: 13 }, category: '고유' },
         ],
         moreRewardCost: { normal: 330, hard: 700 }
-      }
-    ]
-  },
-  ivory_tower: {
-    id: 'ivory_tower',
-    name: '혼돈의 상아탑',
-    category: '어비스 던전',
-    iconUrl: ivory_towerIcon,
-    difficulty: ['normal', 'hard'],
-    gates: [
-      {
-        gateId: 1,
-        name: '1관문',
-        materials: [
-          { name: '정제된 파괴강석', quantity: { normal: 150, hard: 170 }, category: '강화재료' },
-          { name: '정제된 수호강석', quantity: { normal: 300 , hard: 340 }, category: '강화재료' },
-          { name: '찬란한 명예의 돌파석', quantity: { normal: 7, hard: 8 }, category: '강화재료' },
-          { name: '명예의 파편', quantity: { normal: 3600, hard: 4400 }, category: '강화재료' },
-          { name: '빛나는 지혜의 기운', quantity: { normal: 2, hard: 4 }, category: '고유' },
-        ],
-        moreRewardCost: { normal: 180, hard: 350 }
-      },
-      {
-        gateId: 2,
-        name: '2관문',
-        materials: [
-          { name: '정제된 파괴강석', quantity: { normal: 160, hard: 180 }, category: '강화재료' },
-          { name: '정제된 수호강석', quantity: { normal: 320 , hard: 360 }, category: '강화재료' },
-          { name: '찬란한 명예의 돌파석', quantity: { normal: 7, hard: 8 }, category: '강화재료' },
-          { name: '명예의 파편', quantity: { normal: 3600, hard: 4400 }, category: '강화재료' },
-          { name: '빛나는 지혜의 기운', quantity: { normal: 2, hard: 4 }, category: '고유' },
-        ],
-        moreRewardCost: { normal: 220, hard: 500 }
-      },
-      {
-        gateId: 3,
-        name: '3관문',
-        materials: [
-          { name: '정제된 파괴강석', quantity: { normal: 230, hard: 280 }, category: '강화재료' },
-          { name: '정제된 수호강석', quantity: { normal: 460 , hard: 560 }, category: '강화재료' },
-          { name: '찬란한 명예의 돌파석', quantity: { normal: 13, hard: 16 }, category: '강화재료' },
-          { name: '명예의 파편', quantity: { normal: 6000, hard: 7000 }, category: '강화재료' },
-          { name: '빛나는 지혜의 기운', quantity: { normal: 4, hard: 8 }, category: '고유' },
-          { name: '빛나는 지혜의 엘릭서', quantity: { normal: 1, hard: 2 }, category: '고유' },
-          { name: '농축 돌파석', quantity: { normal: 3, hard: 5 }, category: '고유' },
-        ],
-        moreRewardCost: { normal: 300, hard: 950 }
       }
     ]
   },
@@ -412,6 +306,114 @@ export const RAID_DATA = {
       }
     ]
   },
+  // 어비스 던전
+  kayangel: {
+    id: 'kayangel',
+    name: '카양겔',
+    category: '어비스 던전',
+    iconUrl: kayangelIcon,
+    difficulty: ['normal', 'hard'],
+    gates: [
+      {
+        gateId: 1,
+        name: '1관문',
+        materials: [
+          { name: '파괴강석', quantity: { normal: 210 }, category: '강화재료' },
+          { name: '정제된 파괴강석', quantity: { hard: 70 }, category: '강화재료' },
+          { name: '수호강석', quantity: { normal: 420 }, category: '강화재료' },
+          { name: '정제된 수호강석', quantity: { hard: 140 }, category: '강화재료' },
+          { name: '경이로운 명예의 돌파석', quantity: { normal: 10 }, category: '강화재료' },
+          { name: '찬란한 명예의 돌파석', quantity: { hard: 3 }, category: '강화재료' },
+          { name: '명예의 파편', quantity: { normal: 3290, hard: 3400 }, category: '강화재료' },
+          { name: '관조의 빛무리', quantity: { hard: 1 }, category: '고유' },
+          { name: '시련의 빛', quantity: { normal: 11, hard: 14 }, category: '고유' },
+        ],
+        moreRewardCost: { normal: 180, hard: 225 }
+      },
+      {
+        gateId: 2,
+        name: '2관문',
+        materials: [
+          { name: '파괴강석', quantity: { normal: 260 }, category: '강화재료' },
+          { name: '정제된 파괴강석', quantity: { hard: 800 }, category: '강화재료' },
+          { name: '수호강석', quantity: { normal: 520 }, category: '강화재료' },
+          { name: '정제된 수호강석', quantity: { hard: 160 }, category: '강화재료' },
+          { name: '경이로운 명예의 돌파석', quantity: { normal: 11 }, category: '강화재료' },
+          { name: '찬란한 명예의 돌파석', quantity: { hard: 4 }, category: '강화재료' },
+          { name: '명예의 파편', quantity: { normal: 3310, hard: 3400 }, category: '강화재료' },
+          { name: '관조의 빛무리', quantity: { normal: 1, hard: 1 }, category: '고유' },
+          { name: '시련의 빛', quantity: { normal: 12, hard: 16 }, category: '고유' },
+        ],
+        moreRewardCost: { normal: 200, hard: 350 }
+      },
+      {
+        gateId: 3,
+        name: '3관문',
+        materials: [
+          { name: '파괴강석', quantity: { normal: 310 }, category: '강화재료' },
+          { name: '정제된 파괴강석', quantity: { hard: 110 }, category: '강화재료' },
+          { name: '수호강석', quantity: { normal: 620 }, category: '강화재료' },
+          { name: '정제된 수호강석', quantity: { hard: 220 }, category: '강화재료' },
+          { name: '경이로운 명예의 돌파석', quantity: { normal: 15 }, category: '강화재료' },
+          { name: '찬란한 명예의 돌파석', quantity: { hard: 6 }, category: '강화재료' },
+          { name: '명예의 파편', quantity: { normal: 4990, hard: 5100 }, category: '강화재료' },
+          { name: '관조의 빛무리', quantity: { normal: 2, hard: 3 }, category: '고유' },
+          { name: '시련의 빛', quantity: { normal: 17, hard: 20 }, category: '고유' },
+          { name: '심화 돌파석', quantity: { normal: 8 }, category: '고유' },
+          { name: '농축 돌파석', quantity: { hard: 5 }, category: '고유' },
+        ],
+        moreRewardCost: { normal: 270, hard: 500 }
+      }
+    ]
+  },
+    ivory_tower: {
+    id: 'ivory_tower',
+    name: '혼돈의 상아탑',
+    category: '어비스 던전',
+    iconUrl: ivory_towerIcon,
+    difficulty: ['normal', 'hard'],
+    gates: [
+      {
+        gateId: 1,
+        name: '1관문',
+        materials: [
+          { name: '정제된 파괴강석', quantity: { normal: 150, hard: 170 }, category: '강화재료' },
+          { name: '정제된 수호강석', quantity: { normal: 300 , hard: 340 }, category: '강화재료' },
+          { name: '찬란한 명예의 돌파석', quantity: { normal: 7, hard: 8 }, category: '강화재료' },
+          { name: '명예의 파편', quantity: { normal: 3600, hard: 4400 }, category: '강화재료' },
+          { name: '빛나는 지혜의 기운', quantity: { normal: 2, hard: 4 }, category: '고유' },
+        ],
+        moreRewardCost: { normal: 180, hard: 350 }
+      },
+      {
+        gateId: 2,
+        name: '2관문',
+        materials: [
+          { name: '정제된 파괴강석', quantity: { normal: 160, hard: 180 }, category: '강화재료' },
+          { name: '정제된 수호강석', quantity: { normal: 320 , hard: 360 }, category: '강화재료' },
+          { name: '찬란한 명예의 돌파석', quantity: { normal: 7, hard: 8 }, category: '강화재료' },
+          { name: '명예의 파편', quantity: { normal: 3600, hard: 4400 }, category: '강화재료' },
+          { name: '빛나는 지혜의 기운', quantity: { normal: 2, hard: 4 }, category: '고유' },
+        ],
+        moreRewardCost: { normal: 220, hard: 500 }
+      },
+      {
+        gateId: 3,
+        name: '3관문',
+        materials: [
+          { name: '정제된 파괴강석', quantity: { normal: 230, hard: 280 }, category: '강화재료' },
+          { name: '정제된 수호강석', quantity: { normal: 460 , hard: 560 }, category: '강화재료' },
+          { name: '찬란한 명예의 돌파석', quantity: { normal: 13, hard: 16 }, category: '강화재료' },
+          { name: '명예의 파편', quantity: { normal: 6000, hard: 7000 }, category: '강화재료' },
+          { name: '빛나는 지혜의 기운', quantity: { normal: 4, hard: 8 }, category: '고유' },
+          { name: '빛나는 지혜의 엘릭서', quantity: { normal: 1, hard: 2 }, category: '고유' },
+          { name: '농축 돌파석', quantity: { normal: 3, hard: 5 }, category: '고유' },
+        ],
+        moreRewardCost: { normal: 300, hard: 950 }
+      }
+    ]
+  },
+  // 에픽 레이드
   behemoth: {
     id: 'behemoth',
     name: '베히모스',
@@ -448,7 +450,7 @@ export const RAID_DATA = {
       }
     ]
   },
-
+  // 카제로스 레이드
   ekidna: {
     id: 'ekidna',
     name: '서막: 에키드나',
