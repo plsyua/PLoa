@@ -27,7 +27,10 @@
       "Bash(npm:*)",
       "WebFetch(domain:developer-lostark.game.onstove.com)",
       "Bash(mkdir:*)",
-      "WebFetch(domain:loachart.com)"
+      "WebFetch(domain:loachart.com)",
+      "Bash(ss:*)",
+      "Bash(kill:*)",
+      "Read(//mnt/c/Users/master/Desktop/**)"
     ],
     "deny": []
   }
