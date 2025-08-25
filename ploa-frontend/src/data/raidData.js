@@ -3,24 +3,24 @@
 
 // 레이드 아이콘 import
 // 군단장 레이드
-import valtanIcon from '../assets/images/valtan.webp';
-import vykasIcon from '../assets/images/vykas.webp';
-import koukuIcon from '../assets/images/kouku.webp';
-import brelshazaIcon from '../assets/images/brelshaza.webp';
-import illiakanIcon from '../assets/images/illiakan.webp';
-import kamenIcon from '../assets/images/kamen.webp';
+import valtanIcon from '../assets/images/raid/valtan.webp';
+import vykasIcon from '../assets/images/raid/vykas.webp';
+import koukuIcon from '../assets/images/raid/kouku.webp';
+import brelshazaIcon from '../assets/images/raid/brelshaza.webp';
+import illiakanIcon from '../assets/images/raid/illiakan.webp';
+import kamenIcon from '../assets/images/raid/kamen.webp';
 // 어비스 던전
-import kayangelIcon from '../assets/images/kayangel.webp';
-import ivory_towerIcon from '../assets/images/ivory_tower.webp';
+import kayangelIcon from '../assets/images/raid/kayangel.webp';
+import ivory_towerIcon from '../assets/images/raid/ivory_tower.webp';
 // 에픽 레이드
-import behemothIcon from '../assets/images/behemoth.webp';
+import behemothIcon from '../assets/images/raid/behemoth.webp';
 // 카제로스 레이드
-import ekidnaIcon from '../assets/images/ekidna.webp';
-import aegirIcon from '../assets/images/aegir.webp';
-import abrelIcon from '../assets/images/abrel.webp';
-import mordumIcon from '../assets/images/mordum.webp';
-import armocheIcon from '../assets/images/armoche.webp';
-import kazerothIcon from '../assets/images/kazeroth.webp';
+import ekidnaIcon from '../assets/images/raid/ekidna.webp';
+import aegirIcon from '../assets/images/raid/aegir.webp';
+import abrelIcon from '../assets/images/raid/abrel.webp';
+import mordumIcon from '../assets/images/raid/mordum.webp';
+import armocheIcon from '../assets/images/raid/armoche.webp';
+import kazerothIcon from '../assets/images/raid/kazeroth.webp';
 
 export const RAID_DATA = {
   // 군단장 레이드
@@ -628,7 +628,7 @@ export const RAID_DATA = {
           { name: '운명의 수호석', quantity: { normal: 2800, hard: 3360 }, category: '강화재료' },
           { name: '운명의 돌파석', quantity: { normal: 44, hard: 53 }, category: '강화재료' },
           { name: '운명의 파편', quantity: { normal: 11880, hard: 14250 }, category: '강화재료' },
-          { name: '아크 그리드', quantity: { normal: 1, hard: 1 }, category: '고유' },
+          { name: '아크 그리드 코어', quantity: { normal: 1, hard: 1 }, category: '고유' },
         ],
         moreRewardCost: { normal: 4000, hard: 4800 }
       },
@@ -640,7 +640,7 @@ export const RAID_DATA = {
           { name: '운명의 수호석', quantity: { normal: 4800, hard: 5760 }, category: '강화재료' },
           { name: '운명의 돌파석', quantity: { normal: 78, hard: 94 }, category: '강화재료' },
           { name: '운명의 파편', quantity: { normal: 20160, hard: 24200 }, category: '강화재료' },
-          { name: '아크 그리드', quantity: { normal: 1, hard: 1 }, category: '고유' },
+          { name: '아크 그리드 코어', quantity: { normal: 1, hard: 1 }, category: '고유' },
           { name: '순환 돌파석', quantity: { normal: 10, hard: 13 }, category: '고유' },
         ],
         moreRewardCost: { normal: 6560, hard: 8640 }
@@ -662,7 +662,7 @@ export const RAID_DATA = {
           { name: '운명의 수호석', quantity: { normal: 3220, hard: 4400 }, category: '강화재료' },
           { name: '운명의 돌파석', quantity: { normal: 50, hard: 70 }, category: '강화재료' },
           { name: '운명의 파편', quantity: { normal: 13650, hard: 17500 }, category: '강화재료' },
-          { name: '아크 그리드', quantity: { normal: 1, hard: 1 }, category: '고유' },
+          { name: '아크 그리드 코어', quantity: { normal: 1, hard: 1 }, category: '고유' },
         ],
         moreRewardCost: { normal: 4480, hard: 5440 }
       },
@@ -674,7 +674,7 @@ export const RAID_DATA = {
           { name: '운명의 수호석', quantity: { normal: 5520, hard: 7600 }, category: '강화재료' },
           { name: '운명의 돌파석', quantity: { normal: 90, hard: 120 }, category: '강화재료' },
           { name: '운명의 파편', quantity: { normal: 23200, hard: 29800 }, category: '강화재료' },
-          { name: '아크 그리드', quantity: { normal: 1, hard: 1 }, category: '고유' },
+          { name: '아크 그리드 코어', quantity: { normal: 2, hard: 2 }, category: '고유' },
           { name: '순환 돌파석', quantity: { normal: 12, hard: 16 }, category: '고유' },
         ],
         moreRewardCost: { normal: 8320, hard: 11200 }
