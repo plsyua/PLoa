@@ -156,17 +156,6 @@ export const useMoreRewards = () => {
     };
   }, [gateData]);
 
-  // 최고/최저 효율 관문
-  const getEfficiencyExtremes = useCallback(() => {
-    if (gateData.length === 0) return null;
-
-    const sortedByEfficiency = getSortedGates('efficiency');
-    
-    return {
-      bestGate: sortedByEfficiency[0],
-      worstGate: sortedByEfficiency[sortedByEfficiency.length - 1]
-    };
-  }, [gateData, getSortedGates]);
 
   // 초기화
   useEffect(() => {
@@ -201,7 +190,6 @@ export const useMoreRewards = () => {
     // 유틸리티
     getSortedGates,
     getEfficiencyStats,
-    getEfficiencyExtremes,
     
     // 상태 체크
     hasData: gateData.length > 0,
