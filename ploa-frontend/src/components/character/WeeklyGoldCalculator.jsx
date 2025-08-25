@@ -5,11 +5,11 @@ import { getIcon } from '../../utils/icons';
 // 레이드 데이터 상수 정의
 const RAID_DATA = [
   { id: 'valtan_hard', name: '발탄 하드', itemLevel: 1445, gold: 1800 },
-  { id: 'biackiss_hard', name: '비아키스 하드', itemLevel: 1460, gold: 2400 },
+  { id: 'vykas_hard', name: '비아키스 하드', itemLevel: 1460, gold: 2400 },
   { id: 'kouku_normal', name: '쿠크세이튼 노말', itemLevel: 1475, gold: 3000 },
-  { id: 'abrel_hard_1_3', name: '아브렐슈드 하드 1-3', itemLevel: 1540, gold: 3600 },
-  { id: 'abrel_4', name: '아브렐슈드 하드 4 (격주)', itemLevel: 1560, gold: 2000 },
-  { id: 'kayang_hard', name: '카양겔 하드', itemLevel: 1580, gold: 4300 },
+  { id: 'brelshaza_hard_1_3', name: '아브렐슈드 하드 1-3', itemLevel: 1540, gold: 3600 },
+  { id: 'brelshaza_4', name: '아브렐슈드 하드 4 (격주)', itemLevel: 1560, gold: 2000 },
+  { id: 'kayangel_hard', name: '카양겔 하드', itemLevel: 1580, gold: 4300 },
   { id: 'illiakan_hard', name: '일리아칸 하드', itemLevel: 1600, gold: 6000 },
   { id: 'ivory_tower_hard', name: '혼돈의 상아탑 하드', itemLevel: 1620, gold: 7200 },
   { id: 'kamen_hard_1_3', name: '카멘 하드 1-3', itemLevel: 1630, gold: 8000 },
@@ -33,7 +33,7 @@ const RAID_DATA = [
 
 // 레이드 연계 관계 정의 (부모 -> 자식)
 const RAID_DEPENDENCIES = {
-  'abrel_hard_1_3': 'abrel_4',      // 아브렐슈드 하드 1-3 -> 아브렐슈드 하드 4 (격주)
+  'brelshaza_hard_1_3': 'brelshaza_4',      // 아브렐슈드 하드 1-3 -> 아브렐슈드 하드 4 (격주)
   'kamen_hard_1_3': 'kamen_4'       // 카멘 하드 1-3 -> 카멘 하드 4 (격주)
 };
 
