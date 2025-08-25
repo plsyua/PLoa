@@ -2,9 +2,19 @@
 import { GRADE_COLORS } from './constants.js';
 
 // 숫자를 콤마로 구분하여 표시 (예: 1234 → 1,234)
+// 골드 등 정수 단위는 소숫점 제거
 export const formatNumber = (number) => {
   if (number === null || number === undefined) return '0';
-  return Number(number).toLocaleString();
+  return Math.round(Number(number)).toLocaleString();
+};
+
+// 개당 가격용 소숫점 포함 포맷팅 (예: 1234.56 → 1,234.56)
+export const formatDecimalPrice = (number) => {
+  if (number === null || number === undefined) return '0';
+  return Number(number).toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+  });
 };
 
 // 골드 가격 포맷팅 (큰 수는 약어로 표시)
