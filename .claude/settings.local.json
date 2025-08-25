@@ -26,7 +26,8 @@
       "WebSearch",
       "Bash(npm:*)",
       "WebFetch(domain:developer-lostark.game.onstove.com)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "WebFetch(domain:loachart.com)"
     ],
     "deny": []
   }
