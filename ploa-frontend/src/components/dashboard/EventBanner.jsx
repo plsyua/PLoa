@@ -162,6 +162,13 @@ const EventBanner = () => {
     setCurrentIndex(index);
   };
 
+  // 이벤트 이미지 클릭 핸들러
+  const handleImageClick = () => {
+    if (events[currentIndex]?.link) {
+      window.open(events[currentIndex].link, '_blank');
+    }
+  };
+
   // 터치 이벤트 처리
   const handleTouchStart = (e) => {
     setTouchStart(e.targetTouches[0].clientX);
@@ -250,8 +257,23 @@ const EventBanner = () => {
             className="flex transition-transform duration-500 ease-in-out h-full"
             style={{ transform: `translateX(-${currentIndex * 100}%)` }}
           >
-            {events.map((event) => (
-              <div key={event.id} className="w-full h-full flex-shrink-0 bg-gray-200/50 dark:bg-gray-700/50">
+            {events.map((event, index) => (
+              <div 
+                key={event.id} 
+                className={`w-full h-full flex-shrink-0 bg-gray-200/50 dark:bg-gray-700/50 transition-all duration-200 ${
+                  index === currentIndex ? 'cursor-pointer hover:brightness-110 hover:scale-[1.02]' : ''
+                }`}
+                onClick={index === currentIndex ? handleImageClick : undefined}
+                role={index === currentIndex ? "button" : undefined}
+                aria-label={index === currentIndex ? `${event.title} 이벤트 페이지로 이동` : undefined}
+                tabIndex={index === currentIndex ? 0 : -1}
+                onKeyDown={(e) => {
+                  if (index === currentIndex && (e.key === 'Enter' || e.key === ' ')) {
+                    e.preventDefault();
+                    handleImageClick();
+                  }
+                }}
+              >
                 {event.image ? (
                   <img 
                     src={event.image} 
