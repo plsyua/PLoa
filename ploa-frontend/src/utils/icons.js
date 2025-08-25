@@ -1,5 +1,10 @@
 // 로스트아크 공식 아이콘 URL 관리
 
+// 로컬 아이콘 import
+import arkgridCoreIcon from '../assets/images/chara_contents/arkgrid_core.webp';
+import goldIcon from '../assets/images/etc/gold.webp';
+import chestIcon from '../assets/images/etc/chest.webp';
+
 /**
  * 로스트아크 공식 CDN 아이콘들
  * 카테고리별로 분류하여 관리
@@ -8,6 +13,8 @@ export const LOSTARK_ICONS = {
   // 시스템 관련 아이콘
   SYSTEM: {
     TRANSCENDENCE: 'https://cdn-lostark.game.onstove.com/2018/obt/assets/images/common/game/ico_tooltip_transcendence.png',
+    '골드': goldIcon,
+    '더보기 상자': chestIcon,
     // 추가 시스템 아이콘들은 여기에...
   },
   
@@ -51,7 +58,55 @@ export const LOSTARK_ICONS = {
   
   // 아이템 관련 아이콘
   ITEMS: {
-    // 아이템 관련 아이콘들은 여기에...
+    // 재료 아이템 아이콘들
+    MATERIALS: {
+      // 강화재료 - 파괴석 계열
+      '파괴석 결정': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_6_105.png',
+      '파괴강석': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_10_58.png',
+      '정제된 파괴강석': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_11_15.png',
+      '운명의 파괴석': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/use_12_88.png',
+      
+      // 강화재료 - 수호석 계열  
+      '수호석 결정': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_6_104.png',
+      '수호강석': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_10_59.png',
+      '정제된 수호강석': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_11_16.png',
+      '운명의 수호석': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/use_12_89.png',
+      
+      // 강화재료 - 돌파석 계열
+      '위대한 명예의 돌파석': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_7_156.png',
+      '경이로운 명예의 돌파석': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_7_157.png',
+      '찬란한 명예의 돌파석': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_11_17.png',
+      '운명의 돌파석': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/use_12_85.png',
+      '융합 돌파석': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/use/use_7_173.png',
+      '심화 돌파석': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/use/use_7_171.png',
+      '농축 돌파석': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/use/use_11_18.png',
+      '순환 돌파석': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/use/use_12_87.png',
+      
+      // 강화재료 - 파편 계열
+      '명예의 파편': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_8_227.png',
+      '운명의 파편': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/use_12_93.png',
+      
+      // 고유 재료들 - 각 레이드별
+      '마수의 뼈': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_3_101.png',
+      '욕망의 날개': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_3_124.png',
+      '광기의 나팔': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_10_19.png',
+      '몽환의 사념': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_10_80.png',
+      '쇠락의 눈동자': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_11_19.png',
+      '어둠의 불': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_11_239.png',
+      '마력의 샘물': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_11_237.png',
+      '관조의 빛무리': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_10_163.png',
+      '시련의 빛': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_10_164.png',
+      '빛나는 지혜의 기운': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_3_67.png',
+      '빛나는 지혜의 엘릭서': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_11_146.png',
+      '베히모스의 비늘': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_12_67.png',
+      '아그리스의 비늘': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_12_53.png',
+      '알키오네의 눈': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_12_54.png',
+      '업화의 쐐기돌': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_12_180.png',
+      '카르마의 잔영': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_12_222.png',
+      '낙뢰의 뿔': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_13_24.png',
+      '우뢰의 뇌옥': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_13_25.png',
+      '아크 그리드 코어': arkgridCoreIcon,
+    },
   },
   
   // UI 관련 아이콘
@@ -90,4 +145,20 @@ export const getIconCategories = () => {
  */
 export const getIconNames = (category) => {
   return Object.keys(LOSTARK_ICONS[category] || {});
+};
+
+/**
+ * 재료 이름으로 아이콘 URL을 가져오는 함수
+ * @param {string} materialName - 재료 이름
+ * @returns {string|null} - 아이콘 URL 또는 null (fallback 처리용)
+ */
+export const getMaterialIcon = (materialName) => {
+  try {
+    const iconUrl = LOSTARK_ICONS.ITEMS?.MATERIALS?.[materialName];
+    // 빈 문자열이거나 null/undefined인 경우 null 반환 (fallback 처리)
+    return iconUrl && iconUrl.trim() !== '' ? iconUrl : null;
+  } catch (error) {
+    console.warn(`재료 아이콘을 찾을 수 없습니다: ${materialName}`, error);
+    return null;
+  }
 };
