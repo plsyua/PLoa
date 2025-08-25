@@ -2,7 +2,8 @@ import { useState } from 'react';
 import Header from '../components/layout/Header';
 import AuctionCalculator from '../components/utility/AuctionCalculator';
 import RandomPicker from '../components/utility/RandomPicker';
-import { Calculator, Gift } from 'lucide-react';
+import MoreRewardsCalculator from '../components/utility/MoreRewardsCalculator';
+import { Calculator, Gift, TrendingUp } from 'lucide-react';
 
 const Utility = () => {
   const [activeTab, setActiveTab] = useState('auction');
@@ -24,10 +25,10 @@ const Utility = () => {
 
         {/* 탭 네비게이션 */}
         <div className="border-b border-gray-200 dark:border-gray-700 mb-8">
-          <nav className="flex gap-4 justify-start py-6">
+          <nav className="flex gap-4 justify-start py-6 overflow-x-auto">
             <button
               onClick={() => setActiveTab('auction')}
-              className={`py-3 px-6 rounded-lg font-semibold text-base flex items-center gap-3 transition-all duration-200 shadow-sm border-2 ${
+              className={`py-3 px-6 rounded-lg font-semibold text-base flex items-center gap-3 transition-all duration-200 shadow-sm border-2 flex-shrink-0 ${
                 activeTab === 'auction'
                   ? 'bg-blue-600 text-white border-blue-600 shadow-lg scale-105'
                   : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400 hover:shadow-md'
@@ -38,7 +39,7 @@ const Utility = () => {
             </button>
             <button
               onClick={() => setActiveTab('random')}
-              className={`py-3 px-6 rounded-lg font-semibold text-base flex items-center gap-3 transition-all duration-200 shadow-sm border-2 ${
+              className={`py-3 px-6 rounded-lg font-semibold text-base flex items-center gap-3 transition-all duration-200 shadow-sm border-2 flex-shrink-0 ${
                 activeTab === 'random'
                   ? 'bg-blue-600 text-white border-blue-600 shadow-lg scale-105'
                   : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400 hover:shadow-md'
@@ -47,6 +48,17 @@ const Utility = () => {
               <Gift size={20} />
               제비뽑기
             </button>
+            <button
+              onClick={() => setActiveTab('moreRewards')}
+              className={`py-3 px-6 rounded-lg font-semibold text-base flex items-center gap-3 transition-all duration-200 shadow-sm border-2 flex-shrink-0 ${
+                activeTab === 'moreRewards'
+                  ? 'bg-blue-600 text-white border-blue-600 shadow-lg scale-105'
+                  : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400 hover:shadow-md'
+              }`}
+            >
+              <TrendingUp size={20} />
+              더보기 효율
+            </button>
           </nav>
         </div>
 
@@ -54,6 +66,7 @@ const Utility = () => {
         <div>
           {activeTab === 'auction' && <AuctionCalculator />}
           {activeTab === 'random' && <RandomPicker />}
+          {activeTab === 'moreRewards' && <MoreRewardsCalculator />}
         </div>
       </div>
     </div>
