@@ -6,9 +6,7 @@ import { TrendingUp, TrendingDown, Minus, Package, Coins } from 'lucide-react';
 // 효율성에 따른 색상 클래스
 const getEfficiencyColor = (efficiency, isProfit) => {
   if (!isProfit || efficiency < 0) return 'text-red-500 bg-red-50 dark:bg-red-900/20';
-  if (efficiency >= 50) return 'text-green-500 bg-green-50 dark:bg-green-900/20';
-  if (efficiency >= 20) return 'text-yellow-500 bg-yellow-50 dark:bg-yellow-900/20';
-  return 'text-orange-500 bg-orange-50 dark:bg-orange-900/20';
+  return 'text-green-500 bg-green-50 dark:bg-green-900/20';
 };
 
 // 효율성 아이콘
@@ -211,7 +209,7 @@ const TotalSummaryCard = ({ allGates, raidName, difficulty }) => {
   const efficiencyIcon = getEfficiencyIcon(summary.totalEfficiency, summary.isProfit);
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 hover:shadow-lg transition-all duration-200 flex flex-col h-full">
+    <div className="bg-white dark:bg-gray-800 rounded-lg border-2 border-blue-500 dark:border-blue-400 p-4 hover:shadow-lg transition-all duration-200 flex flex-col h-full">
       {/* 헤더 */}
       <div className="flex items-center justify-between mb-3">
         <div>
@@ -277,26 +275,6 @@ const TotalSummaryCard = ({ allGates, raidName, difficulty }) => {
         )}
       </div>
 
-      {/* 효율성 표시 바 */}
-      <div className="mt-auto pt-3 border-t border-gray-100 dark:border-gray-700">
-        <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-2">
-          <span>효율</span>
-          <span>{summary.totalEfficiency >= 0 ? '이익' : '손실'}</span>
-        </div>
-        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-          <div 
-            className={`h-2 rounded-full transition-all duration-300 ${ 
-              summary.isProfit 
-                ? summary.totalEfficiency >= 50 ? 'bg-green-500' : summary.totalEfficiency >= 20 ? 'bg-yellow-500' : 'bg-orange-500'
-                : 'bg-red-500'
-            }`}
-            style={{
-              width: `${Math.min(Math.abs(summary.totalEfficiency), 100)}%`,
-              minWidth: Math.abs(summary.totalEfficiency) > 0 ? '4px' : '0'
-            }}
-          />
-        </div>
-      </div>
     </div>
   );
 };

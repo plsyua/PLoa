@@ -6,9 +6,7 @@ import { TrendingUp, TrendingDown, Minus, Package, Coins } from 'lucide-react';
 // 효율성에 따른 색상 클래스
 const getEfficiencyColor = (efficiency, isProfit) => {
   if (!isProfit || efficiency < 0) return 'text-red-500 bg-red-50 dark:bg-red-900/20';
-  if (efficiency >= 50) return 'text-green-500 bg-green-50 dark:bg-green-900/20';
-  if (efficiency >= 20) return 'text-yellow-500 bg-yellow-50 dark:bg-yellow-900/20';
-  return 'text-orange-500 bg-orange-50 dark:bg-orange-900/20';
+  return 'text-green-500 bg-green-50 dark:bg-green-900/20';
 };
 
 // 효율성 아이콘
@@ -228,27 +226,6 @@ const RaidGateCard = ({ gate, raidName, difficulty, onMaterialToggle }) => {
             }
           />
         ))}
-      </div>
-
-      {/* 효율성 표시 바 */}
-      <div className="mt-auto pt-3 border-t border-gray-100 dark:border-gray-700">
-        <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-2">
-          <span>효율</span>
-          <span>{efficiency >= 0 ? '이익' : '손실'}</span>
-        </div>
-        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-          <div 
-            className={`h-2 rounded-full transition-all duration-300 ${
-              isProfit 
-                ? efficiency >= 50 ? 'bg-green-500' : efficiency >= 20 ? 'bg-yellow-500' : 'bg-orange-500'
-                : 'bg-red-500'
-            }`}
-            style={{
-              width: `${Math.min(Math.abs(efficiency), 100)}%`,
-              minWidth: Math.abs(efficiency) > 0 ? '4px' : '0'
-            }}
-          />
-        </div>
       </div>
 
       {/* 가격 정보 없음 경고 (고유 카테고리 제외) */}

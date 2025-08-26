@@ -12,6 +12,7 @@ const RaidSelectCard = ({ raid, isSelected, onClick }) => {
           ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-lg'
           : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-blue-300 dark:hover:border-blue-600'
       }`}
+      aria-pressed={isSelected}
     >
       <div className="flex items-center gap-3">
         {/* 아이콘 영역 - 현재는 placeholder */}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useCallback } from 'react';
 import { useMoreRewards } from '../../hooks/useMoreRewards';
 import RaidGateCard from './RaidGateCard';
 import RaidSelectCard from './RaidSelectCard';
@@ -6,7 +6,6 @@ import TotalSummaryCard from './TotalSummaryCard';
 import LoadingSpinner from '../common/LoadingSpinner';
 import ErrorMessage from '../common/ErrorMessage';
 import { RAID_DATA } from '../../data/raidData';
-import { formatNumber, formatDateTime } from '../../utils/formatters';
 import { 
   RefreshCw, 
   AlertCircle,
@@ -28,19 +27,18 @@ const MoreRewardsCalculator = () => {
     handleMaterialToggle,
     refreshPrices,
     getSortedGates,
-    getEfficiencyStats,
     hasData,
     hasPrices,
     isOutdated
   } = useMoreRewards();
 
-  // 관문 데이터 (항상 관문순으로 고정)
-  const sortedGates = getSortedGates('gate');
-  
-  // 효율성 통계
-  const stats = getEfficiencyStats();
-  
-  // 최고/최저 효율 관문
+  // 관문 데이터 메모이제이션 (항상 관문순으로 고정)
+  const sortedGates = useMemo(() => getSortedGates('gate'), [getSortedGates]);
+
+  // 컴포넌트 최적화를 위한 콜백 메모이제이션
+  const memoizedHandleMaterialToggle = useCallback((gateId, materialName, isChecked) => {
+    handleMaterialToggle(gateId, materialName, isChecked);
+  }, [handleMaterialToggle]);
 
   if (loading && !hasPrices) {
     return (
@@ -66,47 +64,63 @@ const MoreRewardsCalculator = () => {
       <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         {/* 제목 */}
         <div className="flex items-center justify-between mb-6">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                더보기 효율 계산기
-              </h2>
-              {priceUpdateInfo && (
-                <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium ${
-                  isOutdated 
-                    ? 'bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200'
-                    : 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200'
-                }`}>
-                  <Clock size={12} />
-                  <span>
-                    {isOutdated 
-                      ? '가격 정보 오래됨'
-                      : `가격 정보: ${priceUpdateInfo.lastUpdate || '오늘'} 기준`
-                    }
-                  </span>
-                </div>
-              )}
-            </div>
+          <div className="flex items-center gap-3">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              더보기 효율 계산기
+            </h2>
+            {priceUpdateInfo && (
+              <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium ${
+                isOutdated 
+                  ? 'bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200'
+                  : 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200'
+              }`}>
+                <Clock size={12} />
+                <span>
+                  {isOutdated 
+                    ? '가격 정보 오래됨'
+                    : `가격 정보: ${priceUpdateInfo.lastUpdate || '오늘'} 기준`
+                  }
+                </span>
+              </div>
+            )}
+            {/* 가격 갱신 버튼 */}
+            <button
+              onClick={refreshPrices}
+              disabled={loading}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg font-medium text-sm transition-all ${
+                loading
+                  ? 'bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed'
+                  : 'bg-blue-600 hover:bg-blue-700 text-white hover:scale-105'
+              }`}
+            >
+              <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+              가격 갱신
+            </button>
           </div>
           
-          {/* 가격 갱신 버튼 */}
-          <button
-            onClick={refreshPrices}
-            disabled={loading}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
-              loading
-                ? 'bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed'
-                : 'bg-blue-600 hover:bg-blue-700 text-white hover:scale-105'
-            }`}
-          >
-            <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
-            가격 갱신
-          </button>
+          {/* 난이도 선택 */}
+          <div className="flex gap-1 sm:gap-2">
+            {currentRaid?.difficulty.map((diff) => (
+              <button
+                key={diff}
+                onClick={() => handleDifficultyChange(diff)}
+                className={`px-3 sm:px-4 py-2 rounded-lg font-medium transition-all text-sm sm:text-base ${
+                  selectedDifficulty === diff
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+                aria-pressed={selectedDifficulty === diff}
+                aria-label={`${diff === 'normal' ? '노말' : '하드'} 난이도 선택`}
+              >
+                {diff === 'normal' ? '노말' : '하드'}
+              </button>
+            )) || []}
+          </div>
         </div>
 
         {/* 레이드 선택 */}
         <div className="mb-6">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3" role="group" aria-label="레이드 선택">
             {raidOptions.map((option) => (
               <RaidSelectCard
                 key={option.value}
@@ -118,27 +132,7 @@ const MoreRewardsCalculator = () => {
           </div>
         </div>
 
-        {/* 난이도 선택 */}
-        <div className="mb-6">
-          <div className="flex gap-2">
-            {currentRaid?.difficulty.map((diff) => (
-              <button
-                key={diff}
-                onClick={() => handleDifficultyChange(diff)}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                  selectedDifficulty === diff
-                    ? 'bg-blue-600 text-white shadow-md'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                }`}
-              >
-                {diff === 'normal' ? '노말' : '하드'}
-              </button>
-            )) || []}
-          </div>
-        </div>
       </div>
-
-
 
       {/* 관문 카드 목록 */}
       {hasData ? (
@@ -157,7 +151,7 @@ const MoreRewardsCalculator = () => {
               gate={gate}
               raidName={currentRaid?.name}
               difficulty={selectedDifficulty}
-              onMaterialToggle={handleMaterialToggle}
+              onMaterialToggle={memoizedHandleMaterialToggle}
             />
           ))}
         </div>
