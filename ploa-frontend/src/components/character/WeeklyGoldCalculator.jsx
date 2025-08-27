@@ -93,9 +93,10 @@ const WeeklyGoldCalculator = ({ siblingsData = [] }) => {
   const allSelectedCharacters = Object.values(charactersByServer).flat();
 
 
-  // 각 캐릭터별로 참여 가능한 레이드 목록 생성 (상위 8개만)
+  // 각 캐릭터별로 참여 가능한 레이드 목록 생성 (부모-자식 레이드 연계 고려)
   const getAvailableRaidsForCharacter = (character) => {
-    return RAID_DATA
+    // 1단계: 아이템레벨 체크 및 노말/하드 레이드 필터링
+    const eligibleRaids = RAID_DATA
       .filter(raid => {
         // 기본 아이템레벨 체크
         if (character.ItemAvgLevel < raid.itemLevel) return false;
@@ -118,8 +119,43 @@ const WeeklyGoldCalculator = ({ siblingsData = [] }) => {
         }
         // 2차 정렬: 골드 많이 주는 순
         return b.gold - a.gold;
-      })
-      .slice(0, 8);  // 상위 8개만 선택
+      });
+
+    // 2단계: 부모-자식 레이드 연계를 고려하여 선택
+    const selectedRaids = [];
+    const processedRaids = new Set();
+    let raidGroupCount = 0; // 레이드 묶음 개수 카운터
+    
+    for (const raid of eligibleRaids) {
+      if (processedRaids.has(raid.id)) continue;
+      
+      // 부모 레이드인지 확인
+      const childRaid = RAID_DEPENDENCIES[raid.id];
+      if (childRaid) {
+        // 부모 레이드인 경우: 자식 레이드도 함께 추가
+        const childRaidData = RAID_DATA.find(r => r.id === childRaid);
+        if (childRaidData && eligibleRaids.some(r => r.id === childRaid)) {
+          selectedRaids.push(raid, childRaidData);
+          processedRaids.add(raid.id);
+          processedRaids.add(childRaid);
+          raidGroupCount++; // 부모-자식 쌍을 1개 묶음으로 카운트
+        } else {
+          selectedRaids.push(raid);
+          processedRaids.add(raid.id);
+          raidGroupCount++; // 독립 레이드로 카운트
+        }
+      } else if (!isDependentRaid(raid.id)) {
+        // 독립적인 레이드인 경우
+        selectedRaids.push(raid);
+        processedRaids.add(raid.id);
+        raidGroupCount++; // 독립 레이드로 카운트
+      }
+      
+      // 최대 8개 레이드 묶음까지만 표시
+      if (raidGroupCount >= 8) break;
+    }
+    
+    return selectedRaids;
   };
 
   // 컴포넌트 마운트 시 각 캐릭터별로 최고 골드 레이드 자동 선택
