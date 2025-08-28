@@ -3,7 +3,8 @@ import Header from '../components/layout/Header';
 import AuctionCalculator from '../components/utility/AuctionCalculator';
 import RandomPicker from '../components/utility/RandomPicker';
 import MoreRewardsCalculator from '../components/utility/MoreRewardsCalculator';
-import { Calculator, Gift, TrendingUp } from 'lucide-react';
+import EnhancementCalculator from '../components/utility/EnhancementCalculator';
+import { Calculator, Gift, TrendingUp, Zap } from 'lucide-react';
 
 const Utility = () => {
   const [activeTab, setActiveTab] = useState('auction');
@@ -59,6 +60,17 @@ const Utility = () => {
               <TrendingUp size={20} />
               더보기 효율
             </button>
+            <button
+              onClick={() => setActiveTab('enhancement')}
+              className={`py-3 px-6 rounded-lg font-semibold text-base flex items-center gap-3 transition-all duration-200 shadow-sm border-2 flex-shrink-0 ${
+                activeTab === 'enhancement'
+                  ? 'bg-blue-600 text-white border-blue-600 shadow-lg scale-105'
+                  : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400 hover:shadow-md'
+              }`}
+            >
+              <Zap size={20} />
+              강화 계산기
+            </button>
           </nav>
         </div>
 
@@ -67,6 +79,7 @@ const Utility = () => {
           {activeTab === 'auction' && <AuctionCalculator />}
           {activeTab === 'random' && <RandomPicker />}
           {activeTab === 'moreRewards' && <MoreRewardsCalculator />}
+          {activeTab === 'enhancement' && <EnhancementCalculator />}
         </div>
       </div>
     </div>
