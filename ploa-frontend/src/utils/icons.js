@@ -86,6 +86,19 @@ export const LOSTARK_ICONS = {
       '명예의 파편': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_8_227.png',
       '운명의 파편': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/use_12_93.png',
       
+      // 강화재료 - 강화서 계열
+      '야금술 : 업화 [11-14]': 'https://cdn-lostark.game.onstove.com/efui_iconatlas/use/use_12_218.png',
+      '야금술 : 업화 [15-18]': 'https://cdn-lostark.game.onstove.com/efui_iconatlas/use/use_12_218.png',
+      '재봉술 : 업화 [11-14]': 'https://cdn-lostark.game.onstove.com/efui_iconatlas/use/use_12_219.png',
+      '재봉술 : 업화 [15-18]': 'https://cdn-lostark.game.onstove.com/efui_iconatlas/use/use_12_219.png',
+      
+      // 강화재료 - 숨결 계열
+      '용암의 숨결': 'https://cdn-lostark.game.onstove.com/efui_iconatlas/use/use_12_171.png',
+      '빙하의 숨결': 'https://cdn-lostark.game.onstove.com/efui_iconatlas/use/use_12_172.png',
+
+      // 강화재료 - 융화 재료
+      '아비도스 융화 재료': 'https://cdn-lostark.game.onstove.com/efui_iconatlas/use/use_12_86.png',
+      
       // 고유 재료들 - 각 레이드별
       '마수의 뼈': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_3_101.png',
       '욕망의 날개': 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Use/Use_3_124.png',
