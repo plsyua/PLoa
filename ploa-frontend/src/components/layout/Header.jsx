@@ -4,7 +4,7 @@ import { Search, Clock, X, Star, ChevronDown, Sun, Moon, User } from 'lucide-rea
 import useSearchHistory from '../../hooks/useSearchHistory';
 import useFavorites from '../../hooks/useFavorites';
 import useTheme from '../../hooks/useTheme';
-import { getIcon } from '../../utils/icons';
+import { getIcon } from '../../data/icons';
 
 const Header = () => {
   const location = useLocation();

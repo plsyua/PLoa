@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { DollarSign, ChevronUp, ChevronDown } from 'lucide-react';
-import { getIcon } from '../../utils/icons';
+import { getIcon } from '../../data/icons';
 
 // 레이드 데이터 상수 정의
 const RAID_DATA = [

@@ -31,7 +31,7 @@ import { getGradeTextColor, getMarketGradeStyle, getGradeBorderColor } from '../
 import { getGemDisplayInfo, calculateGemStats, getGemTypeBorderColor } from '../utils/gemUtils';
 import { generateSimpleGemTooltip } from '../utils/tooltipParsers';
 import { getRefiningLevel, getQualityValue, getQualityBgColor, parseArkPassiveDescription, getArkPassivePointColor, getArkPassivePointLevel, getItemLevel, getElixirEffects, getAbilityStoneEngravings, getAccessoryPolishEffects, getBraceletEffects, mapAbilityStoneEngravings } from '../utils/tooltipParsers';
-import { getIcon } from '../utils/icons';
+import { getIcon } from '../data/icons';
 import { getTranscendenceLevel } from '../utils/equipmentParsers';
 import { getCombatPowerColor } from '../utils/combatPowerUtils';
 import { shortenAccessoryEffect, shouldShortenAccessory } from '../utils/accessoryShortener';

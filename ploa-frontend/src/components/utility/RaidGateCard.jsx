@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { formatNumber, formatDecimalPrice } from '../../utils/formatters';
-import { getMaterialIcon, getIcon } from '../../utils/icons';
+import { getMaterialIcon, getIcon } from '../../data/icons';
 import { TrendingUp, TrendingDown, Minus, Package, Coins } from 'lucide-react';
 
 // 효율성에 따른 색상 클래스

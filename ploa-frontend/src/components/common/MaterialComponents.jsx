@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { formatNumber } from '../../utils/formatters';
-import { getMaterialIcon, getIcon } from '../../utils/icons';
+import { getMaterialIcon, getIcon } from '../../data/icons';
 import { Package, Coins } from 'lucide-react';
 
 // 재료 아이콘 컴포넌트

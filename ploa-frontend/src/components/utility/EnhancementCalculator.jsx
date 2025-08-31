@@ -10,7 +10,7 @@ import {
   MATERIAL_MARKET_MAPPING, 
   MATERIAL_PRICE_CALCULATORS, 
   MATERIAL_COSTS 
-} from '../../utils/enhancementData';
+} from '../../data/enhancementData';
 
 
 const EnhancementCalculator = () => {
