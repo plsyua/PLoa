@@ -30,7 +30,8 @@
       "WebFetch(domain:loachart.com)",
       "Bash(ss:*)",
       "Bash(kill:*)",
-      "Read(//mnt/c/Users/master/Desktop/**)"
+      "Read(//mnt/c/Users/master/Desktop/**)",
+      "Bash(git restore:*)"
     ],
     "deny": []
   }
