@@ -431,24 +431,24 @@ const EnhancementCalculator = () => {
     try {
       const newPrices = {};
       
-      // 기본 재료 가격 조회
+      // 기본 재료 가격 조회 - 실제 시장 아이템명을 키로 직접 사용
       for (const [key, itemName] of Object.entries(MATERIAL_MARKET_MAPPING)) {
         if (typeof itemName === 'string') {
           const marketPrice = await fetchMaterialPrice(itemName);
-          newPrices[key] = calculateMaterialPrice(itemName, marketPrice);
+          newPrices[itemName] = calculateMaterialPrice(itemName, marketPrice); // 실제 시장명을 키로 사용
         }
       }
       
-      // 무기용 재료 가격 조회
+      // 무기용 재료 가격 조회 - 실제 시장 아이템명을 키로 직접 사용
       for (const [key, itemName] of Object.entries(MATERIAL_MARKET_MAPPING.weapon)) {
         const marketPrice = await fetchMaterialPrice(itemName);
-        newPrices[`weapon_${key}`] = calculateMaterialPrice(itemName, marketPrice);
+        newPrices[itemName] = calculateMaterialPrice(itemName, marketPrice); // 실제 시장명을 키로 사용
       }
       
-      // 방어구용 재료 가격 조회
+      // 방어구용 재료 가격 조회 - 실제 시장 아이템명을 키로 직접 사용
       for (const [key, itemName] of Object.entries(MATERIAL_MARKET_MAPPING.armor)) {
         const marketPrice = await fetchMaterialPrice(itemName);
-        newPrices[`armor_${key}`] = calculateMaterialPrice(itemName, marketPrice);
+        newPrices[itemName] = calculateMaterialPrice(itemName, marketPrice); // 실제 시장명을 키로 사용
       }
 
       setMaterialPrices(newPrices);
@@ -488,33 +488,40 @@ const EnhancementCalculator = () => {
     return false;
   }, []);
 
-  // 재료별 단가 조회 함수
+  // 재료별 단가 조회 함수 (단순화: 실제 시장명으로 직접 조회 + 단가 변환)
   const getMaterialPrice = (materialKey, equipmentType) => {
-    // 새로운 키 구조 → 기존 가격 키 매핑
-    if (materialKey === '무기_책_11_14') return materialPrices['weapon_책_11_14'] || 0;
-    if (materialKey === '무기_책_15_18') return materialPrices['weapon_책_15_18'] || 0;
-    if (materialKey === '방어구_책_11_14') return materialPrices['armor_책_11_14'] || 0;
-    if (materialKey === '방어구_책_15_18') return materialPrices['armor_책_15_18'] || 0;
-    if (materialKey === '무기_숨결') return materialPrices['weapon_숨결'] || 0;
-    if (materialKey === '방어구_숨결') return materialPrices['armor_숨결'] || 0;
+    // 내부명 → 실제 시장명 매핑
+    const materialNameMapping = {
+      // 공통 재료
+      '돌파석': '운명의 돌파석',
+      '아비도스': '아비도스 융화 재료', 
+      '운명의 파편': '운명의 파편 주머니(대)',
+      
+      // 무기 재료
+      '파괴석': '운명의 파괴석',
+      '무기_숨결': '용암의 숨결',
+      '무기_책_11_14': '야금술 : 업화 [11-14]',
+      '무기_책_15_18': '야금술 : 업화 [15-18]',
+      
+      // 방어구 재료
+      '수호석': '운명의 수호석',
+      '방어구_숨결': '빙하의 숨결',
+      '방어구_책_11_14': '재봉술 : 업화 [11-14]',
+      '방어구_책_15_18': '재봉술 : 업화 [15-18]',
+      
+      // 장비 타입별 동적 매핑
+      '숨결': equipmentType === 'weapon' ? '용암의 숨결' : '빙하의 숨결'
+    };
     
-    // 기존 키 구조 (하위 호환성)
-    if (equipmentType === 'weapon') {
-      // 무기용 재료
-      if (materialKey === '파괴석') return materialPrices['weapon_파괴석'] || 0;
-      if (materialKey === '숨결') return materialPrices['weapon_숨결'] || 0;
-    } else {
-      // 방어구용 재료  
-      if (materialKey === '수호석') return materialPrices['armor_수호석'] || 0;
-      if (materialKey === '숨결') return materialPrices['armor_숨결'] || 0;
-    }
+    // 실제 시장명으로 변환
+    const marketName = materialNameMapping[materialKey] || materialKey;
     
-    // 공통 재료
-    if (materialKey === '돌파석') return materialPrices['돌파석'] || 0;
-    if (materialKey === '아비도스') return materialPrices['아비도스'] || 0;
-    if (materialKey === '운명의 파편') return materialPrices['운명의 파편'] || 0;
+    // 시장 가격 조회
+    const marketPrice = materialPrices[marketName] || 0;
+    if (marketPrice <= 0) return 0;
     
-    return 0;
+    // 단가 변환 로직 적용 (/3000, /100 등)
+    return calculateMaterialPrice(marketName, marketPrice);
   };
 
   // 재료 가격 관리 useEffect
