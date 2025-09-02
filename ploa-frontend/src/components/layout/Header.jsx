@@ -232,6 +232,15 @@ const Header = () => {
               {isActive('/') && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500"></div>}
             </Link>
             <Link 
+              to="/scheduler" 
+              className={`hover:text-gray-900 dark:hover:text-white transition-colors px-3 py-1 relative ${
+                isActive('/scheduler') ? 'text-gray-900 dark:text-white font-medium' : ''
+              }`}
+            >
+              스케줄러
+              {isActive('/scheduler') && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500"></div>}
+            </Link>
+            <Link 
               to="/market" 
               className={`hover:text-gray-900 dark:hover:text-white transition-colors px-3 py-1 relative ${
                 isActive('/market') ? 'text-gray-900 dark:text-white font-medium' : ''

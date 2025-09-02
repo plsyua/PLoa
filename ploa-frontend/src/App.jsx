@@ -3,6 +3,7 @@ import MarketPrice from './pages/MarketPrice';
 import Dashboard from './pages/Dashboard';
 import CharacterDetail from './pages/CharacterDetail';
 import Utility from './pages/Utility';
+import Scheduler from './pages/Scheduler';
 
 function App() {
   return (
@@ -14,6 +15,9 @@ function App() {
           
           {/* 캐릭터 상세 정보 페이지 */}
           <Route path="/character/:characterName" element={<CharacterDetail />} />
+          
+          {/* 스케줄러 페이지 */}
+          <Route path="/scheduler" element={<Scheduler />} />
           
           {/* 시세 분석 페이지 */}
           <Route path="/market" element={<MarketPrice />} />
