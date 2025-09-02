@@ -1,9 +1,9 @@
-import { User, CheckSquare, Square } from 'lucide-react';
+import { User, CheckSquare, Square, Trash2, Users, GripVertical } from 'lucide-react';
 import { DAILY_CONTENT, WEEKLY_CONTENT, ABYSS_DUNGEON_CONTENT, LEGION_RAID_CONTENT, EPIC_RAID_CONTENT, KAZEROTH_RAID_CONTENT } from '../../data/contentData';
 import { getRaidDifficultyInfo } from '../../utils/difficultyUtils';
 import { isContentAvailableToday } from '../../utils/dateUtils';
 
-const CharacterCard = ({ character, onUpdateSchedule, isManageMode }) => {
+const CharacterCard = ({ character, onUpdateSchedule, onRemoveCharacter, isManageMode, onDragStart, onDragEnd, isDragging, transformStyle = {}, isMoving = false }) => {
   
   // 완료 상태 토글 (일일 컨텐츠 - 체크박스)
   const toggleDailyContent = (contentId) => {
@@ -104,7 +104,69 @@ const CharacterCard = ({ character, onUpdateSchedule, isManageMode }) => {
   const progress = calculateProgress();
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+    <div 
+      className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 relative will-change-transform ${
+        isManageMode ? 'cursor-grab hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200' : ''
+      } ${
+        isDragging ? 'opacity-60 scale-105 z-50 cursor-grabbing shadow-2xl border-blue-400 dark:border-blue-500' : ''
+      } ${
+        isMoving ? 'z-10 shadow-lg' : ''
+      } ${
+        transformStyle.className || ''
+      }`}
+      style={{
+        transform: transformStyle.transform || '',
+        transition: isDragging 
+          ? 'opacity 0.2s ease-out, transform 0.2s ease-out' 
+          : isMoving 
+            ? 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+            : 'all 0.2s ease-in-out',
+        backfaceVisibility: 'hidden',
+        WebkitBackfaceVisibility: 'hidden',
+        userSelect: 'none'
+      }}
+      draggable={isManageMode}
+      onDragStart={(e) => {
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', character.id);
+        e.dataTransfer.setData('application/json', JSON.stringify({ 
+          characterId: character.id, 
+          characterName: character.name 
+        }));
+        
+        if (onDragStart) {
+          onDragStart(character, e);
+        }
+      }}
+      onDragEnd={onDragEnd}
+    >
+      {/* 관리 모드에서 삭제 버튼 */}
+      {isManageMode && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation(); // 드래그 이벤트와 충돌 방지
+            onRemoveCharacter(character.id);
+          }}
+          onMouseDown={(e) => e.stopPropagation()} // 마우스 다운 이벤트도 차단
+          className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center text-red-500 bg-red-50 dark:bg-red-900/20 hover:text-red-600 hover:bg-red-100 dark:hover:text-red-400 dark:hover:bg-red-900/30 rounded-full transition-colors z-20"
+          title="캐릭터 삭제"
+          draggable={false} // 버튼 자체는 드래그 불가
+        >
+          <Trash2 size={16} />
+        </button>
+      )}
+      
+      {/* 드래그 핸들 (관리 모드에서만 표시) */}
+      {isManageMode && (
+        <div className="flex items-center justify-center py-2 mb-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-md border border-blue-200 dark:border-blue-700">
+          <GripVertical 
+            className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 cursor-grab transition-colors" 
+            size={18}
+          />
+          <span className="text-xs text-blue-600 dark:text-blue-400 ml-2 font-medium">드래그하여 순서 변경</span>
+        </div>
+      )}
+
       {/* 캐릭터 헤더 */}
       <div className="flex items-center gap-3 mb-4">
         <div className="w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center border border-gray-400 dark:border-gray-500 overflow-hidden">
@@ -134,14 +196,6 @@ const CharacterCard = ({ character, onUpdateSchedule, isManageMode }) => {
         </div>
       </div>
 
-      {/* 관리 모드 알림 */}
-      {isManageMode && (
-        <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md">
-          <p className="text-sm text-blue-700 dark:text-blue-300">
-            관리 모드: 컨텐츠를 클릭하여 추가/제거할 수 있습니다
-          </p>
-        </div>
-      )}
 
       {/* 일일 컨텐츠 */}
       <div className="mb-4">
@@ -156,14 +210,24 @@ const CharacterCard = ({ character, onUpdateSchedule, isManageMode }) => {
               return (
                 <div key={content.id} className="flex items-center gap-2 text-sm">
                   <button
-                    onClick={() => toggleDailyContent(content.id)}
+                    onClick={(e) => {
+                      if (isManageMode) {
+                        e.stopPropagation();
+                      }
+                      toggleDailyContent(content.id);
+                    }}
+                    onMouseDown={(e) => isManageMode && e.stopPropagation()}
                     className="text-gray-400 hover:text-blue-500"
+                    draggable={false}
                   >
                     {isCompleted ? <CheckSquare size={18} className="text-green-500" /> : <Square size={18} />}
                   </button>
                   <span className={`${isCompleted ? 'line-through text-gray-400' : 'text-gray-600 dark:text-gray-400'}`}>
                     {content.name}
                   </span>
+                  {content.shared && (
+                    <Users size={14} className="text-blue-500 dark:text-blue-400" title="계정 공유 컨텐츠" />
+                  )}
                 </div>
               );
             })}
@@ -186,9 +250,16 @@ const CharacterCard = ({ character, onUpdateSchedule, isManageMode }) => {
                   <span className="text-sm text-gray-600 dark:text-gray-400">{content.name}</span>
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => toggleWeeklyContent(content.id, false)}
+                      onClick={(e) => {
+                        if (isManageMode) {
+                          e.stopPropagation();
+                        }
+                        toggleWeeklyContent(content.id, false);
+                      }}
+                      onMouseDown={(e) => isManageMode && e.stopPropagation()}
                       disabled={completed === 0}
                       className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                      draggable={false}
                     >
                       -
                     </button>
@@ -196,9 +267,16 @@ const CharacterCard = ({ character, onUpdateSchedule, isManageMode }) => {
                       {completed}/{content.maxCount}
                     </span>
                     <button
-                      onClick={() => toggleWeeklyContent(content.id, true)}
+                      onClick={(e) => {
+                        if (isManageMode) {
+                          e.stopPropagation();
+                        }
+                        toggleWeeklyContent(content.id, true);
+                      }}
+                      onMouseDown={(e) => isManageMode && e.stopPropagation()}
                       disabled={completed >= content.maxCount}
                       className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                      draggable={false}
                     >
                       +
                     </button>
@@ -212,8 +290,15 @@ const CharacterCard = ({ character, onUpdateSchedule, isManageMode }) => {
               return (
                 <div key={content.id} className="flex items-center gap-2 text-sm">
                   <button
-                    onClick={() => toggleWeeklyContent(content.id)}
+                    onClick={(e) => {
+                      if (isManageMode) {
+                        e.stopPropagation();
+                      }
+                      toggleWeeklyContent(content.id);
+                    }}
+                    onMouseDown={(e) => isManageMode && e.stopPropagation()}
                     className="text-gray-400 hover:text-blue-500"
+                    draggable={false}
                   >
                     {isCompleted ? <CheckSquare size={18} className="text-green-500" /> : <Square size={18} />}
                   </button>
@@ -232,29 +317,26 @@ const CharacterCard = ({ character, onUpdateSchedule, isManageMode }) => {
         <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">엔드 컨텐츠</h4>
         <div className="space-y-1">
           {(() => {
-            // 모든 레이드 컨텐츠 수집
+            // 모든 레이드 컨텐츠 수집 (선언 순서의 반대 - 최신 컨텐츠 우선)
             const allRaids = [
-              ...Object.values(ABYSS_DUNGEON_CONTENT),
-              ...Object.values(LEGION_RAID_CONTENT), 
-              ...Object.values(EPIC_RAID_CONTENT),
-              ...Object.values(KAZEROTH_RAID_CONTENT)
+              ...Object.values(KAZEROTH_RAID_CONTENT).reverse(),
+              ...Object.values(EPIC_RAID_CONTENT).reverse(),
+              ...Object.values(LEGION_RAID_CONTENT).reverse(), 
+              ...Object.values(ABYSS_DUNGEON_CONTENT).reverse()
             ];
             
             // 각 레이드별로 최적 난이도 계산 및 필터링
             const eligibleRaids = allRaids
               .map(raidData => {
-                const { difficulty, canParticipate, lowestRequiredLevel } = getRaidDifficultyInfo(character.itemLevel, raidData);
+                const { difficulty, canParticipate } = getRaidDifficultyInfo(character.itemLevel, raidData);
                 return { 
                   raidData, 
                   difficulty, 
-                  canParticipate, 
-                  lowestRequiredLevel,
-                  minLevel: difficulty ? difficulty.minLevel : lowestRequiredLevel
+                  canParticipate
                 };
               })
               .filter(item => item.canParticipate)
-              .sort((a, b) => b.minLevel - a.minLevel) // 레벨 높은 순
-              .slice(0, 3); // 상위 3개만
+              .slice(0, 3); // 선언 순서대로 상위 3개만
               
             return eligibleRaids.map(({ raidData, difficulty }) => {
               const scheduleData = character.schedule[difficulty.id] || { completed: false };
@@ -263,8 +345,15 @@ const CharacterCard = ({ character, onUpdateSchedule, isManageMode }) => {
               return (
                 <div key={raidData.id} className="flex items-center gap-2 text-sm">
                   <button
-                    onClick={() => toggleWeeklyContent(difficulty.id)}
+                    onClick={(e) => {
+                      if (isManageMode) {
+                        e.stopPropagation();
+                      }
+                      toggleWeeklyContent(difficulty.id);
+                    }}
+                    onMouseDown={(e) => isManageMode && e.stopPropagation()}
                     className="text-gray-400 hover:text-blue-500"
+                    draggable={false}
                   >
                     {isCompleted ? <CheckSquare size={18} className="text-green-500" /> : <Square size={18} />}
                   </button>

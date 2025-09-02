@@ -22,6 +22,7 @@ export const DAILY_CONTENT = {
     maxCount: 1,
     type: 'daily',
     resetType: 'daily',
+    shared: true, // 계정 공유 컨텐츠
     availableDays: [0, 2, 5] // 일요일, 화요일, 금요일 (0=일요일)
   },
   CHAOS_GATE: { // 월, 목, 토, 일요일만 입장 가능
@@ -30,6 +31,7 @@ export const DAILY_CONTENT = {
     maxCount: 1,
     type: 'daily',
     resetType: 'daily',
+    shared: true, // 계정 공유 컨텐츠
     availableDays: [0, 1, 4, 6] // 일요일, 월요일, 목요일, 토요일
   }
 };
