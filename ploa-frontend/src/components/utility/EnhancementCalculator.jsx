@@ -98,6 +98,10 @@ const EnhancementCalculator = () => {
   // 재료 상세 표시 관련 상태
   const [selectedScenario, setSelectedScenario] = useState('median');
 
+  // 계산 관련 상태 (성능 개선용)
+  const [calculationResults, setCalculationResults] = useState(null);
+  const [isCalculating, setIsCalculating] = useState(false);
+
   // 장비 부위별 순서 정의 (요구사항에 따른 순서)
   const equipmentOrder = ['투구', '어깨', '상의', '하의', '장갑', '무기'];
   const equipmentTypeMap = {
@@ -482,6 +486,476 @@ const EnhancementCalculator = () => {
     }
   }, []);
 
+  // 개별 장비 강화 시뮬레이션 (몬테카를로 방식) - 가격 정보 포함
+  const simulateEquipmentEnhancement = (currentLevel, targetLevel, equipmentType, useBooks, useBreaths) => {
+    const results = [];
+    const iterations = 10000;
+
+    for (let sim = 0; sim < iterations; sim++) {
+      let level = currentLevel;
+      let artisanEnergy = 0;
+      let totalMaterials = {
+        '운명의 수호석': 0,
+        '운명의 파괴석': 0,
+        '운명의 돌파석': 0,
+        '아비도스 융화 재료': 0,
+        '운명의 파편': 0,
+        '용암의 숨결': 0,
+        '빙하의 숨결': 0,
+        '야금술 : 업화 [11-14]': 0,
+        '야금술 : 업화 [15-18]': 0,
+        '야금술 : 업화 [19-20]': 0,
+        '재봉술 : 업화 [11-14]': 0,
+        '재봉술 : 업화 [15-18]': 0,
+        '재봉술 : 업화 [19-20]': 0,
+        '장인의 야금술 : 1단계': 0,
+        '장인의 야금술 : 2단계': 0,
+        '장인의 재봉술 : 1단계': 0,
+        '장인의 재봉술 : 2단계': 0
+      };
+      let totalGold = 0; // 강화 자체 골드
+
+      while (level < targetLevel) {
+        const nextLevel = level + 1;
+        let attemptCount = 1;
+        let success = false;
+
+        // 현재 강화 단계 시뮬레이션
+        while (!success) {
+          // 최종 시도 확률 계산
+          const finalRate = calculateFinalRate(nextLevel, attemptCount, useBooks, useBreaths);
+          
+          // 장인의 기운이 100% 이상이면 확정 성공
+          if (artisanEnergy >= 100) {
+            success = true;
+            artisanEnergy = 0; // 성공 시 초기화
+          } else {
+            // 확률 판정
+            const random = Math.random() * 100;
+            if (random < finalRate) {
+              success = true;
+              artisanEnergy = 0; // 성공 시 초기화
+            } else {
+              // 실패 시 장인의 기운 누적
+              artisanEnergy += calculateArtisanEnergy(finalRate);
+              attemptCount++;
+            }
+          }
+
+          // 재료 소모량 추가
+          const materialCost = MATERIAL_COSTS[equipmentType][nextLevel];
+          if (materialCost) {
+            // 장비 타입에 따른 재료 추가 (풀네임 사용)
+            if (equipmentType === 'weapon') {
+              totalMaterials['운명의 파괴석'] += materialCost['파괴석'] || 0;
+            } else {
+              totalMaterials['운명의 수호석'] += materialCost['수호석'] || 0;
+            }
+            
+            totalMaterials['운명의 돌파석'] += materialCost['돌파석'] || 0;
+            totalMaterials['아비도스 융화 재료'] += materialCost['아비도스'] || 0;
+            totalMaterials['운명의 파편'] += materialCost['운명의 파편'] || 0;
+            totalGold += materialCost['골드'] || 0;
+            
+            if (useBreaths) {
+              // 장비 타입에 따라 다른 숨결 사용
+              if (equipmentType === 'weapon') {
+                totalMaterials['용암의 숨결'] += materialCost['숨결'] || 0;
+              } else {
+                totalMaterials['빙하의 숨결'] += materialCost['숨결'] || 0;
+              }
+            }
+            if (useBooks && BOOK_BONUS[nextLevel]) {
+              // 장비 타입과 강화 단계에 따라 다른 책 사용
+              if (equipmentType === 'weapon') {
+                if (nextLevel <= 14) {
+                  totalMaterials['야금술 : 업화 [11-14]'] += materialCost['책'] || 0;
+                } else if (nextLevel <= 18) {
+                  totalMaterials['야금술 : 업화 [15-18]'] += materialCost['책'] || 0;
+                } else {
+                  totalMaterials['야금술 : 업화 [19-20]'] += materialCost['책'] || 0;
+                }
+              } else {
+                if (nextLevel <= 14) {
+                  totalMaterials['재봉술 : 업화 [11-14]'] += materialCost['책'] || 0;
+                } else if (nextLevel <= 18) {
+                  totalMaterials['재봉술 : 업화 [15-18]'] += materialCost['책'] || 0;
+                } else {
+                  totalMaterials['재봉술 : 업화 [19-20]'] += materialCost['책'] || 0;
+                }
+              }
+            }
+          }
+        }
+        
+        level++; // 다음 레벨로 이동
+      }
+
+      // 재료비 계산 (보유재료 차감 전 원본 계산)
+      const materialsWithPrice = {};
+      
+      Object.keys(totalMaterials).forEach(materialKey => {
+        const count = totalMaterials[materialKey];
+        if (count > 0) {
+          const unitPrice = getMaterialPrice(materialKey, equipmentType);
+          const totalPrice = count * unitPrice;
+          
+          materialsWithPrice[materialKey] = {
+            count,
+            unitPrice,
+            totalPrice
+          };
+        }
+      });
+
+      // 보유재료 차감 적용
+      const deductionResult = applyOwnedMaterials(materialsWithPrice, equipmentType);
+
+      results.push({
+        materials: deductionResult.materials,
+        gold: {
+          enhancement: totalGold,                           // 강화 자체 골드
+          materials: deductionResult.gold.actual,           // 실제 재료 구매 골드 (차감 후)
+          originalMaterials: deductionResult.gold.original, // 원래 재료 비용
+          savedMaterials: deductionResult.gold.saved,       // 절약한 재료 비용
+          total: totalGold + deductionResult.gold.actual    // 총 필요 골드 (차감 후)
+        }
+      });
+    }
+
+    return results;
+  };
+
+  // 장인의 기운 100% 확정 강화 비용 계산 (새 구조)
+  const calculateGuaranteedCost = (currentLevel, targetLevel, equipmentType, useBooks, useBreaths) => {
+    let totalMaterials = {
+      '운명의 수호석': 0,
+      '운명의 파괴석': 0,
+      '운명의 돌파석': 0,
+      '아비도스 융화 재료': 0,
+      '운명의 파편': 0,
+      '용암의 숨결': 0,
+      '빙하의 숨결': 0,
+      '야금술 : 업화 [11-14]': 0,
+      '야금술 : 업화 [15-18]': 0,
+      '야금술 : 업화 [19-20]': 0,
+      '재봉술 : 업화 [11-14]': 0,
+      '재봉술 : 업화 [15-18]': 0,
+      '재봉술 : 업화 [19-20]': 0,
+      '장인의 야금술 : 1단계': 0,
+      '장인의 야금술 : 2단계': 0,
+      '장인의 재봉술 : 1단계': 0,
+      '장인의 재봉술 : 2단계': 0
+    };
+    let totalGold = 0; // 강화 자체 골드
+
+    for (let level = currentLevel + 1; level <= targetLevel; level++) {
+      let artisanEnergy = 0;
+      let attemptCount = 1;
+
+      // 장인의 기운이 100%에 도달할 때까지 계산
+      while (artisanEnergy < 100) {
+        const finalRate = calculateFinalRate(level, attemptCount, useBooks, useBreaths);
+        artisanEnergy += calculateArtisanEnergy(finalRate);
+        
+        // 재료 소모량 추가
+        const materialCost = MATERIAL_COSTS[equipmentType][level];
+        if (materialCost) {
+          // 장비 타입에 따른 재료 추가 (풀네임 사용)
+          if (equipmentType === 'weapon') {
+            totalMaterials['운명의 파괴석'] += materialCost['파괴석'] || 0;
+          } else {
+            totalMaterials['운명의 수호석'] += materialCost['수호석'] || 0;
+          }
+          
+          totalMaterials['운명의 돌파석'] += materialCost['돌파석'] || 0;
+          totalMaterials['아비도스 융화 재료'] += materialCost['아비도스'] || 0;
+          totalMaterials['운명의 파편'] += materialCost['운명의 파편'] || 0;
+          totalGold += materialCost['골드'] || 0;
+          
+          if (useBreaths) {
+            // 장비 타입에 따라 다른 숨결 사용
+            if (equipmentType === 'weapon') {
+              totalMaterials['용암의 숨결'] += materialCost['숨결'] || 0;
+            } else {
+              totalMaterials['빙하의 숨결'] += materialCost['숨결'] || 0;
+            }
+          }
+          if (useBooks && BOOK_BONUS[level]) {
+            // 장비 타입과 강화 단계에 따라 다른 책 사용
+            if (equipmentType === 'weapon') {
+              if (level <= 14) {
+                totalMaterials['야금술 : 업화 [11-14]'] += materialCost['책'] || 0;
+              } else if (level <= 18) {
+                totalMaterials['야금술 : 업화 [15-18]'] += materialCost['책'] || 0;
+              } else {
+                totalMaterials['야금술 : 업화 [19-20]'] += materialCost['책'] || 0;
+              }
+            } else {
+              if (level <= 14) {
+                totalMaterials['재봉술 : 업화 [11-14]'] += materialCost['책'] || 0;
+              } else if (level <= 18) {
+                totalMaterials['재봉술 : 업화 [15-18]'] += materialCost['책'] || 0;
+              } else {
+                totalMaterials['재봉술 : 업화 [19-20]'] += materialCost['책'] || 0;
+              }
+            }
+          }
+        }
+
+        attemptCount++;
+      }
+
+      // 장인의 기운 100%일 때 확정 성공 시도 - 마지막 재료 소모 추가!
+      const finalMaterialCost = MATERIAL_COSTS[equipmentType][level];
+      if (finalMaterialCost) {
+        // 장비 타입에 따른 재료 추가 (풀네임 사용)
+        if (equipmentType === 'weapon') {
+          totalMaterials['운명의 파괴석'] += finalMaterialCost['파괴석'] || 0;
+        } else {
+          totalMaterials['운명의 수호석'] += finalMaterialCost['수호석'] || 0;
+        }
+        
+        totalMaterials['운명의 돌파석'] += finalMaterialCost['돌파석'] || 0;
+        totalMaterials['아비도스 융화 재료'] += finalMaterialCost['아비도스'] || 0;
+        totalMaterials['운명의 파편'] += finalMaterialCost['운명의 파편'] || 0;
+        totalGold += finalMaterialCost['골드'] || 0;
+        
+        if (useBreaths) {
+          // 장비 타입에 따라 다른 숨결 사용
+          if (equipmentType === 'weapon') {
+            totalMaterials['용암의 숨결'] += finalMaterialCost['숨결'] || 0;
+          } else {
+            totalMaterials['빙하의 숨결'] += finalMaterialCost['숨결'] || 0;
+          }
+        }
+        if (useBooks && BOOK_BONUS[level]) {
+          // 장비 타입과 강화 단계에 따라 다른 책 사용
+          if (equipmentType === 'weapon') {
+            if (level <= 14) {
+              totalMaterials['야금술 : 업화 [11-14]'] += finalMaterialCost['책'] || 0;
+            } else if (level <= 18) {
+              totalMaterials['야금술 : 업화 [15-18]'] += finalMaterialCost['책'] || 0;
+            } else {
+              totalMaterials['야금술 : 업화 [19-20]'] += finalMaterialCost['책'] || 0;
+            }
+          } else {
+            if (level <= 14) {
+              totalMaterials['재봉술 : 업화 [11-14]'] += finalMaterialCost['책'] || 0;
+            } else if (level <= 18) {
+              totalMaterials['재봉술 : 업화 [15-18]'] += finalMaterialCost['책'] || 0;
+            } else {
+              totalMaterials['재봉술 : 업화 [19-20]'] += finalMaterialCost['책'] || 0;
+            }
+          }
+        }
+      }
+    }
+
+    // 재료비 계산 (보유재료 차감 전 원본 계산)
+    const materialsWithPrice = {};
+    
+    Object.keys(totalMaterials).forEach(materialKey => {
+      const count = totalMaterials[materialKey];
+      if (count > 0) {
+        const unitPrice = getMaterialPrice(materialKey, equipmentType);
+        const totalPrice = count * unitPrice;
+        
+        materialsWithPrice[materialKey] = {
+          count,
+          unitPrice,
+          totalPrice
+        };
+      }
+    });
+
+    // 보유재료 차감 적용
+    const deductionResult = applyOwnedMaterials(materialsWithPrice, equipmentType);
+
+    return {
+      materials: deductionResult.materials,
+      gold: {
+        enhancement: totalGold,                           // 강화 자체 골드
+        materials: deductionResult.gold.actual,           // 실제 재료 구매 골드 (차감 후)
+        originalMaterials: deductionResult.gold.original, // 원래 재료 비용
+        savedMaterials: deductionResult.gold.saved,       // 절약한 재료 비용
+        total: totalGold + deductionResult.gold.actual    // 총 필요 골드 (차감 후)
+      }
+    };
+  };
+
+  // 수동 계산 시작 함수 (성능 개선)
+  const startCalculation = useCallback(async () => {
+    if (!equipmentData || !enhancementTargets || Object.keys(equipmentData).length === 0) {
+      return;
+    }
+
+    setIsCalculating(true);
+    
+    try {
+      // 약간의 지연을 주어 UI가 업데이트 되도록 함
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // 계산 실행 (기존 calculateTotalEnhancementCost 로직)
+      const scenarios = {};
+      
+      // 몬테카를로 시뮬레이션을 통한 다양한 시나리오 계산
+      const allResults = [];
+      
+      equipmentOrder.forEach(type => {
+        const equipment = equipmentData[type];
+        const targets = enhancementTargets[type];
+        
+        if (equipment && targets) {
+          // 일반 강화 시뮬레이션
+          if (targets.normalTarget > equipment.normalLevel) {
+            const equipType = type === '무기' ? 'weapon' : 'armor';
+            const normalResults = simulateEquipmentEnhancement(
+              equipment.normalLevel, 
+              targets.normalTarget, 
+              equipType,
+              materialOptions.normalBooks,
+              materialOptions.normalBreaths
+            );
+            allResults.push(...normalResults);
+          }
+          
+          // 상급 강화 시뮬레이션  
+          if (targets.advancedTarget > equipment.advancedLevel) {
+            const equipType = type === '무기' ? 'weapon' : 'armor';
+            const advancedResults = simulateEquipmentEnhancement(
+              equipment.advancedLevel, 
+              targets.advancedTarget, 
+              equipType,
+              materialOptions.advancedScrolls,
+              materialOptions.advancedBreaths
+            );
+            allResults.push(...advancedResults);
+          }
+        }
+      });
+      
+      if (allResults.length > 0) {
+        // 시나리오별 통계 계산
+        allResults.sort((a, b) => a.gold.total - b.gold.total);
+        
+        const upper25Index = Math.floor(allResults.length * 0.25);
+        const medianIndex = Math.floor(allResults.length * 0.5); 
+        const lower25Index = Math.floor(allResults.length * 0.75);
+        
+        scenarios.upper25 = allResults[upper25Index];
+        scenarios.median = allResults[medianIndex];
+        scenarios.lower25 = allResults[lower25Index];
+      }
+      
+      // 확정 강화 계산 (장인의 기운 100% 방식)
+      let guaranteedResult = {
+        materials: {},
+        gold: {
+          enhancement: 0,
+          materials: 0,
+          total: 0
+        }
+      };
+      
+      equipmentOrder.forEach(type => {
+        const equipment = equipmentData[type];
+        const targets = enhancementTargets[type];
+        
+        if (equipment && targets) {
+          // 일반 강화 확정 계산
+          if (targets.normalTarget > equipment.normalLevel) {
+            const equipType = type === '무기' ? 'weapon' : 'armor';
+            const normalGuaranteed = calculateGuaranteedCost(
+              equipment.normalLevel, 
+              targets.normalTarget, 
+              equipType,
+              materialOptions.normalBooks,
+              materialOptions.normalBreaths
+            );
+            
+            // 재료 합계
+            Object.keys(normalGuaranteed.materials).forEach(materialKey => {
+              const materialData = normalGuaranteed.materials[materialKey];
+              if (!guaranteedResult.materials[materialKey]) {
+                guaranteedResult.materials[materialKey] = {
+                  name: materialData.name,
+                  needed: 0,
+                  owned: 0,
+                  toBuy: 0,
+                  unitPrice: materialData.unitPrice,
+                  originalCost: 0,
+                  savedCost: 0,
+                  actualCost: 0
+                };
+              }
+              
+              guaranteedResult.materials[materialKey].needed += materialData.needed;
+              guaranteedResult.materials[materialKey].owned += materialData.owned;
+              guaranteedResult.materials[materialKey].toBuy += materialData.toBuy;
+              guaranteedResult.materials[materialKey].originalCost += materialData.originalCost;
+              guaranteedResult.materials[materialKey].savedCost += materialData.savedCost;
+              guaranteedResult.materials[materialKey].actualCost += materialData.actualCost;
+            });
+            
+            guaranteedResult.gold.enhancement += normalGuaranteed.gold.enhancement;
+            guaranteedResult.gold.materials += normalGuaranteed.gold.materials;
+            guaranteedResult.gold.total += normalGuaranteed.gold.total;
+          }
+          
+          // 상급 강화 확정 계산
+          if (targets.advancedTarget > equipment.advancedLevel) {
+            const equipType = type === '무기' ? 'weapon' : 'armor';
+            const advancedGuaranteed = calculateGuaranteedCost(
+              equipment.advancedLevel, 
+              targets.advancedTarget, 
+              equipType,
+              materialOptions.advancedScrolls,
+              materialOptions.advancedBreaths
+            );
+            
+            // 재료 합계 (동일한 로직)
+            Object.keys(advancedGuaranteed.materials).forEach(materialKey => {
+              const materialData = advancedGuaranteed.materials[materialKey];
+              if (!guaranteedResult.materials[materialKey]) {
+                guaranteedResult.materials[materialKey] = {
+                  name: materialData.name,
+                  needed: 0,
+                  owned: 0, 
+                  toBuy: 0,
+                  unitPrice: materialData.unitPrice,
+                  originalCost: 0,
+                  savedCost: 0,
+                  actualCost: 0
+                };
+              }
+              
+              guaranteedResult.materials[materialKey].needed += materialData.needed;
+              guaranteedResult.materials[materialKey].owned += materialData.owned;
+              guaranteedResult.materials[materialKey].toBuy += materialData.toBuy;
+              guaranteedResult.materials[materialKey].originalCost += materialData.originalCost;
+              guaranteedResult.materials[materialKey].savedCost += materialData.savedCost;
+              guaranteedResult.materials[materialKey].actualCost += materialData.actualCost;
+            });
+            
+            guaranteedResult.gold.enhancement += advancedGuaranteed.gold.enhancement;
+            guaranteedResult.gold.materials += advancedGuaranteed.gold.materials;
+            guaranteedResult.gold.total += advancedGuaranteed.gold.total;
+          }
+        }
+      });
+      
+      scenarios.guaranteed = guaranteedResult;
+      
+      setCalculationResults(scenarios);
+      
+    } catch (error) {
+      console.error('계산 중 오류 발생:', error);
+    } finally {
+      setIsCalculating(false);
+    }
+  }, [equipmentData, enhancementTargets, materialOptions, simulateEquipmentEnhancement, calculateGuaranteedCost, equipmentOrder]);
+
   // 재료별 단가 조회 함수 (priceStorage 기반)
   const getMaterialPrice = (materialName, equipmentType) => {
     // '숨결' 키워드는 장비 타입에 따라 변환
@@ -845,173 +1319,8 @@ const EnhancementCalculator = () => {
     };
   };
 
-  // 4가지 시나리오 계산 로직
-  const calculateScenarios = (results) => {
-    // 총 골드를 기준으로 정렬
-    const sortedResults = results.sort((a, b) => {
-      return a.gold.total - b.gold.total;
-    });
-
-    const totalResults = sortedResults.length;
-    
-    return {
-      upper25: sortedResults[Math.floor(totalResults * 0.25)], // 상위 25%
-      median: sortedResults[Math.floor(totalResults * 0.5)],   // 중앙값
-      lower25: sortedResults[Math.floor(totalResults * 0.75)], // 하위 25%
-      guaranteed: null // 별도 계산 필요
-    };
-  };
 
 
-  // 전체 장비 강화 비용 계산
-  const calculateTotalEnhancementCost = () => {
-    if (!equipmentData || !enhancementTargets || Object.keys(equipmentData).length === 0) {
-      return null;
-    }
-
-    // 각 장비별 시뮬레이션 결과 수집
-    const allResults = [];
-    
-    equipmentOrder.forEach(type => {
-      const equipment = equipmentData[type];
-      const targets = enhancementTargets[type];
-      
-      if (equipment && targets && targets.normalTarget > equipment.normalLevel) {
-        // 현재 레벨에서 목표 레벨까지 강화 필요
-        const currentLevel = equipment.normalLevel;
-        const targetLevel = targets.normalTarget;
-        const equipmentType = type === '무기' ? 'weapon' : 'armor';
-        
-        const results = simulateEquipmentEnhancement(
-          currentLevel,
-          targetLevel,
-          equipmentType,
-          materialOptions.normalBooks || materialOptions.advancedScrolls,
-          materialOptions.normalBreaths || materialOptions.advancedBreaths
-        );
-        
-        // 각 장비의 결과를 전체 결과에 통합
-        results.forEach((result, index) => {
-          if (!allResults[index]) {
-            allResults[index] = {
-              materials: {},
-              gold: { 
-                enhancement: 0, 
-                materials: 0, 
-                originalMaterials: 0,
-                savedMaterials: 0,
-                total: 0 
-              }
-            };
-          }
-          
-          // 재료 통합 (새로운 구조 반영)
-          Object.keys(result.materials).forEach(materialKey => {
-            const materialData = result.materials[materialKey];
-            if (!allResults[index].materials[materialKey]) {
-              allResults[index].materials[materialKey] = {
-                name: materialData.name,
-                needed: 0,
-                owned: 0,
-                toBuy: 0,
-                unitPrice: materialData.unitPrice,
-                originalCost: 0,
-                savedCost: 0,
-                actualCost: 0
-              };
-            }
-            const existing = allResults[index].materials[materialKey];
-            existing.needed += materialData.needed;
-            existing.owned += materialData.owned;
-            existing.toBuy += materialData.toBuy;
-            existing.originalCost += materialData.originalCost;
-            existing.savedCost += materialData.savedCost;
-            existing.actualCost += materialData.actualCost;
-          });
-          
-          // 골드 통합 (새로운 구조 반영)
-          allResults[index].gold.enhancement += result.gold.enhancement;
-          allResults[index].gold.materials += result.gold.materials;
-          allResults[index].gold.originalMaterials += result.gold.originalMaterials;
-          allResults[index].gold.savedMaterials += result.gold.savedMaterials;
-          allResults[index].gold.total += result.gold.total;
-        });
-      }
-    });
-
-    if (allResults.length === 0) {
-      return null;
-    }
-
-    // 4가지 시나리오 계산
-    const scenarios = calculateScenarios(allResults);
-    
-    // 장인의 기운 100% 확정 강화 비용 계산
-    let guaranteedResult = {
-      materials: {},
-      gold: { 
-        enhancement: 0, 
-        materials: 0, 
-        originalMaterials: 0,
-        savedMaterials: 0,
-        total: 0 
-      }
-    };
-
-    equipmentOrder.forEach(type => {
-      const equipment = equipmentData[type];
-      const targets = enhancementTargets[type];
-      
-      if (equipment && targets && targets.normalTarget > equipment.normalLevel) {
-        const currentLevel = equipment.normalLevel;
-        const targetLevel = targets.normalTarget;
-        const equipmentType = type === '무기' ? 'weapon' : 'armor';
-        
-        const guaranteed = calculateGuaranteedCost(
-          currentLevel,
-          targetLevel,
-          equipmentType,
-          materialOptions.normalBooks || materialOptions.advancedScrolls,
-          materialOptions.normalBreaths || materialOptions.advancedBreaths
-        );
-        
-        // 재료 통합 (새로운 구조 반영)
-        Object.keys(guaranteed.materials).forEach(materialKey => {
-          const materialData = guaranteed.materials[materialKey];
-          if (!guaranteedResult.materials[materialKey]) {
-            guaranteedResult.materials[materialKey] = {
-              name: materialData.name,
-              needed: 0,
-              owned: 0,
-              toBuy: 0,
-              unitPrice: materialData.unitPrice,
-              originalCost: 0,
-              savedCost: 0,
-              actualCost: 0
-            };
-          }
-          const existing = guaranteedResult.materials[materialKey];
-          existing.needed += materialData.needed;
-          existing.owned += materialData.owned;
-          existing.toBuy += materialData.toBuy;
-          existing.originalCost += materialData.originalCost;
-          existing.savedCost += materialData.savedCost;
-          existing.actualCost += materialData.actualCost;
-        });
-        
-        // 골드 통합 (새로운 구조 반영)
-        guaranteedResult.gold.enhancement += guaranteed.gold.enhancement;
-        guaranteedResult.gold.materials += guaranteed.gold.materials;
-        guaranteedResult.gold.originalMaterials += guaranteed.gold.originalMaterials;
-        guaranteedResult.gold.savedMaterials += guaranteed.gold.savedMaterials;
-        guaranteedResult.gold.total += guaranteed.gold.total;
-      }
-    });
-
-    scenarios.guaranteed = guaranteedResult;
-    
-    return scenarios;
-  };
 
   // 재료 데이터를 TotalSummaryCard 형식으로 변환
   const formatMaterialsForDisplay = (scenario) => {
@@ -1553,13 +1862,15 @@ const EnhancementCalculator = () => {
             </div>
           </div>
 
-          {/* 재료 가격 정보 및 갱신 버튼 */}
+          {/* 재료 가격 정보 및 제어 버튼들 */}
           <div className="flex items-center gap-3">
             {priceUpdateInfo && (
               <span className="text-xs text-gray-600 dark:text-gray-400">
                 가격 갱신: {priceUpdateInfo.lastUpdate || '오늘'}
               </span>
             )}
+            
+            {/* 가격 갱신 버튼 */}
             <button
               onClick={() => refreshPrices()}
               disabled={priceLoading}
@@ -1576,6 +1887,29 @@ const EnhancementCalculator = () => {
               )}
               가격 갱신
             </button>
+
+            {/* 계산 시작 버튼 */}
+            <button
+              onClick={() => startCalculation()}
+              disabled={isCalculating || !equipmentData || Object.keys(equipmentData).length === 0}
+              className={`px-4 py-2 text-sm font-medium rounded transition-all duration-200 flex items-center gap-2 ${
+                isCalculating || !equipmentData || Object.keys(equipmentData).length === 0
+                  ? 'bg-gray-200 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                  : 'bg-green-600 hover:bg-green-700 text-white hover:scale-105 shadow-sm'
+              }`}
+            >
+              {isCalculating ? (
+                <>
+                  <Loader2 size={14} className="animate-spin" />
+                  <span>계산 중...</span>
+                </>
+              ) : (
+                <>
+                  <Search size={14} />
+                  <span>계산 시작</span>
+                </>
+              )}
+            </button>
           </div>
         </div>
       )}
@@ -1583,11 +1917,37 @@ const EnhancementCalculator = () => {
 
       {/* 상세 재료 목록 섹션 */}
       {equipmentData && (() => {
-        const scenarios = calculateTotalEnhancementCost();
+        // 계산 결과가 없으면 안내 메시지 표시
+        if (!calculationResults) {
+          return (
+            <div className="bg-white dark:bg-gray-800 rounded-lg border p-8 text-center">
+              <div className="text-gray-500 dark:text-gray-400 mb-4">
+                <Search size={48} className="mx-auto mb-3 opacity-50" />
+                <h3 className="text-lg font-medium mb-2">계산이 필요합니다</h3>
+                <p className="text-sm">
+                  '계산 시작' 버튼을 눌러 강화 비용을 계산해보세요.
+                </p>
+              </div>
+            </div>
+          );
+        }
         
-        if (!scenarios) return null;
+        const selectedScenarioData = calculationResults[selectedScenario];
         
-        const selectedScenarioData = scenarios[selectedScenario];
+        // 선택된 시나리오 데이터가 없는 경우 처리
+        if (!selectedScenarioData) {
+          return (
+            <div className="bg-white dark:bg-gray-800 rounded-lg border p-8 text-center">
+              <div className="text-gray-500 dark:text-gray-400">
+                <h3 className="text-lg font-medium mb-2">데이터 오류</h3>
+                <p className="text-sm">
+                  선택된 시나리오의 데이터가 없습니다. 다시 계산해주세요.
+                </p>
+              </div>
+            </div>
+          );
+        }
+        
         const displayMaterials = formatMaterialsForDisplay(selectedScenarioData);
         
         const scenarioOptions = [
@@ -1626,19 +1986,19 @@ const EnhancementCalculator = () => {
               <div className="text-center">
                 <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">재료비</div>
                 <div className="text-base font-semibold text-blue-600 dark:text-blue-400">
-                  {formatNumber(Math.round(selectedScenarioData.gold.materials))}
+                  {formatNumber(Math.round(selectedScenarioData?.gold?.materials || 0))}
                 </div>
               </div>
               <div className="text-center">
                 <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">강화비</div>
                 <div className="text-base font-semibold text-orange-600 dark:text-orange-400">
-                  {formatNumber(Math.round(selectedScenarioData.gold.enhancement))}
+                  {formatNumber(Math.round(selectedScenarioData?.gold?.enhancement || 0))}
                 </div>
               </div>
               <div className="text-center">
                 <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">총 비용</div>
                 <div className="text-base font-semibold text-gray-900 dark:text-white flex items-center gap-1 justify-center">
-                  <span>{formatNumber(Math.round(selectedScenarioData.gold.total))}</span>
+                  <span>{formatNumber(Math.round(selectedScenarioData?.gold?.total || 0))}</span>
                   <GoldIcon />
                 </div>
               </div>
