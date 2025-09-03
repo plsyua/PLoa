@@ -89,8 +89,14 @@ export const LOSTARK_ICONS = {
       // 강화재료 - 강화서 계열
       '야금술 : 업화 [11-14]': 'https://cdn-lostark.game.onstove.com/efui_iconatlas/use/use_12_218.png',
       '야금술 : 업화 [15-18]': 'https://cdn-lostark.game.onstove.com/efui_iconatlas/use/use_12_218.png',
+      '야금술 : 업화 [19-20]': 'https://cdn-lostark.game.onstove.com/efui_iconatlas/use/use_12_218.png',
       '재봉술 : 업화 [11-14]': 'https://cdn-lostark.game.onstove.com/efui_iconatlas/use/use_12_219.png',
       '재봉술 : 업화 [15-18]': 'https://cdn-lostark.game.onstove.com/efui_iconatlas/use/use_12_219.png',
+      '재봉술 : 업화 [19-20]': 'https://cdn-lostark.game.onstove.com/efui_iconatlas/use/use_12_219.png',
+      '장인의 야금술 : 1단계': 'https://cdn-lostark.game.onstove.com/efui_iconatlas/use/use_12_242.png',
+      '장인의 야금술 : 2단계': 'https://cdn-lostark.game.onstove.com/efui_iconatlas/use/use_12_244.png',
+      '장인의 재봉술 : 1단계': 'https://cdn-lostark.game.onstove.com/efui_iconatlas/use/use_12_243.png',
+      '장인의 재봉술 : 2단계': 'https://cdn-lostark.game.onstove.com/efui_iconatlas/use/use_12_245.png',
       
       // 강화재료 - 숨결 계열
       '용암의 숨결': 'https://cdn-lostark.game.onstove.com/efui_iconatlas/use/use_12_171.png',
