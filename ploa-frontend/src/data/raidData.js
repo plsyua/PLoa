@@ -662,7 +662,7 @@ export const RAID_DATA = {
           { name: '운명의 수호석', quantity: { normal: 3220, hard: 4400 }, category: '강화재료' },
           { name: '운명의 돌파석', quantity: { normal: 50, hard: 70 }, category: '강화재료' },
           { name: '운명의 파편', quantity: { normal: 13650, hard: 17500 }, category: '강화재료' },
-          { name: '아크 그리드 코어', quantity: { normal: 1, hard: 1 }, category: '고유' },
+          { name: '아크 그리드 코어', quantity: { normal: 2, hard: 2 }, category: '고유' },
         ],
         moreRewardCost: { normal: 4480, hard: 5440 }
       },
