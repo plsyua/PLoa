@@ -1,5 +1,3 @@
-// 로스트아크 공식 아이콘 URL 관리
-
 // 로컬 아이콘 import
 import arkgridCoreIcon from '../assets/images/chara_contents/arkgrid_core.webp';
 import goldIcon from '../assets/images/etc/gold.webp';
@@ -128,11 +126,24 @@ export const LOSTARK_ICONS = {
     },
   },
   
+  // 각인 아이콘 (동적 관리)
+  ENGRAVINGS: {},
+
   // UI 관련 아이콘
   UI: {
-    // UI 관련 아이콘들은 여기에...
+    // 등록
   }
 };
+
+const engravingModules = import.meta.glob('../assets/images/engravings/*.webp', { eager: true });
+
+for (const path in engravingModules) {
+  // 파일 경로에서 파일명(확장자 제외)을 추출합니다.
+  const filename = path.split('/').pop().split('.')[0];
+  
+  // LOSTARK_ICONS.ENGRAVINGS 객체에 파일명과 이미지 URL을 할당합니다.
+  LOSTARK_ICONS.ENGRAVINGS[filename] = engravingModules[path].default;
+}
 
 /**
  * 아이콘 URL을 안전하게 가져오는 유틸리티 함수
