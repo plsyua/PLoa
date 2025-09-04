@@ -505,8 +505,28 @@ const CharacterDetail = () => {
               onMouseMove={handleMouseMove}
               onMouseLeave={handleMouseLeave}
             >
-              <div className={`w-8 h-8 rounded flex items-center justify-center ${getMarketGradeStyle(effect.Grade)}`}>
-                <Star size={16} className={getGradeTextColor(effect.Grade)} />
+              <div className={`w-8 h-8 rounded flex items-center justify-center overflow-hidden ${getMarketGradeStyle(effect.Grade)}`}>
+                {(() => {
+                  const engravingIcon = getIcon('ENGRAVINGS', effect.Name);
+                  return engravingIcon ? (
+                    <img 
+                      src={engravingIcon} 
+                      alt={effect.Name} 
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.nextElementSibling.style.display = 'block';
+                      }}
+                    />
+                  ) : (
+                    <Star size={16} className={getGradeTextColor(effect.Grade)} />
+                  );
+                })()}
+                <Star 
+                  size={16} 
+                  className={`${getGradeTextColor(effect.Grade)}`} 
+                  style={{ display: 'none' }}
+                />
               </div>
               <div className="flex-1">
                 <div className="text-gray-900 dark:text-white font-medium text-sm">{effect.Name}</div>
