@@ -32,7 +32,8 @@
       "Bash(kill:*)",
       "Read(//mnt/c/Users/master/Desktop/**)",
       "Bash(git restore:*)",
-      "Bash(timeout:*)"
+      "Bash(timeout:*)",
+      "Bash(sed:*)"
     ],
     "deny": []
   }
