@@ -33,7 +33,8 @@
       "Read(//mnt/c/Users/master/Desktop/**)",
       "Bash(git restore:*)",
       "Bash(timeout:*)",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "Read(//mnt/c/Users/AI-SW/Downloads/**)"
     ],
     "deny": []
   }
