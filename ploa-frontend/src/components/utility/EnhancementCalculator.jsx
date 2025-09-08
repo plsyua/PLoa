@@ -3,7 +3,7 @@ import { Search, Loader2, Clock, X, Plus, Minus, RefreshCw } from 'lucide-react'
 import { getCharacterProfile, getCharacterEquipment } from '../../services/lostarkApi';
 import { getRefiningLevel } from '../../utils/equipmentParsers';
 import { formatNumber } from '../../utils/formatters';
-import { MaterialItem, ChestIcon, GoldIcon } from '../common/MaterialComponents';
+import { MaterialItem, MaterialIcon, ChestIcon, GoldIcon } from '../common/MaterialComponents';
 import { 
   ENHANCEMENT_RATES, 
   BOOK_BONUS, 
@@ -108,6 +108,27 @@ const EnhancementCalculator = () => {
     '장갑': '장갑',
     '무기': '무기'
   };
+
+  // 보유 재료 표시 순서 정의 (개발자 커스텀 순서)
+  const MATERIAL_DISPLAY_ORDER = [
+    '야금술 : 업화 [11-14]',
+    '용암의 숨결',
+    '운명의 파괴석',
+    '야금술 : 업화 [15-18]',
+    '빙하의 숨결',
+    '운명의 수호석',
+    '야금술 : 업화 [19-20]',
+    '장인의 야금술 : 1단계',
+    '운명의 돌파석',
+    '재봉술 : 업화 [11-14]',
+    '장인의 야금술 : 2단계',
+    '아비도스 융화 재료',
+    '재봉술 : 업화 [15-18]',
+    '장인의 재봉술 : 1단계',
+    '운명의 파편',
+    '재봉술 : 업화 [19-20]',
+    '장인의 재봉술 : 2단계'
+  ];
 
   // 캐릭터 장비 정보 검색
   const handleSearchCharacter = async (searchName = null) => {
@@ -1363,38 +1384,44 @@ const EnhancementCalculator = () => {
                 </button>
               </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-96 overflow-y-auto">
-              {Object.entries(materials).map(([materialType, materialData]) => (
-                <div key={materialType} className="flex flex-col gap-1">
-                  <label className="text-sm text-gray-700 dark:text-gray-300">
-                    {materialType}
-                  </label>
-                  <div className="flex gap-1">
-                    <input
-                      type="text"
-                      value={materialData.isMax ? '' : formatNumber(materialData.count)}
-                      onChange={(e) => handleMaterialChange(materialType, e.target.value)}
-                      disabled={materialData.isMax}
-                      className={`flex-1 px-2 py-1 text-xs border rounded transition-colors ${
-                        materialData.isMax
-                          ? 'bg-gray-100 dark:bg-gray-700 text-gray-400 border-gray-200 dark:border-gray-600 placeholder-gray-900 dark:placeholder-white'
-                          : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 focus:ring-1 focus:ring-blue-500'
-                      }`}
-                      placeholder={materialData.isMax ? "최대+" : "0"}
-                    />
-                    <button
-                      onClick={() => handleMaxToggle(materialType)}
-                      className={`px-2 py-1 text-xs rounded transition-colors ${
-                        materialData.isMax 
-                          ? 'bg-green-500 text-white border border-green-500' 
-                          : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-500 hover:bg-gray-300 dark:hover:bg-gray-500'
-                      }`}
-                    >
-                      최대
-                    </button>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-96 overflow-y-auto">
+              {MATERIAL_DISPLAY_ORDER.map((materialType) => {
+                const materialData = materials[materialType];
+                if (!materialData) return null; // 재료가 존재하지 않으면 skip
+                
+                return (
+                  <div key={materialType} className="flex flex-col gap-1">
+                    <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                      <MaterialIcon materialName={materialType} />
+                      {materialType}
+                    </label>
+                    <div className="flex gap-1">
+                      <input
+                        type="text"
+                        value={materialData.isMax ? '' : formatNumber(materialData.count)}
+                        onChange={(e) => handleMaterialChange(materialType, e.target.value)}
+                        disabled={materialData.isMax}
+                        className={`w-20 px-2 py-1 text-xs border rounded transition-colors ${
+                          materialData.isMax
+                            ? 'bg-gray-100 dark:bg-gray-700 text-gray-400 border-gray-200 dark:border-gray-600 placeholder-gray-900 dark:placeholder-white'
+                            : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 focus:ring-1 focus:ring-blue-500'
+                        }`}
+                        placeholder={materialData.isMax ? "최대+" : "0"}
+                      />
+                      <button
+                        onClick={() => handleMaxToggle(materialType)}
+                        className={`px-2 py-1 text-xs rounded transition-colors ${
+                          materialData.isMax 
+                            ? 'bg-green-500 text-white border border-green-500' 
+                            : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-500 hover:bg-gray-300 dark:hover:bg-gray-500'
+                        }`}
+                      >
+                        최대
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
