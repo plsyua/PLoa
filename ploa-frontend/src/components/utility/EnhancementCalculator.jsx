@@ -554,52 +554,131 @@ const EnhancementCalculator = () => {
     initializePrices();
   }, [initializePrices]);
 
+  // 상급 재련 구간을 10단계 단위로 분할
+  const splitAdvancedRange = (startLevel, endLevel) => {
+    const ranges = [];
+    let current = startLevel;
+    
+    while (current < endLevel) {
+      // 다음 10의 배수까지 또는 목표 레벨까지
+      const nextMilestone = Math.min(Math.ceil((current + 1) / 10) * 10, endLevel);
+      ranges.push([current, nextMilestone]);
+      current = nextMilestone;
+    }
+    
+    return ranges;
+  };
+
+  // 상급 재련 데이터 합산
+  const combineAdvancedData = (dataList) => {
+    if (!dataList || dataList.length === 0) return null;
+    
+    const combined = {
+      materials: {},
+      gold: { enhancement: 0, materials: 0, originalMaterials: 0, savedMaterials: 0, total: 0 }
+    };
+    
+    dataList.forEach(data => {
+      if (!data) return;
+      
+      // 재료 합산
+      Object.keys(data.materials).forEach(materialKey => {
+        if (!combined.materials[materialKey]) {
+          combined.materials[materialKey] = {
+            name: data.materials[materialKey].name,
+            needed: 0,
+            owned: 0,
+            toBuy: 0,
+            unitPrice: data.materials[materialKey].unitPrice,
+            originalCost: 0,
+            savedCost: 0,
+            actualCost: 0
+          };
+        }
+        const existing = combined.materials[materialKey];
+        const materialData = data.materials[materialKey];
+        existing.needed += materialData.needed;
+        existing.owned += materialData.owned;
+        existing.toBuy += materialData.toBuy;
+        existing.originalCost += materialData.originalCost;
+        existing.savedCost += materialData.savedCost;
+        existing.actualCost += materialData.actualCost;
+      });
+      
+      // 골드 합산
+      combined.gold.enhancement += data.gold.enhancement;
+      combined.gold.materials += data.gold.materials;
+      combined.gold.originalMaterials += data.gold.originalMaterials;
+      combined.gold.savedMaterials += data.gold.savedMaterials;
+      combined.gold.total += data.gold.total;
+    });
+    
+    return combined;
+  };
+
   // 사전 계산된 데이터에서 시나리오별 강화 비용 조회
   const getPrecomputedScenario = (startLevel, endLevel, equipmentType, useBooks, useBreaths, scenarioType, isAdvanced = false) => {
     // 키 생성: 상급 재련인 경우 "adv_" 접두사 추가
     const keyPrefix = isAdvanced ? 'adv_' : '';
     const key = `${keyPrefix}${startLevel}_${endLevel}_${equipmentType}_${useBooks}_${useBreaths}`;
     
+    console.log(`데이터 조회 시도: ${key}, isAdvanced: ${isAdvanced}`);
+    
     // 사전 계산된 데이터 조회
     const precomputedData = enhancementPrecomputedData[key];
+    console.log(`조회 결과:`, precomputedData ? '데이터 존재' : '데이터 없음');
     
-    // 상급 재련의 경우 시나리오가 없으므로 직접 데이터 사용
+    // 상급 재련의 경우 구간 분할 후 합산 처리
     if (isAdvanced) {
-      if (!precomputedData) {
-        console.warn(`사전 계산된 상급 재련 데이터를 찾을 수 없습니다: ${key}`);
-        return null;
+      // 구간을 10단계 단위로 분할
+      const ranges = splitAdvancedRange(startLevel, endLevel);
+      console.log(`구간 분할 결과:`, ranges);
+      
+      const rangeDataList = [];
+      
+      // 각 구간별 데이터 조회
+      for (const [rangeStart, rangeEnd] of ranges) {
+        const rangeKey = `adv_${rangeStart}_${rangeEnd}_${equipmentType}_${useBooks}_${useBreaths}`;
+        const rangeData = enhancementPrecomputedData[rangeKey];
+        
+        console.log(`구간 데이터 조회: ${rangeKey}`, rangeData ? '성공' : '실패');
+        
+        if (rangeData) {
+          const materialsWithPrice = {};
+          
+          // 사전 계산된 재료 데이터를 현재 형식으로 변환
+          Object.keys(rangeData.materials).forEach(materialKey => {
+            const count = rangeData.materials[materialKey];
+            if (count > 0) {
+              const unitPrice = getMaterialPrice(materialKey, equipmentType);
+              const totalPrice = count * unitPrice;
+              
+              materialsWithPrice[materialKey] = {
+                count,
+                unitPrice,
+                totalPrice
+              };
+            }
+          });
+
+          // 보유재료 차감 적용
+          const deductionResult = applyOwnedMaterials(materialsWithPrice);
+
+          rangeDataList.push({
+            materials: deductionResult.materials,
+            gold: {
+              enhancement: rangeData.gold,                      // 강화 자체 골드
+              materials: deductionResult.gold.actual,           // 실제 재료 구매 골드 (차감 후)
+              originalMaterials: deductionResult.gold.original, // 원래 재료 비용
+              savedMaterials: deductionResult.gold.saved,       // 절약한 재료 비용
+              total: rangeData.gold + deductionResult.gold.actual // 총 필요 골드 (차감 후)
+            }
+          });
+        }
       }
       
-      const materialsWithPrice = {};
-      
-      // 사전 계산된 재료 데이터를 현재 형식으로 변환
-      Object.keys(precomputedData.materials).forEach(materialKey => {
-        const count = precomputedData.materials[materialKey];
-        if (count > 0) {
-          const unitPrice = getMaterialPrice(materialKey, equipmentType);
-          const totalPrice = count * unitPrice;
-          
-          materialsWithPrice[materialKey] = {
-            count,
-            unitPrice,
-            totalPrice
-          };
-        }
-      });
-
-      // 보유재료 차감 적용
-      const deductionResult = applyOwnedMaterials(materialsWithPrice);
-
-      return {
-        materials: deductionResult.materials,
-        gold: {
-          enhancement: precomputedData.gold,                   // 강화 자체 골드
-          materials: deductionResult.gold.actual,              // 실제 재료 구매 골드 (차감 후)
-          originalMaterials: deductionResult.gold.original,    // 원래 재료 비용
-          savedMaterials: deductionResult.gold.saved,          // 절약한 재료 비용
-          total: precomputedData.gold + deductionResult.gold.actual // 총 필요 골드 (차감 후)
-        }
-      };
+      // 구간별 데이터 합산
+      return combineAdvancedData(rangeDataList);
     }
     
     // 일반 재련의 경우 기존 로직 사용

@@ -1,6 +1,12 @@
 /**
  * T4 상급 재련 사전 계산 데이터 생성 스크립트
  * 기존 일반 재련 데이터에 상급 재련 데이터 추가
+ * 
+ * 주요 제약사항:
+ * - 스크롤 재료: 1-20단계만 사용 가능
+ *   - 1-10단계: 장인의 야금술/재봉술 1단계
+ *   - 11-20단계: 장인의 야금술/재봉술 2단계
+ * - 21-40단계: 숨결만 선택 재료로 사용 가능
  */
 
 import enhancementPrecomputedData from './enhancementPrecomputedData.json' with { type: 'json' };
@@ -40,7 +46,7 @@ const ENHANCED_BONUS_TABLE = {
 };
 
 const MAX_EXP = 1000;
-const ITERATIONS = 10000; // 상급 재련용 반복 횟수
+const ITERATIONS = 15000; // 상급 재련용 반복 횟수
 
 /**
  * T4 상급 재료 비용 데이터
@@ -49,60 +55,226 @@ const ITERATIONS = 10000; // 상급 재련용 반복 횟수
  *       실제로는 구간별로 재료 소모량이 다름
  *       
  * 구간별 실제 재료 소모량 (시도당):
- * 1-10단계:   [실제 값 미확인 - 조사 필요]
- *   - 운명의 돌파석: ?개
- *   - 아비도스 융화 재료: ?개
- *   - 운명의 파편: ?개
- *   - 골드: ?골드
+ * 1-10단계(방어구): 
+ *   - 운명의 수호석: 250개
+ *   - 운명의 돌파석: 6개
+ *   - 아비도스 융화 재료: 7개
+ *   - 운명의 파편: 2400개
+ *   - 골드: 760골드
+ *   // 선택 재료 :
+ *   - 빙하의 숨결 : 6개
+ *   - '장인의 재봉술 : 1단계' : 1개
  * 
- * 11-20단계:  [실제 값 미확인 - 조사 필요]
- *   - 운명의 돌파석: ?개
- *   - 아비도스 융화 재료: ?개
- *   - 운명의 파편: ?개
- *   - 골드: ?골드
+ * 1-10단계(무기): 
+ *   - 운명의 파괴석: 300개
+ *   - 운명의 돌파석: 8개
+ *   - 아비도스 융화 재료: 12개
+ *   - 운명의 파편: 4000개
+ *   - 골드: 900골드
+ *   // 선택 재료 :
+ *   - 용암의 숨결 : 6개
+ *   - '장인의 야금술 : 1단계' : 1개
  * 
- * 21-30단계:  [실제 값 미확인 - 조사 필요]
- *   - 운명의 돌파석: ?개
- *   - 아비도스 융화 재료: ?개
- *   - 운명의 파편: ?개
- *   - 골드: ?골드
+ * 11-20단계(방어구): 
+ *   - 운명의 수호석: 450개
+ *   - 운명의 돌파석: 8개
+ *   - 아비도스 융화 재료: 8개
+ *   - 운명의 파편: 4800개
+ *   - 골드: 1440골드
+ *   // 선택 재료 :
+ *   - 빙하의 숨결 : 9개
+ *   - '장인의 재봉술 : 2단계' : 1개
  * 
- * 31-40단계:  [실제 값 미확인 - 조사 필요]
- *   - 운명의 돌파석: ?개
- *   - 아비도스 융화 재료: ?개
- *   - 운명의 파편: ?개
- *   - 골드: ?골드
+ * 11-20단계(무기): 
+ *   - 운명의 파괴석: 550개
+ *   - 운명의 돌파석: 11개
+ *   - 아비도스 융화 재료: 13개
+ *   - 운명의 파편: 8000개
+ *   - 골드: 2000골드
+ *   // 선택 재료 :
+ *   - 용암의 숨결 : 9개
+ *   - '장인의 야금술 : 2단계' : 1개
  * 
+ * 21-30단계(방어구): 
+ *   - 운명의 수호석: 1000개
+ *   - 운명의 돌파석: 18개
+ *   - 아비도스 융화 재료: 17개
+ *   - 운명의 파편: 7000개
+ *   - 골드: 2000골드
+ *   // 선택 재료 :
+ *   - 빙하의 숨결 : 20개
+ *
+ * 21-30단계(무기): 
+ *   - 운명의 파괴석: 1200개
+ *   - 운명의 돌파석: 25개
+ *   - 아비도스 융화 재료: 28개
+ *   - 운명의 파편: 11500개
+ *   - 골드: 3000골드
+ *   // 선택 재료 :
+ *   - 용암의 숨결 : 20개
+ *  
+ * 31-40단계(방어구): 
+ *   - 운명의 수호석: 1200개
+ *   - 운명의 돌파석: 23개
+ *   - 아비도스 융화 재료: 19개
+ *   - 운명의 파편: 8000개
+ *   - 골드: 2400골드
+ *   // 선택 재료 :
+ *   - 빙하의 숨결 : 24개
+ *
+ * 31-40단계(무기): 
+ *   - 운명의 파괴석: 1400개
+ *   - 운명의 돌파석: 32개
+ *   - 아비도스 융화 재료: 30개
+ *   - 운명의 파편: 13000개
+ *   - 골드: 4000골드
+ *   // 선택 재료 :
+ *   - 용암의 숨결 : 24개
+ *  
  * FIXME: 구간별 차등 적용 로직으로 변경 필요
  *        현재 구조: base (단일 객체)
  *        목표 구조: base_1_10, base_11_20, base_21_30, base_31_40 (구간별 객체)
  *        또는 함수형태로 (startLevel, endLevel) => materialCosts 반환
  */
 const ADVANCED_MATERIAL_COSTS = {
-  // 기본 재료 (임시: 모든 구간 공통 - 추후 구간별로 분리 필요)
+  // 구간별 기본 재료 (장비 타입별)
   base: {
-    '운명의 돌파석': 12,      // TODO: 구간별로 다른 값 적용 필요
-    '아비도스 융화 재료': 8,  // TODO: 구간별로 다른 값 적용 필요
-    '운명의 파편': 4000,      // TODO: 구간별로 다른 값 적용 필요
-    '골드': 500,             // TODO: 구간별로 다른 값 적용 필요
+    '1-10': {
+      armor: {
+        '운명의 수호석': 250,
+        '운명의 돌파석': 6,
+        '아비도스 융화 재료': 7,
+        '운명의 파편': 2400,
+        '골드': 760,
+      },
+      weapon: {
+        '운명의 파괴석': 300,
+        '운명의 돌파석': 8,
+        '아비도스 융화 재료': 12,
+        '운명의 파편': 4000,
+        '골드': 900,
+      },
+    },
+    '11-20': {
+      armor: {
+        '운명의 수호석': 450,
+        '운명의 돌파석': 8,
+        '아비도스 융화 재료': 8,
+        '운명의 파편': 4800,
+        '골드': 1440,
+      },
+      weapon: {
+        '운명의 파괴석': 550,
+        '운명의 돌파석': 11,
+        '아비도스 융화 재료': 13,
+        '운명의 파편': 8000,
+        '골드': 2000,
+      },
+    },
+    '21-30': {
+      armor: {
+        '운명의 수호석': 1000,
+        '운명의 돌파석': 18,
+        '아비도스 융화 재료': 17,
+        '운명의 파편': 7000,
+        '골드': 2000,
+      },
+      weapon: {
+        '운명의 파괴석': 1200,
+        '운명의 돌파석': 25,
+        '아비도스 융화 재료': 28,
+        '운명의 파편': 11500,
+        '골드': 3000,
+      },
+    },
+    '31-40': {
+      armor: {
+        '운명의 수호석': 1200,
+        '운명의 돌파석': 23,
+        '아비도스 융화 재료': 19,
+        '운명의 파편': 8000,
+        '골드': 2400,
+      },
+      weapon: {
+        '운명의 파괴석': 1400,
+        '운명의 돌파석': 32,
+        '아비도스 융화 재료': 30,
+        '운명의 파편': 13000,
+        '골드': 4000,
+      },
+    },
   },
-  // 장비별 스크롤 재료
+  // 장비별 스크롤 재료 (1-20단계만 사용 가능)
   scrolls: {
     weapon: {
-      1: '장인의 야금술 : 1단계',  // 1-20단계
-      2: '장인의 야금술 : 2단계',  // 21-40단계
+      1: '장인의 야금술 : 1단계',  // 1-10단계
+      2: '장인의 야금술 : 2단계',  // 11-20단계
     },
     armor: {
-      1: '장인의 재봉술 : 1단계',   // 1-20단계  
-      2: '장인의 재봉술 : 2단계',   // 21-40단계
+      1: '장인의 재봉술 : 1단계',   // 1-10단계  
+      2: '장인의 재봉술 : 2단계',   // 11-20단계
     },
   },
-  // 숨결 재료
+  // 숨결 재료 (구간별 사용량)
   breaths: {
-    weapon: '용암의 숨결',
-    armor: '빙하의 숨결',
+    weapon: {
+      material: '용암의 숨결',
+      amounts: {
+        '1-10': 6,
+        '11-20': 9,
+        '21-30': 20,
+        '31-40': 24,
+      },
+    },
+    armor: {
+      material: '빙하의 숨결',
+      amounts: {
+        '1-10': 6,
+        '11-20': 9,
+        '21-30': 20,
+        '31-40': 24,
+      },
+    },
   },
 };
+
+/**
+ * 강화 구간을 키 문자열로 변환
+ * @param {number} startLevel - 시작 강화 단계
+ * @returns {string} 구간 키 (예: '1-10', '11-20')
+ */
+function getRangeKey(startLevel) {
+  if (startLevel >= 0 && startLevel < 10) return '1-10';   // 0-9단계 시작 → 1-10 재료 사용
+  if (startLevel >= 10 && startLevel < 20) return '11-20'; // 10-19단계 시작 → 11-20 재료 사용
+  if (startLevel >= 20 && startLevel < 30) return '21-30'; // 20-29단계 시작 → 21-30 재료 사용
+  if (startLevel >= 30 && startLevel < 40) return '31-40'; // 30-39단계 시작 → 31-40 재료 사용
+  throw new Error(`유효하지 않은 강화 단계: ${startLevel}`);
+}
+
+/**
+ * 구간별 재료 비용 데이터 획득
+ * @param {number} startLevel - 시작 강화 단계
+ * @param {string} equipmentType - 장비 타입 ('weapon' | 'armor')
+ * @returns {Object} 해당 구간의 기본 재료 비용
+ */
+function getAdvancedMaterialCosts(startLevel, equipmentType) {
+  const rangeKey = getRangeKey(startLevel);
+  return ADVANCED_MATERIAL_COSTS.base[rangeKey][equipmentType];
+}
+
+/**
+ * 스크롤 사용 가능 구간 검증
+ * @param {number} startLevel - 시작 강화 단계
+ * @param {boolean} useScrolls - 스크롤 사용 여부
+ * @returns {boolean} 유효한 조합인지 여부
+ */
+function isValidScrollCombination(startLevel, useScrolls) {
+  // 20단계 이상에서는 스크롤 사용 불가 (21-30, 31-40 구간)
+  if (startLevel >= 20 && useScrolls) {
+    return false;
+  }
+  return true;
+}
 
 /**
  * 재료 조합을 T4 successTable 인덱스로 변환
@@ -267,14 +439,20 @@ function runAdvancedRefinementSimulation({
 /**
  * 상급 재련 구간별 시뮬레이션 실행
  */
-function simulateAdvancedRefinement(startLevel, endLevel, equipmentType, useScrolls, useBreaths) {
-  console.log(`상급 재련 시뮬레이션: ${startLevel}→${endLevel}, ${equipmentType}, 스크롤:${useScrolls}, 숨결:${useBreaths}`);
+function simulateAdvancedRefinement(startLevel, equipmentType, useScrolls, useBreaths) {
+  console.log(`상급 재련 시뮬레이션: ${startLevel}단계 시작, ${equipmentType}, 스크롤:${useScrolls}, 숨결:${useBreaths}`);
+  
+  // 스크롤 사용 가능 구간 검증
+  if (!isValidScrollCombination(startLevel, useScrolls)) {
+    console.warn(`경고: ${startLevel}단계에서는 스크롤 사용이 불가능합니다. 스크롤 사용을 비활성화합니다.`);
+    useScrolls = false;
+  }
   
   // 재료 조합에 따른 successTable 인덱스 결정
   const tableIndex = getSuccessTableIndex(useScrolls, useBreaths);
   
   // 구간에 따른 bonusTable 선택
-  const bonusTable = startLevel >= 20 ? BONUS_TABLE_21_40 : BONUS_TABLE_1_20;
+  const bonusTable = startLevel >= 21 ? BONUS_TABLE_21_40 : BONUS_TABLE_1_20;
   
   const results = [];
   
@@ -309,27 +487,33 @@ function simulateAdvancedRefinement(startLevel, endLevel, equipmentType, useScro
   avgResult.bonusTry /= ITERATIONS;
   avgResult.enhancedBonusTry /= ITERATIONS;
   
-  // 재료 계산
-  const baseCost = ADVANCED_MATERIAL_COSTS.base;
-  const materials = {
-    '운명의 돌파석': Math.round(avgResult.paidNormalTry * baseCost['운명의 돌파석']),
-    '아비도스 융화 재료': Math.round(avgResult.paidNormalTry * baseCost['아비도스 융화 재료']),
-    '운명의 파편': Math.round(avgResult.paidNormalTry * baseCost['운명의 파편']),
-  };
+  // 구간별 재료 비용 데이터 획득
+  const baseCosts = getAdvancedMaterialCosts(startLevel, equipmentType);
+  const rangeKey = getRangeKey(startLevel);
   
-  let totalGold = Math.round(avgResult.paidNormalTry * baseCost['골드']);
+  // 기본 재료 계산
+  const materials = {};
+  Object.entries(baseCosts).forEach(([materialName, cost]) => {
+    if (materialName !== '골드') {
+      materials[materialName] = Math.round(avgResult.paidNormalTry * cost);
+    }
+  });
   
-  // 스크롤 재료 추가
-  if (useScrolls) {
-    const scrollType = startLevel >= 20 ? 2 : 1;
+  let totalGold = Math.round(avgResult.paidNormalTry * baseCosts['골드']);
+  
+  // 스크롤 재료 추가 (0-19단계만 가능)
+  if (useScrolls && startLevel < 20) {
+    const scrollType = startLevel >= 10 ? 2 : 1;  // 10-19단계는 2단계, 0-9단계는 1단계
     const scrollMaterial = ADVANCED_MATERIAL_COSTS.scrolls[equipmentType][scrollType];
     materials[scrollMaterial] = Math.round(avgResult.paidNormalTry * 1); // 시도당 1개
   }
   
   // 숨결 재료 추가
   if (useBreaths) {
-    const breathMaterial = ADVANCED_MATERIAL_COSTS.breaths[equipmentType];
-    materials[breathMaterial] = Math.round(avgResult.paidNormalTry * 1); // 시도당 1개
+    const breathData = ADVANCED_MATERIAL_COSTS.breaths[equipmentType];
+    const breathMaterial = breathData.material;
+    const breathAmount = breathData.amounts[rangeKey];
+    materials[breathMaterial] = Math.round(avgResult.paidNormalTry * breathAmount);
   }
   
   return {
@@ -354,28 +538,46 @@ function generateAllAdvancedRefinementData() {
   // 장비 타입: weapon, armor
   const equipmentTypes = ['weapon', 'armor'];
   
-  // 재료 조합: 스크롤 O/X × 숨결 O/X
-  const materialCombinations = [
-    { scrolls: false, breaths: false },
-    { scrolls: true, breaths: false },
-    { scrolls: false, breaths: true },
-    { scrolls: true, breaths: true },
-  ];
-  
   let processedCount = 0;
-  const totalCount = ranges.length * equipmentTypes.length * materialCombinations.length;
+  let totalCount = 0;
+  
+  // 구간별 유효한 재료 조합 생성
+  const getValidCombinations = (startLevel) => {
+    const baseCombinations = [
+      { scrolls: false, breaths: false },
+      { scrolls: false, breaths: true },
+    ];
+    
+    // 0-19단계만 스크롤 사용 가능 (1-10, 11-20 구간)
+    if (startLevel < 20) {
+      baseCombinations.push(
+        { scrolls: true, breaths: false },
+        { scrolls: true, breaths: true }
+      );
+    }
+    
+    return baseCombinations;
+  };
+  
+  // 총 조합 수 계산
+  ranges.forEach(([start]) => {
+    const validCombinations = getValidCombinations(start);
+    totalCount += equipmentTypes.length * validCombinations.length;
+  });
   
   console.log(`상급 재련 데이터 생성 시작... 총 ${totalCount}개 조합`);
   
   ranges.forEach(([start, end]) => {
+    const validCombinations = getValidCombinations(start);
+    
     equipmentTypes.forEach(equipmentType => {
-      materialCombinations.forEach(combination => {
+      validCombinations.forEach(combination => {
         const key = `adv_${start}_${end}_${equipmentType}_${combination.scrolls}_${combination.breaths}`;
         
         console.log(`처리 중: ${key} (${++processedCount}/${totalCount})`);
         
         const result = simulateAdvancedRefinement(
-          start, end, equipmentType, 
+          start, equipmentType, 
           combination.scrolls, combination.breaths
         );
         
@@ -389,7 +591,7 @@ function generateAllAdvancedRefinementData() {
 }
 
 // 메인 실행
-if (typeof process !== 'undefined' && process.versions && process.versions.node) {
+if (typeof globalThis !== 'undefined' && globalThis.process && globalThis.process.versions && globalThis.process.versions.node) {
   const fs = await import('fs');
   
   console.log('기존 일반 재련 데이터 로드 중...');
