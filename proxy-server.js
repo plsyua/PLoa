@@ -1,6 +1,10 @@
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
+const multer = require('multer');
+const { spawn } = require('child_process');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 const PORT = 3001;
@@ -11,6 +15,30 @@ const LOSTARK_API_URL = 'https://developer-lostark.game.onstove.com';
 
 // CORS 미들웨어
 app.use(cors());
+
+// JSON 파싱 미들웨어
+app.use(express.json());
+
+// 파일 업로드 설정
+const upload = multer({
+  dest: 'uploads/',
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB
+  },
+  fileFilter: (req, file, cb) => {
+    // 이미지 파일만 허용
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('이미지 파일만 업로드 가능합니다.'), false);
+    }
+  }
+});
+
+// uploads 폴더 생성
+if (!fs.existsSync('uploads')) {
+  fs.mkdirSync('uploads');
+}
 
 // 이미지 프록시 엔드포인트
 app.get('/proxy-image', async (req, res) => {
@@ -49,6 +77,103 @@ app.get('/proxy-image', async (req, res) => {
   } catch (error) {
     console.error('❌ 프록시 이미지 요청 실패:', error.message);
     res.status(500).json({ error: '이미지 프록시 실패', details: error.message });
+  }
+});
+
+// OCR 닉네임 인식 엔드포인트
+app.post('/api/ocr-nicknames', upload.single('image'), async (req, res) => {
+  let tempFilePath = null;
+  
+  try {
+    if (!req.file) {
+      return res.status(400).json({ 
+        success: false, 
+        error: '이미지 파일이 업로드되지 않았습니다.' 
+      });
+    }
+
+    tempFilePath = req.file.path;
+    console.log('📷 OCR 처리 시작:', tempFilePath);
+
+    // Python OCR 스크립트 실행 (실제 버전)
+    const pythonProcess = spawn('./ocr_env/bin/python', ['ocr_script.py', tempFilePath], {
+      cwd: __dirname
+    });
+
+    let result = '';
+    let error = '';
+
+    pythonProcess.stdout.on('data', (data) => {
+      result += data.toString();
+    });
+
+    pythonProcess.stderr.on('data', (data) => {
+      error += data.toString();
+    });
+
+    pythonProcess.on('close', (code) => {
+      // 임시 파일 정리
+      if (tempFilePath && fs.existsSync(tempFilePath)) {
+        try {
+          fs.unlinkSync(tempFilePath);
+        } catch (cleanupError) {
+          console.warn('임시 파일 삭제 실패:', cleanupError.message);
+        }
+      }
+
+      if (code !== 0) {
+        console.error('❌ OCR 처리 실패:', error);
+        return res.status(500).json({
+          success: false,
+          error: 'OCR 처리 중 오류가 발생했습니다.',
+          details: error
+        });
+      }
+
+      try {
+        // Python 스크립트 결과 파싱
+        const ocrResult = JSON.parse(result.trim());
+        
+        if (ocrResult.success && ocrResult.nicknames && ocrResult.nicknames.length > 0) {
+          console.log('✅ OCR 처리 성공:', ocrResult.nicknames);
+          res.json({
+            success: true,
+            nicknames: ocrResult.nicknames,
+            processedImage: ocrResult.processedImage || null
+          });
+        } else {
+          console.log('⚠️ 닉네임 인식 실패');
+          res.json({
+            success: false,
+            error: '닉네임을 인식할 수 없습니다. 이미지가 선명한지 확인해주세요.'
+          });
+        }
+      } catch (parseError) {
+        console.error('❌ OCR 결과 파싱 실패:', parseError.message);
+        res.status(500).json({
+          success: false,
+          error: 'OCR 결과 처리 중 오류가 발생했습니다.',
+          details: parseError.message
+        });
+      }
+    });
+
+  } catch (error) {
+    // 임시 파일 정리
+    if (tempFilePath && fs.existsSync(tempFilePath)) {
+      try {
+        fs.unlinkSync(tempFilePath);
+      } catch (cleanupError) {
+        console.warn('임시 파일 삭제 실패:', cleanupError.message);
+      }
+    }
+
+    console.error('❌ OCR 엔드포인트 오류:', error.message);
+    res.status(500).json({
+      success: false,
+      error: 'OCR 처리 중 서버 오류가 발생했습니다.',
+      details: error.message
+    });
   }
 });
 

@@ -34,7 +34,11 @@
       "Bash(git restore:*)",
       "Bash(timeout:*)",
       "Bash(sed:*)",
-      "Read(//mnt/c/Users/AI-SW/Downloads/**)"
+      "Read(//mnt/c/Users/AI-SW/Downloads/**)",
+      "Bash(python3:*)",
+      "Bash(pip3 install:*)",
+      "Bash(./ocr_env/bin/python:*)",
+      "Bash(./ocr_env/bin/pip install opencv-python pytesseract pillow)"
     ],
     "deny": []
   }

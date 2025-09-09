@@ -258,6 +258,15 @@ const Header = () => {
               유틸리티
               {isActive('/utility') && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500"></div>}
             </Link>
+            <Link 
+              to="/auto-search" 
+              className={`hover:text-gray-900 dark:hover:text-white transition-colors px-3 py-1 relative ${
+                isActive('/auto-search') ? 'text-gray-900 dark:text-white font-medium' : ''
+              }`}
+            >
+              자동 검색
+              {isActive('/auto-search') && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500"></div>}
+            </Link>
             
             {/* 테마 토글 버튼 */}
             <button

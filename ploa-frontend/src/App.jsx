@@ -4,6 +4,8 @@ import Dashboard from './pages/Dashboard';
 import CharacterDetail from './pages/CharacterDetail';
 import Utility from './pages/Utility';
 import Scheduler from './pages/Scheduler';
+import AutoSearch from './pages/AutoSearch';
+import SearchResults from './pages/SearchResults';
 
 function App() {
   return (
@@ -24,6 +26,12 @@ function App() {
           
           {/* 유틸리티 페이지 */}
           <Route path="/utility" element={<Utility />} />
+          
+          {/* 자동 검색 페이지 */}
+          <Route path="/auto-search" element={<AutoSearch />} />
+          
+          {/* 검색 결과 페이지 */}
+          <Route path="/search-results" element={<SearchResults />} />
           
           {/* 404 페이지는 메인 대시보드로 리다이렉트 */}
           <Route path="*" element={<Navigate to="/" replace />} />
