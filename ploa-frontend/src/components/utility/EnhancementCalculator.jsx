@@ -554,15 +554,44 @@ const EnhancementCalculator = () => {
     initializePrices();
   }, [initializePrices]);
 
-  // 상급 재련 구간을 10단계 단위로 분할
+  // 상급 재련 구간을 올바른 단계별로 분할 (1-10, 11-20, 21-30, 31-40)
   const splitAdvancedRange = (startLevel, endLevel) => {
     const ranges = [];
     let current = startLevel;
     
     while (current < endLevel) {
-      // 다음 10의 배수까지 또는 목표 레벨까지
-      const nextMilestone = Math.min(Math.ceil((current + 1) / 10) * 10, endLevel);
-      ranges.push([current, nextMilestone]);
+      let nextMilestone;
+      
+      // 상급재련 단계별 구간 정의
+      if (current >= 0 && current < 10) {
+        nextMilestone = Math.min(10, endLevel);
+      } else if (current >= 10 && current < 20) {
+        nextMilestone = Math.min(20, endLevel);
+      } else if (current >= 20 && current < 30) {
+        nextMilestone = Math.min(30, endLevel);
+      } else if (current >= 30 && current < 40) {
+        nextMilestone = Math.min(40, endLevel);
+      } else {
+        // 40 이상인 경우 (혹시 모를 확장 대비)
+        nextMilestone = endLevel;
+      }
+      
+      // 데이터 키와 매핑되는 구간으로 변환
+      let rangeStart, rangeEnd;
+      if (current >= 0 && current < 10) {
+        rangeStart = 0; rangeEnd = Math.min(10, nextMilestone);
+      } else if (current >= 10 && current < 20) {
+        rangeStart = 10; rangeEnd = Math.min(20, nextMilestone);
+      } else if (current >= 20 && current < 30) {
+        rangeStart = 20; rangeEnd = Math.min(30, nextMilestone);
+      } else if (current >= 30 && current < 40) {
+        rangeStart = 30; rangeEnd = Math.min(40, nextMilestone);
+      }
+      
+      if (rangeStart !== undefined && rangeEnd !== undefined) {
+        ranges.push([rangeStart, rangeEnd]);
+      }
+      
       current = nextMilestone;
     }
     
