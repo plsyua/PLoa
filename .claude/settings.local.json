@@ -38,7 +38,11 @@
       "Bash(python3:*)",
       "Bash(pip3 install:*)",
       "Bash(./ocr_env/bin/python:*)",
-      "Bash(./ocr_env/bin/pip install opencv-python pytesseract pillow)"
+      "Bash(./ocr_env/bin/pip install opencv-python pytesseract pillow)",
+      "Bash(awk:*)",
+      "Bash(grep:*)",
+      "Bash(source:*)",
+      "Bash(/home/master/PLoa/ocr_env/bin/pip list)"
     ],
     "deny": []
   }
