@@ -42,7 +42,11 @@
       "Bash(awk:*)",
       "Bash(grep:*)",
       "Bash(source:*)",
-      "Bash(/home/master/PLoa/ocr_env/bin/pip list)"
+      "Bash(/home/master/PLoa/ocr_env/bin/pip list)",
+      "Bash(git ls-tree:*)",
+      "Bash(git rm:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": []
   }
