@@ -22,6 +22,18 @@ dist-ssr
 # Upload files
 uploads/
 
+# Python virtual environments
+ocr_env/
+venv/
+env/
+.venv/
+.env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
