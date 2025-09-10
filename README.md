@@ -87,6 +87,9 @@ source ocr_env/bin/activate  # Linux/Mac
 ocr_env\Scripts\activate     # Windows
 
 # OCR 라이브러리 설치
+pip install -r requirements.txt
+
+# 또는 개별 설치
 pip install opencv-python pytesseract pillow hanspell
 ```
 

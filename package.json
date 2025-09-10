@@ -1,5 +1,6 @@
 {
   "name": "ploa-proxy-server",
+  "private": true,
   "version": "1.0.0",
   "description": "Lost Ark 이미지 프록시 서버",
   "main": "proxy-server.js",
@@ -16,11 +17,21 @@
   "devDependencies": {
     "nodemon": "^3.1.10"
   },
+  "engines": {
+    "node": ">=21.7.3",
+    "npm": ">=10.5.0"
+  },
   "keywords": [
     "proxy",
     "lostark",
-    "image"
+    "image",
+    "ocr",
+    "analytics"
   ],
-  "author": "",
-  "license": "ISC"
+  "author": "PLoa Team",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/plsyua/PLoa.git"
+  }
 }
