@@ -22,6 +22,11 @@ dist-ssr
 # Upload files
 uploads/
 
+# OCR 관련 생성 파일들
+cropped_images/*.jpg
+cropped_images/*.png
+ocr_responses/*.json
+
 # Python virtual environments
 ocr_env/
 venv/
