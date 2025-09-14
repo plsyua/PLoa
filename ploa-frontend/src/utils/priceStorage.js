@@ -205,13 +205,25 @@ export const calculateGateEfficiency = (gate, storedPrices, difficulty = 'normal
     const itemValue = isChecked ? baseValue : 0;
     
     totalValue += itemValue;
+    
+    // gradeInfo가 있는 경우 난이도에 맞는 값 추출
+    let gradeInfo = null;
+    if (material.gradeInfo) {
+      if (typeof material.gradeInfo === 'object' && material.gradeInfo !== null) {
+        gradeInfo = material.gradeInfo[difficulty];
+      } else {
+        gradeInfo = material.gradeInfo;
+      }
+    }
+    
     materialDetails.push({
       ...material,
       quantity: materialQuantity, // 계산된 난이도별 수량으로 업데이트
       unitPrice: material.category === '고유' ? 0 : (priceInfo.currentMinPrice || priceInfo.yDayAvgPrice || 0),
       totalValue: itemValue,
       isAvailable: material.category === '고유' ? false : priceInfo.isAvailable,
-      isChecked: isChecked
+      isChecked: isChecked,
+      gradeInfo: gradeInfo // 난이도에 맞는 등급 정보 추가
     });
   });
   
