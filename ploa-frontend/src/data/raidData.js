@@ -628,7 +628,8 @@ export const RAID_DATA = {
           { name: '운명의 수호석', quantity: { normal: 2800, hard: 3360 }, category: '강화재료' },
           { name: '운명의 돌파석', quantity: { normal: 44, hard: 53 }, category: '강화재료' },
           { name: '운명의 파편', quantity: { normal: 11880, hard: 14250 }, category: '강화재료' },
-          { name: '아크 그리드 코어', quantity: { normal: 1, hard: 1 }, category: '고유' },
+          { name: '아크 그리드 코어', quantity: { normal: 1 }, category: '고유', gradeInfo: { normal: '[영웅~고대]' } },
+          { name: '아크 그리드 코어', quantity: { hard: 1 }, category: '고유', gradeInfo: { hard: '[전설~고대]' } },
         ],
         moreRewardCost: { normal: 4000, hard: 4800 }
       },
@@ -640,7 +641,8 @@ export const RAID_DATA = {
           { name: '운명의 수호석', quantity: { normal: 4800, hard: 5760 }, category: '강화재료' },
           { name: '운명의 돌파석', quantity: { normal: 78, hard: 94 }, category: '강화재료' },
           { name: '운명의 파편', quantity: { normal: 20160, hard: 24200 }, category: '강화재료' },
-          { name: '아크 그리드 코어', quantity: { normal: 1, hard: 1 }, category: '고유' },
+          { name: '아크 그리드 코어', quantity: { normal: 1 }, category: '고유', gradeInfo: { normal: '[영웅~고대]' } },
+          { name: '아크 그리드 코어', quantity: { hard: 1 }, category: '고유', gradeInfo: { hard: '[전설~고대]' } },
           { name: '순환 돌파석', quantity: { normal: 10, hard: 13 }, category: '고유' },
         ],
         moreRewardCost: { normal: 6560, hard: 8640 }
@@ -662,7 +664,8 @@ export const RAID_DATA = {
           { name: '운명의 수호석', quantity: { normal: 3220, hard: 4400 }, category: '강화재료' },
           { name: '운명의 돌파석', quantity: { normal: 50, hard: 70 }, category: '강화재료' },
           { name: '운명의 파편', quantity: { normal: 13650, hard: 17500 }, category: '강화재료' },
-          { name: '아크 그리드 코어', quantity: { normal: 2, hard: 2 }, category: '고유' },
+          { name: '아크 그리드 코어', quantity: { normal: 2 }, category: '고유', gradeInfo: { normal: '[영웅~고대]' } },
+          { name: '아크 그리드 코어', quantity: { hard: 2 }, category: '고유', gradeInfo: { hard: '[전설~고대]' } },
         ],
         moreRewardCost: { normal: 4480, hard: 5440 }
       },
@@ -674,7 +677,8 @@ export const RAID_DATA = {
           { name: '운명의 수호석', quantity: { normal: 5520, hard: 7600 }, category: '강화재료' },
           { name: '운명의 돌파석', quantity: { normal: 90, hard: 120 }, category: '강화재료' },
           { name: '운명의 파편', quantity: { normal: 23200, hard: 29800 }, category: '강화재료' },
-          { name: '아크 그리드 코어', quantity: { normal: 2, hard: 2 }, category: '고유' },
+          { name: '아크 그리드 코어', quantity: { normal: 2 }, category: '고유', gradeInfo: { normal: '[영웅~고대]' } },
+          { name: '아크 그리드 코어', quantity: { hard: 2 }, category: '고유', gradeInfo: { hard: '[전설~고대]' } },
           { name: '순환 돌파석', quantity: { normal: 12, hard: 16 }, category: '고유' },
         ],
         moreRewardCost: { normal: 8320, hard: 11200 }
