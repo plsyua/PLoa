@@ -90,7 +90,7 @@ const ChestIcon = memo(() => {
 
 // 재료 아이템 컴포넌트
 const MaterialItem = memo(({ material, onToggleCheck }) => {
-  const { name, quantity, unitPrice, totalValue, isAvailable, category, isChecked = true } = material;
+  const { name, quantity, unitPrice, totalValue, isAvailable, category, isChecked = true, gradeInfo } = material;
   
   // '고유' 카테고리 재료는 수량만 표시 (가격 정보 없음)
   if (category === '고유') {
@@ -102,6 +102,11 @@ const MaterialItem = memo(({ material, onToggleCheck }) => {
         </div>
         <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
           {name}
+          {gradeInfo && (
+            <span className="ml-1 text-gray-500 dark:text-gray-400">
+              {gradeInfo}
+            </span>
+          )}
         </span>
         <div className="ml-auto text-sm font-medium text-gray-600 dark:text-gray-400">
           {quantity}개
@@ -121,6 +126,11 @@ const MaterialItem = memo(({ material, onToggleCheck }) => {
           </div>
           <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
             {name}
+            {gradeInfo && (
+              <span className="ml-1 text-gray-500 dark:text-gray-400">
+                {gradeInfo}
+              </span>
+            )}
           </span>
           <div className="whitespace-nowrap">
             <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">

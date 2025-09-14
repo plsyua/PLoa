@@ -18,7 +18,7 @@ const getEfficiencyIcon = (efficiency, isProfit) => {
 
 // 총합 재료 아이템 컴포넌트 (TotalSummaryCard 전용)
 const TotalMaterialItem = memo(({ material }) => {
-  const { name, quantity, totalValue, category } = material;
+  const { name, quantity, totalValue, category, gradeInfo } = material;
   
   // '고유' 카테고리 재료는 수량만 표시 (가격 정보 없음)
   if (category === '고유') {
@@ -29,6 +29,11 @@ const TotalMaterialItem = memo(({ material }) => {
         </div>
         <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
           {name}
+          {gradeInfo && (
+            <span className="ml-1 text-gray-500 dark:text-gray-400">
+              {gradeInfo}
+            </span>
+          )}
         </span>
         <div className="ml-auto text-sm font-medium text-gray-600 dark:text-gray-400">
           {quantity}개
@@ -47,6 +52,11 @@ const TotalMaterialItem = memo(({ material }) => {
           </div>
           <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
             {name}
+            {gradeInfo && (
+              <span className="ml-1 text-gray-500 dark:text-gray-400">
+                {gradeInfo}
+              </span>
+            )}
           </span>
           <div className="whitespace-nowrap">
             <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">
@@ -94,7 +104,10 @@ const TotalSummaryCard = ({ allGates, raidName, difficulty }) => {
       // 재료별 수량과 가치 합산
       if (gate.materialDetails) {
         gate.materialDetails.forEach(material => {
-          const key = material.name;
+          // gradeInfo가 있는 경우 재료명과 등급 정보를 함께 키로 사용
+          const gradeInfo = material.gradeInfo || '';
+          const key = gradeInfo ? `${material.name}|${gradeInfo}` : material.name;
+          
           if (materialMap.has(key)) {
             const existing = materialMap.get(key);
             existing.quantity += material.quantity || 0;
@@ -105,7 +118,8 @@ const TotalSummaryCard = ({ allGates, raidName, difficulty }) => {
               quantity: material.quantity || 0,
               totalValue: material.isChecked !== false ? material.totalValue || 0 : 0,
               category: material.category || '일반',
-              isAvailable: material.isAvailable !== false
+              isAvailable: material.isAvailable !== false,
+              gradeInfo: gradeInfo
             });
           }
         });
