@@ -5,6 +5,7 @@ import CharacterDetail from './pages/CharacterDetail';
 import Utility from './pages/Utility';
 import Scheduler from './pages/Scheduler';
 import AutoSearch from './pages/AutoSearch';
+import ConfirmNicknames from './pages/ConfirmNicknames';
 import SearchResults from './pages/SearchResults';
 
 function App() {
@@ -29,7 +30,10 @@ function App() {
           
           {/* 자동 검색 페이지 */}
           <Route path="/auto-search" element={<AutoSearch />} />
-          
+
+          {/* 닉네임 확인 페이지 */}
+          <Route path="/confirm-nicknames" element={<ConfirmNicknames />} />
+
           {/* 검색 결과 페이지 */}
           <Route path="/search-results" element={<SearchResults />} />
           
