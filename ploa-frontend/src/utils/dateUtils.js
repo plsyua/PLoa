@@ -12,7 +12,14 @@ export const isContentAvailableToday = (content, currentDate = new Date()) => {
     return true;
   }
   
-  const currentDay = currentDate.getDay(); // 0=일요일, 1=월요일, ..., 6=토요일
+  // 로스트아크 리셋 시간 고려 (오전 6시)
+  const adjustedDate = new Date(currentDate);
+  if (currentDate.getHours() < 6) {
+    // 오전 6시 이전이면 전날 기준으로 계산
+    adjustedDate.setDate(currentDate.getDate() - 1);
+  }
+  
+  const currentDay = adjustedDate.getDay(); // 0=일요일, 1=월요일, ..., 6=토요일
   return content.availableDays.includes(currentDay);
 };
 
