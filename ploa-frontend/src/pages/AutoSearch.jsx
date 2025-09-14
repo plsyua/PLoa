@@ -1,9 +1,9 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/layout/Header';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
-import { Upload, Image as ImageIcon, Search, Users, ExternalLink } from 'lucide-react';
+import { Upload, Image as ImageIcon, Search, Users, ExternalLink, Keyboard } from 'lucide-react';
 
 const AutoSearch = () => {
   const navigate = useNavigate();
@@ -13,6 +13,46 @@ const AutoSearch = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [ocrResults, setOcrResults] = useState(null);
+
+  // 클립보드 붙여넣기 이벤트 처리
+  const handlePaste = useCallback((e) => {
+    e.preventDefault();
+
+    const items = e.clipboardData?.items;
+    if (!items) return;
+
+    // 클립보드에서 이미지 찾기
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+
+      if (item.type.startsWith('image/')) {
+        const file = item.getAsFile();
+        if (file) {
+          handleFile(file);
+          return;
+        }
+      }
+    }
+
+    // 이미지가 없으면 안내 메시지
+    setError('클립보드에 이미지가 없습니다. 스크린샷을 먼저 캡처해주세요.');
+  }, []);
+
+  // 페이지 전체에 paste 이벤트 리스너 등록
+  useEffect(() => {
+    const handleGlobalPaste = (e) => {
+      // 입력 필드에서 paste 이벤트가 발생한 경우는 제외
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        return;
+      }
+      handlePaste(e);
+    };
+
+    document.addEventListener('paste', handleGlobalPaste);
+    return () => {
+      document.removeEventListener('paste', handleGlobalPaste);
+    };
+  }, [handlePaste]);
 
   // 드래그 앤 드롭 이벤트 처리
   const handleDrag = useCallback((e) => {
@@ -94,12 +134,12 @@ const AutoSearch = () => {
       const result = await response.json();
       
       if (result.success && result.nicknames && result.nicknames.length > 0) {
-        // 검색 결과 페이지로 이동
-        navigate('/search-results', { 
-          state: { 
+        // 닉네임 확인 페이지로 이동
+        navigate('/confirm-nicknames', {
+          state: {
             nicknames: result.nicknames,
-            originalImage: imagePreview 
-          } 
+            originalImage: imagePreview
+          }
         });
       } else {
         setError('닉네임을 찾을 수 없습니다. 이미지를 다시 확인해주세요.');
@@ -158,9 +198,15 @@ const AutoSearch = () => {
               <p className="text-lg font-medium text-gray-900 dark:text-white mb-2">
                 이미지를 드래그하여 업로드하거나
               </p>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
+              <p className="text-gray-600 dark:text-gray-400 mb-2">
                 클릭하여 파일을 선택하세요
               </p>
+              <div className="flex items-center justify-center gap-2 mb-4 px-4 py-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-800">
+                <Keyboard size={16} className="text-blue-600 dark:text-blue-400" />
+                <p className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                  또는 스크린샷 캡처 후 <kbd className="px-1.5 py-0.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-xs font-mono">Ctrl+V</kbd>로 붙여넣기
+                </p>
+              </div>
               <input
                 type="file"
                 accept="image/*"
@@ -175,7 +221,7 @@ const AutoSearch = () => {
                 파일 선택
               </label>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
-                지원 형식: JPG, PNG, GIF (최대 10MB)
+                지원 형식: JPG, PNG, GIF (최대 10MB) | 클립보드 이미지 지원
               </p>
             </div>
           ) : (
@@ -233,15 +279,20 @@ const AutoSearch = () => {
             사용법 안내
           </h3>
           <div className="space-y-2 text-blue-800 dark:text-blue-200">
-            <p>1. 로스트아크 게임에서 대기실 또는 파티 모집 화면의 스크린샷을 촬영하세요.</p>
-            <p>2. 촬영한 이미지를 위 영역에 업로드하세요.</p>
-            <p>3. '닉네임 인식 시작' 버튼을 클릭하면 자동으로 닉네임을 추출합니다.</p>
-            <p>4. 인식된 닉네임들의 종합 정보를 확인하고, 원하는 캐릭터를 선택하세요.</p>
+            <p>1. <strong>스크린샷 촬영:</strong> 로스트아크 대기실 또는 파티 모집 화면을 캡처하세요.</p>
+            <p>2. <strong>이미지 업로드:</strong> 다음 중 한 가지 방법을 선택하세요.</p>
+            <div className="ml-4 space-y-1 text-sm">
+              <p>• 파일 드래그앤드롭 또는 파일 선택 버튼</p>
+              <p>• <kbd className="px-1.5 py-0.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded font-mono text-xs">Ctrl+V</kbd> 키로 클립보드 이미지 붙여넣기 (캡처 도구 사용 후)</p>
+            </div>
+            <p>3. <strong>닉네임 인식:</strong> '닉네임 인식 시작' 버튼을 클릭하면 자동으로 닉네임을 추출합니다.</p>
+            <p>4. <strong>결과 확인:</strong> 인식된 닉네임들의 종합 정보를 확인하고, 원하는 캐릭터를 선택하세요.</p>
           </div>
           
           <div className="mt-4 p-3 bg-blue-100 dark:bg-blue-800/30 rounded border border-blue-300 dark:border-blue-600">
             <p className="text-sm text-blue-700 dark:text-blue-300">
               💡 <strong>팁:</strong> 닉네임이 선명하게 보이는 고해상도 스크린샷을 사용하면 더 정확한 결과를 얻을 수 있습니다.
+              Windows는 <strong>Snipping Tool</strong>, macOS는 <strong>Command+Shift+4</strong> 사용을 권장합니다.
             </p>
           </div>
         </div>
