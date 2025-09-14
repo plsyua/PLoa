@@ -46,8 +46,25 @@
       "Bash(git ls-tree:*)",
       "Bash(git rm:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(tesseract:*)",
+      "Bash(./ocr_env/bin/pip install paddlepaddle paddleocr)",
+      "Bash(pip install:*)",
+      "Bash(/home/master/PLoa/ocr_env/bin/pip install paddlepaddle paddleocr)",
+      "Bash(/home/master/.local/bin/pip install paddlepaddle paddleocr opencv-python pillow hanspell)",
+      "Bash(/home/master/.local/bin/pip install --break-system-packages paddlepaddle paddleocr opencv-python pillow hanspell)",
+      "Bash(/home/master/.local/bin/pip install --break-system-packages paddlepaddle paddleocr opencv-python pillow)",
+      "Read(//home/master/.local/lib/python3.12/site-packages/**)",
+      "Read(//usr/share/fonts/truetype/**)",
+      "Read(//usr/share/fonts/**)",
+      "Bash(apt list:*)",
+      "Bash(/home/master/.local/bin/virtualenv pororo_env)",
+      "Bash(pip --version)",
+      "Bash(git clone:*)",
+      "WebFetch(domain:api.ncloud-docs.com)",
+      "WebFetch(domain:sasagefind.com)"
     ],
     "deny": []
-  }
+  },
+  "spinnerTipsEnabled": false
 }

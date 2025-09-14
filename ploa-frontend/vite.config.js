@@ -6,6 +6,17 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
+      // OCR 관련 API는 로컬 프록시 서버로 라우팅
+      '/api/ocr-': {
+        target: 'http://localhost:3001',
+        changeOrigin: true
+      },
+      // 프록시 이미지 요청도 로컬 서버로
+      '/proxy-image': {
+        target: 'http://localhost:3001',
+        changeOrigin: true
+      },
+      // 나머지 Lost Ark API는 개발자 서버로 라우팅
       '/api': {
         target: 'https://developer-lostark.game.onstove.com',
         changeOrigin: true,

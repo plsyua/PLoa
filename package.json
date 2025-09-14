@@ -1,8 +1,8 @@
 {
   "name": "ploa-proxy-server",
   "private": true,
-  "version": "1.0.0",
-  "description": "Lost Ark 이미지 프록시 서버",
+  "version": "1.1.0",
+  "description": "Lost Ark 게임 데이터 분석 플랫폼 - NAVER CLOVA OCR 및 API 프록시 서버",
   "main": "proxy-server.js",
   "scripts": {
     "start": "node proxy-server.js",
@@ -11,8 +11,11 @@
   "dependencies": {
     "axios": "^1.11.0",
     "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
     "express": "^4.21.2",
-    "multer": "^1.4.5-lts.1"
+    "form-data": "^4.0.4",
+    "multer": "^1.4.5-lts.1",
+    "sharp": "^0.34.3"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
@@ -26,7 +29,11 @@
     "lostark",
     "image",
     "ocr",
-    "analytics"
+    "analytics",
+    "clova",
+    "naver-api",
+    "api-caching",
+    "korean-gaming"
   ],
   "author": "PLoa Team",
   "license": "ISC",
