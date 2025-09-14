@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { apiCache } from '../utils/apiCache';
 
 // 개발 환경에서는 Vite 프록시 사용, 프로덕션에서는 직접 API 호출
 const isDevelopment = import.meta.env.DEV;
@@ -15,70 +16,93 @@ const lostarkApi = axios.create({
   },
 });
 
+// 캐시를 적용한 API 요청 헬퍼 함수
+const cachedApiRequest = async (endpoint, characterName, errorMessage) => {
+  const cacheKey = apiCache.generateKey(endpoint, { characterName });
+
+  // 1. 캐시된 데이터 확인
+  const cachedData = apiCache.get(cacheKey);
+  if (cachedData) {
+    return cachedData;
+  }
+
+  // 2. 진행 중인 요청 확인 (중복 요청 방지)
+  const pendingRequest = apiCache.getPendingRequest(cacheKey);
+  if (pendingRequest) {
+    return pendingRequest;
+  }
+
+  // 3. 새로운 API 요청
+  const requestPromise = (async () => {
+    try {
+      const response = await lostarkApi.get(endpoint);
+      const data = response.data;
+      
+      // 4. 성공한 데이터를 캐시에 저장
+      apiCache.set(cacheKey, data);
+      return data;
+    } catch (error) {
+      console.error(errorMessage, error);
+      throw error;
+    }
+  })();
+
+  // 5. 진행 중인 요청으로 등록 후 반환
+  return apiCache.setPendingRequest(cacheKey, requestPromise);
+};
+
 // 캐릭터 프로필
 export const getCharacterProfile = async (characterName) => {
-  try {
-    const response = await lostarkApi.get(`/armories/characters/${characterName}/profiles`);
-    return response.data;
-  } catch (error) {
-    console.error('캐릭터 프로필 조회 실패:', error);
-    throw error;
-  }
+  return cachedApiRequest(
+    `/armories/characters/${characterName}/profiles`,
+    characterName,
+    '캐릭터 프로필 조회 실패:'
+  );
 };
 
 // 장비 정보
 export const getCharacterEquipment = async (characterName) => {
-  try {
-    const response = await lostarkApi.get(`/armories/characters/${characterName}/equipment`);
-    return response.data;
-  } catch (error) {
-    console.error('장비 정보 조회 실패:', error);
-    throw error;
-  }
+  return cachedApiRequest(
+    `/armories/characters/${characterName}/equipment`,
+    characterName,
+    '장비 정보 조회 실패:'
+  );
 };
 
 // 각인 정보
 export const getCharacterEngravings = async (characterName) => {
-  try {
-    const response = await lostarkApi.get(`/armories/characters/${characterName}/engravings`);
-    return response.data;
-  } catch (error) {
-    console.error('각인 정보 조회 실패:', error);
-    throw error;
-  }
+  return cachedApiRequest(
+    `/armories/characters/${characterName}/engravings`,
+    characterName,
+    '각인 정보 조회 실패:'
+  );
 };
 
 // 보석 정보
 export const getCharacterGems = async (characterName) => {
-  try {
-    const response = await lostarkApi.get(`/armories/characters/${characterName}/gems`);
-    return response.data;
-  } catch (error) {
-    console.error('보석 정보 조회 실패:', error);
-    throw error;
-  }
+  return cachedApiRequest(
+    `/armories/characters/${characterName}/gems`,
+    characterName,
+    '보석 정보 조회 실패:'
+  );
 };
 
 // 스킬 정보
 export const getCharacterSkills = async (characterName) => {
-  try {
-    const response = await lostarkApi.get(`/armories/characters/${characterName}/combat-skills`);
-    return response.data;
-  } catch (error) {
-    console.error('스킬 정보 조회 실패:', error);
-    throw error;
-  }
+  return cachedApiRequest(
+    `/armories/characters/${characterName}/combat-skills`,
+    characterName,
+    '스킬 정보 조회 실패:'
+  );
 };
 
 // 수집품 정보
 export const getCharacterCollectibles = async (characterName) => {
-  try {
-    const response = await lostarkApi.get(`/armories/characters/${characterName}/collectibles`);
-    return response.data;
-  } catch (error) {
-    console.error('수집품 정보 조회 실패:', error);
-    throw error;
-  }
+  return cachedApiRequest(
+    `/armories/characters/${characterName}/collectibles`,
+    characterName,
+    '수집품 정보 조회 실패:'
+  );
 };
 
 // 아크 패시브 정보
@@ -153,12 +177,10 @@ export const getEvents = async () => {
 
 // 원정대 캐릭터 목록 조회
 export const getCharacterSiblings = async (characterName) => {
-  try {
-    const response = await lostarkApi.get(`/characters/${characterName}/siblings`);
-    return response.data;
-  } catch (error) {
-    console.error('원정대 캐릭터 조회 실패:', error);
-    throw error;
-  }
+  return cachedApiRequest(
+    `/characters/${characterName}/siblings`,
+    characterName,
+    '원정대 캐릭터 조회 실패:'
+  );
 };
 
