@@ -159,7 +159,7 @@ const AuctionCalculator = () => {
                     : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
                 }`}
               >
-                16명
+                16명 / 카게
               </button>
             </div>
           </div>
