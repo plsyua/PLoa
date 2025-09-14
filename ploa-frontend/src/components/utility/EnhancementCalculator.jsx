@@ -333,7 +333,7 @@ const EnhancementCalculator = () => {
     if (!equipment) return;
     
     const currentTarget = enhancementTargets[equipmentType].advancedTarget;
-    const availableLevels = [10, 20, 30, 40].filter(level => level >= equipment.advancedLevel);
+    const availableLevels = [0, 10, 20, 30, 40].filter(level => level >= equipment.advancedLevel);
     const currentIndex = availableLevels.indexOf(currentTarget);
     const newIndex = Math.max(0, Math.min(availableLevels.length - 1, currentIndex + delta));
     
