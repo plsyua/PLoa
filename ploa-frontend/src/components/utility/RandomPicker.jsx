@@ -65,9 +65,6 @@ const RandomPicker = () => {
       case 'calendar':
         setItems(['모험 섬', '카오스게이트', '필드 보스', '태초의 섬']);
         break;
-      case 'food':
-        setItems(['치킨', '햄부기', '분식', '한식', '중식', '일식']);
-        break;
       case 'party4':
         setItems(['1파티 1번', '1파티 2번', '1파티 3번', '1파티 4번']);
         break;
@@ -118,12 +115,6 @@ const RandomPicker = () => {
             className="px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors text-sm"
           >
             캘린더
-          </button>
-          <button
-            onClick={() => addPresetItems('food')}
-            className="px-4 py-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-lg hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors text-sm"
-          >
-            음식 메뉴
           </button>
           <button
             onClick={() => addPresetItems('party4')}
