@@ -648,29 +648,32 @@ const EnhancementCalculator = () => {
   // 사전 계산된 데이터에서 시나리오별 강화 비용 조회
   const getPrecomputedScenario = (startLevel, endLevel, equipmentType, useBooks, useBreaths, scenarioType, isAdvanced = false) => {
     // 키 생성: 상급 재련인 경우 "adv_" 접두사 추가
+    // 상급 재련에서는 useBooks가 실제로는 useScrolls 의미
     const keyPrefix = isAdvanced ? 'adv_' : '';
     const key = `${keyPrefix}${startLevel}_${endLevel}_${equipmentType}_${useBooks}_${useBreaths}`;
     
-    console.log(`데이터 조회 시도: ${key}, isAdvanced: ${isAdvanced}`);
     
     // 사전 계산된 데이터 조회
     const precomputedData = enhancementPrecomputedData[key];
-    console.log(`조회 결과:`, precomputedData ? '데이터 존재' : '데이터 없음');
     
     // 상급 재련의 경우 구간 분할 후 합산 처리
     if (isAdvanced) {
       // 구간을 10단계 단위로 분할
       const ranges = splitAdvancedRange(startLevel, endLevel);
-      console.log(`구간 분할 결과:`, ranges);
       
       const rangeDataList = [];
       
       // 각 구간별 데이터 조회
       for (const [rangeStart, rangeEnd] of ranges) {
         const rangeKey = `adv_${rangeStart}_${rangeEnd}_${equipmentType}_${useBooks}_${useBreaths}`;
-        const rangeData = enhancementPrecomputedData[rangeKey];
+        let rangeData = enhancementPrecomputedData[rangeKey];
         
-        console.log(`구간 데이터 조회: ${rangeKey}`, rangeData ? '성공' : '실패');
+        // 스크롤 사용 데이터가 없는 경우 fallback 시도
+        if (!rangeData && useBooks) {
+          const fallbackKey = `adv_${rangeStart}_${rangeEnd}_${equipmentType}_false_${useBreaths}`;
+          rangeData = enhancementPrecomputedData[fallbackKey];
+        }
+        
         
         if (rangeData) {
           const materialsWithPrice = {};
@@ -714,7 +717,6 @@ const EnhancementCalculator = () => {
     const precomputedScenarios = precomputedData;
     
     if (!precomputedScenarios || !precomputedScenarios[scenarioType]) {
-      console.warn(`사전 계산된 데이터를 찾을 수 없습니다: ${key}, ${scenarioType}`);
       return null;
     }
 
@@ -760,7 +762,6 @@ const EnhancementCalculator = () => {
     const precomputedScenarios = enhancementPrecomputedData[key];
     
     if (!precomputedScenarios || !precomputedScenarios.guaranteed) {
-      console.warn(`사전 계산된 확정 강화 데이터를 찾을 수 없습니다: ${key}`);
       return null;
     }
 
@@ -833,8 +834,8 @@ const EnhancementCalculator = () => {
         const currentLevel = equipment.normalLevel;
         const targetLevel = targets.normalTarget;
         const equipmentType = type === '무기' ? 'weapon' : 'armor';
-        const useBooks = materialOptions.normalBooks || materialOptions.advancedScrolls;
-        const useBreaths = materialOptions.normalBreaths || materialOptions.advancedBreaths;
+        const useBooks = materialOptions.normalBooks;
+        const useBreaths = materialOptions.normalBreaths;
         
         // 각 시나리오별 데이터 조회 및 통합
         ['upper25', 'median', 'lower25'].forEach(scenarioType => {
@@ -1479,7 +1480,7 @@ const EnhancementCalculator = () => {
                   onChange={(e) => handleMaterialOptionChange('normalBooks', e.target.checked)}
                   className="w-4 h-4"
                 />
-                <span>책</span>
+                <MaterialIcon materialName="야금술 : 업화 [11-14]" /><span className="text-gray-900 dark:text-white">책</span>
               </label>
               <label className="flex items-center gap-2">
                 <input
@@ -1488,7 +1489,7 @@ const EnhancementCalculator = () => {
                   onChange={(e) => handleMaterialOptionChange('normalBreaths', e.target.checked)}
                   className="w-4 h-4"
                 />
-                <span>숨결</span>
+                <MaterialIcon materialName="빙하의 숨결" /><span className="text-gray-900 dark:text-white">숨결</span>
               </label>
             </div>
             
@@ -1501,7 +1502,7 @@ const EnhancementCalculator = () => {
                   onChange={(e) => handleMaterialOptionChange('advancedScrolls', e.target.checked)}
                   className="w-4 h-4"
                 />
-                <span>스크롤</span>
+                <MaterialIcon materialName="장인의 야금술 : 2단계" /><span className="text-gray-900 dark:text-white">스크롤</span>
               </label>
               <label className="flex items-center gap-2">
                 <input
@@ -1510,7 +1511,7 @@ const EnhancementCalculator = () => {
                   onChange={(e) => handleMaterialOptionChange('advancedBreaths', e.target.checked)}
                   className="w-4 h-4"
                 />
-                <span>숨결</span>
+                <MaterialIcon materialName="빙하의 숨결" /><span className="text-gray-900 dark:text-white">숨결</span>
               </label>
             </div>
           </div>
