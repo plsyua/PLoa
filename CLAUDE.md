@@ -9,6 +9,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 배포 및 유지보수  
 - 운영 및 모니터링
 - **코드의 중요한 부분에는 이해하기 쉽게 한글 주석 필수**
+- **파일을 생성할 때 최상단에 공통주석 작성(파일명, 파일 위치, 간단한 설명, 작성일, 버전)**
 
 ### 📁 작업 환경
 - **프로젝트 루트**: `\\wsl.localhost\Ubuntu\home\master\PLoa`

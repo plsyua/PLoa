@@ -62,7 +62,8 @@
       "Bash(pip --version)",
       "Bash(git clone:*)",
       "WebFetch(domain:api.ncloud-docs.com)",
-      "WebFetch(domain:sasagefind.com)"
+      "WebFetch(domain:sasagefind.com)",
+      "Read(//mnt/c/Users/AI-SW/Desktop/**)"
     ],
     "deny": []
   },
