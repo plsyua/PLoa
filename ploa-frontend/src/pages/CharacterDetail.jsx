@@ -830,7 +830,7 @@ const CharacterDetail = () => {
             }}
           >
             <div 
-              className="text-gray-900 dark:text-white font-medium text-sm"
+              className="font-medium text-sm"
               dangerouslySetInnerHTML={{ 
                 __html: generateSimpleGemTooltip(gemTooltipData.gemInfo, true, gemTooltipData.gem.Name) 
               }}

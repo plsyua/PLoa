@@ -354,7 +354,7 @@ export const generateSimpleGemTooltip = (gemData, includeHtml = false, gemName =
   // 파싱이 성공한 경우 확대 모드와 동일한 표기 방식 사용
   if (gemData.hasTooltipData && gemData.skillName && gemData.effects.length > 0) {
     if (includeHtml) {
-      return `<span class="text-yellow-400">${gemData.skillName}</span> <span class="text-white">${gemData.effects.join(', ')}</span>`;
+      return `<span class="text-yellow-400">${gemData.skillName}</span> <span class="text-gray-900 dark:text-white">${gemData.effects.join(', ')}</span>`;
     }
     return `${gemData.skillName} ${gemData.effects.join(', ')}`;
   }
@@ -364,14 +364,14 @@ export const generateSimpleGemTooltip = (gemData, includeHtml = false, gemName =
     // 보석명에서 HTML 태그 제거하여 표시
     const cleanName = extractPlainText(gemName);
     if (includeHtml) {
-      return `<span class="text-white">${cleanName}</span>`;
+      return `<span class="text-gray-900 dark:text-white">${cleanName}</span>`;
     }
     return cleanName;
   }
   
   // 최후의 폴백
   if (includeHtml) {
-    return '<span class="text-gray-400">보석 정보 없음</span>';
+    return '<span class="text-gray-500 dark:text-gray-400">보석 정보 없음</span>';
   }
   return '보석 정보 없음';
 };
@@ -384,29 +384,29 @@ export const generateSimpleGemTooltip = (gemData, includeHtml = false, gemName =
  */
 export const generateGemTooltipContent = (gemData, gemName) => {
   if (!gemData.isValid) {
-    return `<div class="text-white font-medium">${gemName}</div>`;
+    return `<div class="text-gray-900 dark:text-white font-medium">${gemName}</div>`;
   }
   
   // 간소화된 툴팁 사용
   const simpleTooltip = generateSimpleGemTooltip(gemData);
   if (simpleTooltip) {
-    return `<div class="text-white font-medium">${simpleTooltip}</div>`;
+    return `<div class="text-gray-900 dark:text-white font-medium">${simpleTooltip}</div>`;
   }
   
   // 폴백: 기본 정보 표시
   let content = '';
   
   if (gemData.skillName) {
-    content += `<div class="text-white font-medium mb-1">${gemData.skillName}</div>`;
+    content += `<div class="text-gray-900 dark:text-white font-medium mb-1">${gemData.skillName}</div>`;
   }
   
   if (gemData.effects.length > 0) {
-    content += '<div class="text-gray-300 text-sm mt-1">';
+    content += '<div class="text-gray-600 dark:text-gray-300 text-sm mt-1">';
     gemData.effects.forEach(effect => {
       content += `<div>${effect}</div>`;
     });
     content += '</div>';
   }
   
-  return content || `<div class="text-white font-medium">${gemName}</div>`;
+  return content || `<div class="text-gray-900 dark:text-white font-medium">${gemName}</div>`;
 };
