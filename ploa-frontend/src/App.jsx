@@ -4,7 +4,7 @@ import Dashboard from './pages/Dashboard';
 import CharacterDetail from './pages/CharacterDetail';
 import Utility from './pages/Utility';
 import Scheduler from './pages/Scheduler';
-import AutoSearch from './pages/AutoSearch';
+import PartySearch from './pages/PartySearch';
 import ConfirmNicknames from './pages/ConfirmNicknames';
 import SearchResults from './pages/SearchResults';
 
@@ -28,8 +28,8 @@ function App() {
           {/* 유틸리티 페이지 */}
           <Route path="/utility" element={<Utility />} />
           
-          {/* 자동 검색 페이지 */}
-          <Route path="/auto-search" element={<AutoSearch />} />
+          {/* 파티 검색 페이지 */}
+          <Route path="/party-search" element={<PartySearch />} />
 
           {/* 닉네임 확인 페이지 */}
           <Route path="/confirm-nicknames" element={<ConfirmNicknames />} />
