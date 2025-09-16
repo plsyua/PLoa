@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '../components/layout/Header';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
-import { User, ExternalLink, TrendingUp, Swords, Crown, Calendar, Zap, UserPlus } from 'lucide-react';
+import { User, TrendingUp, Swords, Crown, Calendar, Zap, UserPlus } from 'lucide-react';
 import { getCombatPowerColor } from '../utils/combatPowerUtils';
 // 레이드 아이콘 직접 import
 import valtanIcon from '../assets/images/raid/valtan.webp';
@@ -269,14 +269,6 @@ const getClassSynergies = (className, arkPassiveData) => {
   return synergies;
 };
 
-// 외부 사이트 링크 생성
-const generateExternalLinks = (characterName) => {
-  return {
-    lostarkInfo: `https://lostark.game.onstove.com/Profile/Character/${encodeURIComponent(characterName)}`,
-    loawa: `https://loawa.com/char/${encodeURIComponent(characterName)}`,
-    lostarkDiary: `https://lostark-diary.com/character/${encodeURIComponent(characterName)}`,
-  };
-};
 
 const CharacterCard = ({ characterName, onCharacterClick, onDataLoaded }) => {
   const [characterData, setCharacterData] = useState(null);
@@ -360,8 +352,6 @@ const CharacterCard = ({ characterName, onCharacterClick, onDataLoaded }) => {
     return count;
   };
 
-  // 외부 링크
-  const externalLinks = generateExternalLinks(characterName);
 
   if (loading) {
     return (
@@ -382,17 +372,6 @@ const CharacterCard = ({ characterName, onCharacterClick, onDataLoaded }) => {
           <h3 className="text-lg font-semibold text-red-700 dark:text-red-300">{characterName}</h3>
         </div>
         <ErrorMessage message={error} />
-        <div className="mt-4 flex gap-2 flex-wrap">
-          <a
-            href={externalLinks.lostarkInfo}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 px-3 py-1 bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300 text-sm rounded-lg hover:bg-orange-200 dark:hover:bg-orange-800 transition-colors"
-          >
-            <ExternalLink size={12} />
-            전투정보실
-          </a>
-        </div>
       </div>
     );
   }

@@ -310,7 +310,7 @@ const PartySearch = () => {
             파티 검색
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            대기실 스크린샷을 업로드하면 자동으로 닉네임을 인식하여 캐릭터 정보를 검색합니다.</p>
+            대기실 스크린샷을 업로드하면 자동으로 닉네임을 인식하여 캐릭터 정보를 검색합니다. (1920x1080 기준)</p>
           <p className="text-gray-600 dark:text-gray-400">
             하단에서 수동 검색도 가능합니다.</p>
         </div>
@@ -319,7 +319,7 @@ const PartySearch = () => {
         <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-600 p-6 mb-6">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
             <ImageIcon size={24} />
-            이미지 업로드❗주의: 파티 대기실 창을 임의로 이동하지 마세요.
+            이미지 업로드❗주의: 파티 대기실 창을 최상단으로 이동하세요.
           </h2>
 
           {!imagePreview ? (
@@ -413,7 +413,7 @@ const PartySearch = () => {
             간단 사용법
           </h3>
           <div className="space-y-2 text-blue-800 dark:text-blue-200">
-            <p>1. <strong>스크린샷 촬영:</strong> 파티에 들어가 대기실을 띄우고, <kbd className="px-1.5 py-0.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded font-mono text-xs">Win + Shift + S</kbd> 로 전체 화면 캡처.</p>
+            <p>1. <strong>스크린샷 촬영:</strong> 파티 대기실을 띄우고, 최상단으로 드래그. <kbd className="px-1.5 py-0.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded font-mono text-xs">Win + Shift + S</kbd> 로 전체 화면 캡처.</p>
             <p>2. <strong>이미지 업로드:</strong> <kbd className="px-1.5 py-0.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded font-mono text-xs">Ctrl + V</kbd> 로 클립보드 붙여넣기.</p>
             <p>3. <strong>닉네임 인식:</strong> '닉네임 인식 시작' 버튼을 클릭하면 자동으로 닉네임을 추출합니다.</p>
             <p>4. <strong>검수 및 결과 확인:</strong> 인식된 닉네임들이 정확한지 확인하고, 종합 정보를 확인하세요.</p>
