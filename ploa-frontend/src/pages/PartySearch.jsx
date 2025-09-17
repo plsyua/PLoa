@@ -339,7 +339,7 @@ const PartySearch = () => {
                 드래그 & 드롭 혹은 클릭하여 파일 선택
               </p>
               <p className="text-gray-600 dark:text-gray-400 mb-2">
-                또는 전체 화면 캡처 후 <kbd className="px-1.5 py-0.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-xs font-mono">Ctrl + V</kbd> 로 붙여넣기
+                또는 <kbd className="px-1.5 py-0.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-xs font-mono">Alt + PrtScr</kbd> 후 <kbd className="px-1.5 py-0.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-xs font-mono">Ctrl + V</kbd> 로 붙여넣기
               </p>
               <input
                 type="file"
@@ -413,10 +413,10 @@ const PartySearch = () => {
             간단 사용법
           </h3>
           <div className="space-y-2 text-blue-800 dark:text-blue-200">
-            <p>1. <strong>스크린샷 촬영:</strong> 파티 대기실을 띄우고, 최상단으로 드래그. <kbd className="px-1.5 py-0.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded font-mono text-xs">Win + Shift + S</kbd> 로 전체 화면 캡처.</p>
-            <p>2. <strong>이미지 업로드:</strong> <kbd className="px-1.5 py-0.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded font-mono text-xs">Ctrl + V</kbd> 로 클립보드 붙여넣기.</p>
-            <p>3. <strong>닉네임 인식:</strong> '닉네임 인식 시작' 버튼을 클릭하면 자동으로 닉네임을 추출합니다.</p>
-            <p>4. <strong>검수 및 결과 확인:</strong> 인식된 닉네임들이 정확한지 확인하고, 종합 정보를 확인하세요.</p>
+            <p>1. 파티에 입장, 대기실 창을 최상단으로 드래그. <kbd className="px-1.5 py-0.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded font-mono text-xs">Alt + PrtScr</kbd> 로 전체 화면 캡처.</p>
+            <p>2. <kbd className="px-1.5 py-0.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded font-mono text-xs">Ctrl + V</kbd> 로 클립보드 붙여넣기.</p>
+            <p>3. '닉네임 인식 시작' 버튼을 클릭하면 자동으로 닉네임을 추출합니다.</p>
+            <p>4. 인식된 닉네임들이 정확한지 확인하고, 종합 정보를 확인하세요.</p>
           </div>
         </div>
 
@@ -424,7 +424,7 @@ const PartySearch = () => {
         <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-600 p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-              수동 파티 입력 ({partySlots.filter(name => name && name.trim()).length}/8명)
+              수동 검색 ({partySlots.filter(name => name && name.trim()).length}/8명)
             </h2>
             <button
               onClick={handleManualSearch}
@@ -438,7 +438,6 @@ const PartySearch = () => {
 
           {/* 1번 파티 */}
           <div className="mb-6">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">1번 파티</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
               {partySlots.slice(0, 4).map((nickname, index) => (
                 <PartySlotCard
@@ -461,7 +460,6 @@ const PartySearch = () => {
 
           {/* 2번 파티 */}
           <div>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">2번 파티</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
               {partySlots.slice(4, 8).map((nickname, index) => (
                 <PartySlotCard
