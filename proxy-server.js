@@ -47,51 +47,52 @@ if (!fs.existsSync('uploads')) {
 // 닉네임 검증 유틸리티 함수들
 function isValidNickname(text) {
   // 유효한 닉네임인지 검사
-  // 로스트아크 닉네임 규칙: 2-12자 길이, 한글/영문/숫자 조합
-  if (!text || text.length < 2 || text.length > 12) {
+  console.log(`  🔍 isValidNickname 검증 시작: "${text}"`);
+
+  // 로스트아크 닉네임 규칙: 2-15자 길이, 한글/영문/숫자 조합 (OCR 오인식 고려하여 15자까지 허용)
+  if (!text || text.length < 2 || text.length > 15) {
+    console.log(`    ❌ 길이 검사 실패: ${text?.length || 0}자 (2-15자 필요)`);
     return false;
   }
+  console.log(`    ✅ 길이 검사 통과: ${text.length}자`);
 
   // 한글, 영문, 숫자만 허용
   if (!/^[가-힣a-zA-Z0-9]+$/.test(text)) {
+    console.log(`    ❌ 문자 패턴 검사 실패: 한글/영문/숫자 이외의 문자 포함`);
     return false;
   }
+  console.log(`    ✅ 문자 패턴 검사 통과`);
 
   // 숫자만으로 이루어진 경우 제외
   if (/^\d+$/.test(text)) {
+    console.log(`    ❌ 숫자만으로 구성된 텍스트`);
     return false;
   }
 
   // 숫자+한글 조합 제외 (예: "1번", "2파티" 등)
   if (/^\d+[가-힣]+$/.test(text)) {
+    console.log(`    ❌ 숫자+한글 패턴`);
     return false;
   }
 
   // 너무 짧은 영문은 제외 (최소 3자)
   if (/^[a-zA-Z]+$/.test(text) && text.length < 3) {
+    console.log(`    ❌ 너무 짧은 영문: ${text.length}자`);
     return false;
   }
 
   // 게임 UI 텍스트 제외
   const excludeWords = [
-    '레벨', '길드', '서버', '클래스', '전투력', '아이템레벨', '아이템',
-    'Level', 'Guild', 'Server', 'Class', 'Combat', 'Item', 'Lv',
-    '로스트아크', 'LostArk', '대기실', '파티', 'Party', '방', 'Room',
-    '모집', '참여', '신청', '수락', '거부', '나가기', '입장', '대기',
-    '시작', '준비', '완료', '취소', '확인', '닫기', '열기',
-    '채팅', '설정', '옵션', '도움말', '정보', '상세', '보기',
-    '선택', '변경', '수정', '삭제', '추가', '저장', '불러오기',
-    '검색', '돋보기', '아이콘', '카드', '캐릭터', '정보보기',
-    '클릭', '터치', '선택됨', '활성', '비활성',
-    '1번', '2번', '3번', '4번', '5번', '6번', '7번', '8번', '번째', '팀', '탭',
+    '1번', '2번', '3번', '4번', '5번', '6번', '7번', '8번',
     // 파티 관련 UI 텍스트
     '1번 파티', '2번 파티', '3번 파티', '4번 파티',
-    '파티 모집', '모집 설정', '상세 정보', '정보 보기', '참가자', '신청자'
+    '파티 모집', '모집 설정', '상세 정보', '정보 보기', '참가자', '신청자', '모집중'
   ];
 
   const lowerText = text.toLowerCase();
   for (const exclude of excludeWords) {
     if (lowerText.includes(exclude.toLowerCase())) {
+      console.log(`    ❌ 제외 단어 포함: "${exclude}"`);
       return false;
     }
   }
@@ -99,60 +100,85 @@ function isValidNickname(text) {
   // 정규식 패턴으로 UI 텍스트 제외
   // 숫자+번 패턴 (1번, 2번 등)
   if (/^\d+번$/.test(text)) {
+    console.log(`    ❌ 숫자+번 패턴`);
     return false;
   }
 
   // 숫자+번+파티 패턴 (1번 파티, 2번 파티 등)
   if (/^\d+번\s*파티$/.test(text)) {
+    console.log(`    ❌ 숫자+번+파티 패턴`);
     return false;
   }
 
   // 단순 1-2자리 숫자만 (1, 2, 3, 4 등)
   if (/^\d+$/.test(text) && text.length <= 2) {
+    console.log(`    ❌ 짧은 숫자 패턴`);
     return false;
   }
 
   // 대괄호로 감싸진 텍스트 ([노말], [하드] 등)
   if (/^\[.+\]$/.test(text)) {
+    console.log(`    ❌ 대괄호 패턴`);
     return false;
   }
 
   // 숫자-숫자 패턴 (1-1, 1-2, 2-1 등)
   if (/^\d+-\d+$/.test(text)) {
+    console.log(`    ❌ 숫자-숫자 패턴`);
     return false;
   }
 
   // 반복 문자 제외 (같은 문자 3개 이상 연속)
   if (/(.)\1{2,}/.test(text)) {
+    console.log(`    ❌ 반복 문자 패턴`);
     return false;
   }
 
+  console.log(`    ✅ 모든 검증 통과: "${text}"`);
   return true;
 }
 
 function cleanAndValidateText(text) {
   // 추출된 텍스트를 정리하고 유효한 닉네임만 추출
-  if (!text) return [];
+  console.log(`🧹 cleanAndValidateText 처리 시작: "${text}"`);
+
+  if (!text) {
+    console.log(`❌ 빈 텍스트로 인해 반환: []`);
+    return [];
+  }
 
   // 기본 정리
   text = text.trim();
+  console.log(`✂️ 트림 후: "${text}"`);
 
   // 특수문자 제거하고 한글/영문/숫자만 보존
   const cleanText = text.replace(/[^\w가-힣\s]/g, ' ').replace(/\s+/g, ' ').trim();
+  console.log(`🧼 정리 후: "${cleanText}"`);
 
-  if (!cleanText) return [];
+  if (!cleanText) {
+    console.log(`❌ 정리 후 빈 텍스트로 인해 반환: []`);
+    return [];
+  }
 
   // 공백으로 분리하여 개별 단어 검사
   const words = cleanText.split(' ');
+  console.log(`📋 분리된 단어들: [${words.map(w => `"${w}"`).join(', ')}]`);
+
   const validNicknames = [];
 
   for (const word of words) {
     const trimmedWord = word.trim();
+    console.log(`🔍 단어 검증 중: "${trimmedWord}"`);
+
     if (isValidNickname(trimmedWord)) {
+      console.log(`✅ 유효한 닉네임으로 추가: "${trimmedWord}"`);
       validNicknames.push(trimmedWord);
+    } else {
+      console.log(`❌ 유효하지 않은 닉네임으로 제외: "${trimmedWord}"`);
     }
   }
 
+  console.log(`🎯 최종 유효한 닉네임들: [${validNicknames.map(n => `"${n}"`).join(', ')}]`);
   return validNicknames;
 }
 
@@ -172,10 +198,10 @@ async function cropWaitingRoomArea(imagePath) {
     // 2단계: 최적화된 ROI 설정 (최적 밸런스로 정확한 대기실 플레이어 영역)
     const margin = 20; // 20px 안전 여백
     const baseRoi = {
-      left: Math.floor(width * 0.65),   // 65% (닉네임 짤림 방지)
-      top: Math.floor(height * 0.28),   // 28% (균형잡힌 상단 제거)
-      width: Math.floor(width * 0.32),  // 32% (좌측 확장)
-      height: Math.floor(height * 0.30) // 30% (집중된 플레이어 목록 영역)
+      left: Math.floor(width * 0.70),   // 60% (더 중앙쪽 닉네임 포함)
+      top: Math.floor(height * 0.19),   // 24% (플레이어 닉네임 영역 포함을 위해 위로 조정)
+      width: Math.floor(width * 0.30),  // 30% (좌우 여백 최적화)
+      height: Math.floor(height * 0.14) // 28% (하단 불필요한 영역 제거)
     };
     
     // 3단계: 안전 여백을 포함한 최종 ROI

@@ -92,13 +92,80 @@ const ConfirmNicknames = () => {
   const navigate = useNavigate();
   const { nicknames: initialNicknames, originalImage } = location.state || {};
 
+  // OCR 결과에 빈 슬롯 정보 추가 (SearchResults와 동일한 로직)
+  const insertEmptySlots = (names) => {
+    // 현재 OCR 결과가 6개이고 실제로는 2-3, 2-4가 빈 슬롯인 경우
+    if (names?.length === 6) {
+      return [
+        names[0], // 1-1: 귀여운건슬링
+        names[1], // 2-1: 리릭시아
+        names[2], // 1-2: 친구차이
+        names[3], // 2-2: 플슈링
+        names[4], // 1-3: 밤고개로
+        '!',      // 2-3: 빈 슬롯
+        names[5], // 1-4: 홀리는딜러입니다
+        '!'       // 2-4: 빈 슬롯
+      ];
+    }
+    return names || [];
+  };
+
+  // 파티별로 닉네임 분리 (SearchResults와 동일한 로직)
+  const organizeParties = (names) => {
+    const party1 = []; // 1번 파티
+    const party2 = []; // 2번 파티
+    let position1 = 0; // 1번 파티 포지션 카운터
+    let position2 = 0; // 2번 파티 포지션 카운터
+
+    for (let i = 0; i < names.length; i++) {
+      const nickname = names[i];
+
+      // 현재 어느 파티 차례인지 판단 (전체 포지션 기준)
+      const totalPosition = position1 + position2;
+      const isParty1Turn = (totalPosition % 2 === 0);
+
+      // '!' 또는 '모집중' 인식된 경우 해당 파티에 null 추가
+      if (nickname === '!' || nickname === '모집중') {
+        if (isParty1Turn) {
+          party1.push('');
+          position1++;
+        } else {
+          party2.push('');
+          position2++;
+        }
+        continue;
+      }
+
+      // 실제 닉네임 처리
+      if (nickname) {
+        if (isParty1Turn) {
+          party1.push(nickname);
+          position1++;
+        } else {
+          party2.push(nickname);
+          position2++;
+        }
+      }
+    }
+
+    // 각 파티를 정확히 4개 슬롯으로 맞추기
+    while (party1.length < 4) {
+      party1.push('');
+    }
+    while (party2.length < 4) {
+      party2.push('');
+    }
+
+    return [...party1, ...party2]; // 8개 슬롯 반환
+  };
+
+  // 파티 구성 로직 적용
+  const processedNames = insertEmptySlots(initialNicknames);
+  const organizedSlots = organizeParties(processedNames);
+
   // 8개 고정 슬롯으로 변경
   const [partySlots, setPartySlots] = useState(() => {
-    const slots = new Array(8).fill('');
-    initialNicknames?.forEach((nickname, index) => {
-      if (index < 8) slots[index] = nickname;
-    });
-    return slots;
+    return organizedSlots.length > 0 ? organizedSlots : new Array(8).fill('');
   });
   const [editingIndex, setEditingIndex] = useState(-1);
   const [editValue, setEditValue] = useState('');
@@ -160,7 +227,7 @@ const ConfirmNicknames = () => {
 
   // 처음으로 돌아가기
   const goBack = () => {
-    navigate('/auto-search');
+    navigate('/party-search');
   };
 
   // Enter 키 처리
