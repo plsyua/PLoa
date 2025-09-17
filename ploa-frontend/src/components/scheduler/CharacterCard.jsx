@@ -6,7 +6,19 @@ import { RAID_DATA } from '../../data/raidData';
 import { getIcon } from '../../data/icons';
 
 const CharacterCard = ({ character, onUpdateSchedule, onRemoveCharacter, isManageMode, onDragStart, onDragEnd, isDragging, transformStyle = {}, isMoving = false }) => {
-  
+
+  // 캐릭터 클릭 핸들러 (새 탭에서 캐릭터 상세 페이지 열기)
+  const handleCharacterClick = (e) => {
+    if (isManageMode) {
+      e.stopPropagation(); // 관리 모드에서는 드래그 방지
+      return;
+    }
+
+    // 새 탭에서 캐릭터 상세 페이지 열기
+    const url = `/character/${encodeURIComponent(character.name)}`;
+    window.open(url, '_blank');
+  };
+
   // 완료 상태 토글 (일일 컨텐츠 - 체크박스)
   const toggleDailyContent = (contentId) => {
     const currentState = character.schedule[contentId]?.completed || false;
@@ -160,7 +172,10 @@ const CharacterCard = ({ character, onUpdateSchedule, onRemoveCharacter, isManag
 
       {/* 캐릭터 헤더 */}
       <div className="flex items-center gap-3 mb-4">
-        <div className="w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center border border-gray-400 dark:border-gray-500 overflow-hidden">
+        <div
+          className="w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center border border-gray-400 dark:border-gray-500 overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
+          onClick={handleCharacterClick}
+        >
           {character.classIcon ? (
             <img 
               src={character.classIcon} 
@@ -178,7 +193,12 @@ const CharacterCard = ({ character, onUpdateSchedule, onRemoveCharacter, isManag
           />
         </div>
         <div className="flex-1">
-          <h3 className="font-medium text-gray-900 dark:text-white">{character.name}</h3>
+          <h3
+            className="font-medium text-gray-900 dark:text-white cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            onClick={handleCharacterClick}
+          >
+            {character.name}
+          </h3>
           <div className="text-sm text-gray-500 dark:text-gray-400">
             {[character.className, `Lv.${character.itemLevel}`]
               .filter(Boolean)
