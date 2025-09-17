@@ -41,7 +41,8 @@ export const RAID_DATA = {
           { name: '명예의 파편', quantity: { normal: 600, hard: 1300 }, category: '강화재료' },
           { name: '마수의 뼈', quantity: { normal: 1, hard: 3 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 75, hard: 175 }
+        moreRewardCost: { normal: 75, hard: 175 },
+        clearGold: { normal: 1234, hard: 1234 }
       },
       {
         gateId: 2,
@@ -54,7 +55,8 @@ export const RAID_DATA = {
           { name: '마수의 뼈', quantity: { normal: 2, hard: 3 }, category: '고유' },
           { name: '융합 돌파석', quantity: { normal: 6, hard: 12 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 100, hard: 275 }
+        moreRewardCost: { normal: 100, hard: 275 },
+        clearGold: { normal: 1234, hard: 1234 }
       }
     ]
   },
@@ -75,7 +77,8 @@ export const RAID_DATA = {
           { name: '명예의 파편', quantity: { normal: 800, hard: 1600 }, category: '강화재료' },
           { name: '욕망의 날개', quantity: { normal: 1, hard: 3 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 100, hard: 225 }
+        moreRewardCost: { normal: 100, hard: 225 },
+        clearGold: { normal: 1234, hard: 1234 }
       },
       {
         gateId: 2,
@@ -88,7 +91,8 @@ export const RAID_DATA = {
           { name: '욕망의 날개', quantity: { normal: 2, hard: 3 }, category: '고유' },
           { name: '융합 돌파석', quantity: { normal: 8, hard: 16 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 150, hard: 375 }
+        moreRewardCost: { normal: 150, hard: 375 },
+        clearGold: { normal: 1234, hard: 1234 }
       }
     ]
   },
@@ -109,7 +113,8 @@ export const RAID_DATA = {
           { name: '명예의 파편', quantity: { normal: 2200 }, category: '강화재료' },
           { name: '광기의 나팔', quantity: { normal: 1 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 100 }
+        moreRewardCost: { normal: 100 },
+        clearGold: { normal: 1234, hard: 1234 }
       },
       {
         gateId: 2,
@@ -121,7 +126,8 @@ export const RAID_DATA = {
           { name: '명예의 파편', quantity: { normal: 2200 }, category: '강화재료' },
           { name: '광기의 나팔', quantity: { normal: 2 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 150 }
+        moreRewardCost: { normal: 150 },
+        clearGold: { normal: 1234, hard: 1234 }
       },
       {
         gateId: 3,
@@ -134,7 +140,8 @@ export const RAID_DATA = {
           { name: '광기의 나팔', quantity: { normal: 2 }, category: '고유' },
           { name: '융합 돌파석', quantity: { normal: 12 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 200 }
+        moreRewardCost: { normal: 200 },
+        clearGold: { normal: 1234, hard: 1234 }
       }
     ]
   },
@@ -155,7 +162,8 @@ export const RAID_DATA = {
           { name: '명예의 파편', quantity: { normal: 3000, hard: 3000 }, category: '강화재료' },
           { name: '몽환의 사념', quantity: { normal: 4, hard: 6 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 100, hard: 300 }
+        moreRewardCost: { normal: 100, hard: 300 },
+        clearGold: { normal: 1234, hard: 1234 }
       },
       {
         gateId: 2,
@@ -167,7 +175,8 @@ export const RAID_DATA = {
           { name: '명예의 파편', quantity: { normal: 3000, hard: 4000 }, category: '강화재료' },
           { name: '몽환의 사념', quantity: { normal: 4, hard: 6 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 150, hard: 300 }
+        moreRewardCost: { normal: 150, hard: 300 },
+        clearGold: { normal: 1234, hard: 1234 }
       },
       {
         gateId: 3,
@@ -180,7 +189,8 @@ export const RAID_DATA = {
           { name: '몽환의 사념', quantity: { normal: 5, hard: 7 }, category: '고유' },
           { name: '심화 돌파석', quantity: { normal: 10, hard: 12 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 200, hard: 300 }
+        moreRewardCost: { normal: 200, hard: 300 },
+        clearGold: { normal: 1234, hard: 1234 }
       },
       {
         gateId: 4,
@@ -193,7 +203,8 @@ export const RAID_DATA = {
           { name: '몽환의 사념', quantity: { normal: 7, hard: 10 }, category: '고유' },
           { name: '심화 돌파석', quantity: { normal: 20, hard: 24 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 375, hard: 500 }
+        moreRewardCost: { normal: 375, hard: 500 },
+        clearGold: { normal: 1234, hard: 1234 }
       }
     ]
   },
@@ -214,7 +225,8 @@ export const RAID_DATA = {
           { name: '명예의 파편', quantity: { normal: 3830, hard: 3200 }, category: '강화재료' },
           { name: '쇠락의 눈동자', quantity: { normal: 3, hard: 7 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 190, hard: 300 }
+        moreRewardCost: { normal: 190, hard: 300 },
+        clearGold: { normal: 1234, hard: 1234 }
       },
       {
         gateId: 2,
@@ -226,7 +238,8 @@ export const RAID_DATA = {
           { name: '명예의 파편', quantity: { normal: 3880, hard: 3200 }, category: '강화재료' },
           { name: '쇠락의 눈동자', quantity: { normal: 3, hard: 7 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 230, hard: 500 }
+        moreRewardCost: { normal: 230, hard: 500 },
+        clearGold: { normal: 1234, hard: 1234 }
       },
       {
         gateId: 3,
@@ -239,7 +252,8 @@ export const RAID_DATA = {
           { name: '쇠락의 눈동자', quantity: { normal: 5, hard: 8 }, category: '고유' },
           { name: '농축 돌파석', quantity: { normal: 7, hard: 13 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 330, hard: 700 }
+        moreRewardCost: { normal: 330, hard: 700 },
+        clearGold: { normal: 1234, hard: 1234 }
       }
     ]
   },
@@ -261,7 +275,8 @@ export const RAID_DATA = {
           { name: '어둠의 불', quantity: { normal: 6, hard: 12 }, category: '고유' },
           { name: '마력의 샘물', quantity: { normal: 2, hard: 6 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 360, hard: 500 }
+        moreRewardCost: { normal: 360, hard: 500 },
+        clearGold: { normal: 1234, hard: 1234 }
       },
       {
         gateId: 2,
@@ -274,7 +289,8 @@ export const RAID_DATA = {
           { name: '어둠의 불', quantity: { normal: 8, hard: 16 }, category: '고유' },
           { name: '마력의 샘물', quantity: { normal: 3, hard: 9 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 440, hard: 600 }
+        moreRewardCost: { normal: 440, hard: 600 },
+        clearGold: { normal: 1234, hard: 1234 }
       },
       {
         gateId: 3,
@@ -288,7 +304,8 @@ export const RAID_DATA = {
           { name: '마력의 샘물', quantity: { normal: 4, hard: 12 }, category: '고유' },
           { name: '농축 돌파석', quantity: { normal: 3, hard: 5 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 640, hard: 900 }
+        moreRewardCost: { normal: 640, hard: 900 },
+        clearGold: { normal: 1234, hard: 1234 }
       },
       {
         gateId: 4,
@@ -302,7 +319,8 @@ export const RAID_DATA = {
           { name: '마력의 샘물', quantity: { hard: 12 }, category: '고유' },
           { name: '농축 돌파석', quantity: { hard: 7 }, category: '고유' },
         ],
-        moreRewardCost: { hard: 1250 }
+        moreRewardCost: { hard: 1250 },
+        clearGold: { normal: 1234, hard: 1234 }
       }
     ]
   },
@@ -328,7 +346,8 @@ export const RAID_DATA = {
           { name: '관조의 빛무리', quantity: { hard: 1 }, category: '고유' },
           { name: '시련의 빛', quantity: { normal: 11, hard: 14 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 180, hard: 225 }
+        moreRewardCost: { normal: 180, hard: 225 },
+        clearGold: { normal: 1234, hard: 1234 }
       },
       {
         gateId: 2,
@@ -344,7 +363,8 @@ export const RAID_DATA = {
           { name: '관조의 빛무리', quantity: { normal: 1, hard: 1 }, category: '고유' },
           { name: '시련의 빛', quantity: { normal: 12, hard: 16 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 200, hard: 350 }
+        moreRewardCost: { normal: 200, hard: 350 },
+        clearGold: { normal: 1234, hard: 1234 }
       },
       {
         gateId: 3,
@@ -362,11 +382,12 @@ export const RAID_DATA = {
           { name: '심화 돌파석', quantity: { normal: 8 }, category: '고유' },
           { name: '농축 돌파석', quantity: { hard: 5 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 270, hard: 500 }
+        moreRewardCost: { normal: 270, hard: 500 },
+        clearGold: { normal: 1234, hard: 1234 }
       }
     ]
   },
-    ivory_tower: {
+  ivory_tower: {
     id: 'ivory_tower',
     name: '혼돈의 상아탑',
     category: '어비스 던전',
@@ -383,7 +404,8 @@ export const RAID_DATA = {
           { name: '명예의 파편', quantity: { normal: 3600, hard: 4400 }, category: '강화재료' },
           { name: '빛나는 지혜의 기운', quantity: { normal: 2, hard: 4 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 180, hard: 350 }
+        moreRewardCost: { normal: 180, hard: 350 },
+        clearGold: { normal: 1234, hard: 1234 }
       },
       {
         gateId: 2,
@@ -395,7 +417,8 @@ export const RAID_DATA = {
           { name: '명예의 파편', quantity: { normal: 3600, hard: 4400 }, category: '강화재료' },
           { name: '빛나는 지혜의 기운', quantity: { normal: 2, hard: 4 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 220, hard: 500 }
+        moreRewardCost: { normal: 220, hard: 500 },
+        clearGold: { normal: 1234, hard: 1234 }
       },
       {
         gateId: 3,
@@ -409,7 +432,8 @@ export const RAID_DATA = {
           { name: '빛나는 지혜의 엘릭서', quantity: { normal: 1, hard: 2 }, category: '고유' },
           { name: '농축 돌파석', quantity: { normal: 3, hard: 5 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 300, hard: 950 }
+        moreRewardCost: { normal: 300, hard: 950 },
+        clearGold: { normal: 1234, hard: 1234 }
       }
     ]
   },
@@ -432,7 +456,8 @@ export const RAID_DATA = {
           { name: '베히모스의 비늘', quantity: { normal: 10 }, category: '고유' },
           { name: '마력의 샘물', quantity: { normal: 10 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 920 }
+        moreRewardCost: { normal: 920 },
+        clearGold: { normal: 1234, hard: 1234 }
       },
       {
         gateId: 2,
@@ -446,7 +471,8 @@ export const RAID_DATA = {
           { name: '마력의 샘물', quantity: { normal: 18 }, category: '고유' },
           { name: '순환 돌파석', quantity: { normal: 7 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 1960 }
+        moreRewardCost: { normal: 1960 },
+        clearGold: { normal: 1234, hard: 1234 }
       }
     ]
   },
@@ -473,7 +499,8 @@ export const RAID_DATA = {
           { name: '아그리스의 비늘', quantity: { normal: 3 }, category: '고유' },
           { name: '알키오네의 눈', quantity: { hard: 3 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 380, hard: 920 }
+        moreRewardCost: { normal: 380, hard: 920 },
+        clearGold: { normal: 1234, hard: 1234 }
       },
       {
         gateId: 2,
@@ -492,7 +519,8 @@ export const RAID_DATA = {
           { name: '농축 돌파석', quantity: { normal: 5 }, category: '고유' },
           { name: '순환 돌파석', quantity: { hard: 6 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 840, hard: 1960 }
+        moreRewardCost: { normal: 840, hard: 1960 },
+        clearGold: { normal: 1234, hard: 1234 }
       }
     ]
   },
@@ -513,7 +541,8 @@ export const RAID_DATA = {
           { name: '운명의 파편', quantity: { normal: 3790, hard: 6670 }, category: '강화재료' },
           { name: '업화의 쐐기돌', quantity: { normal: 4, hard: 8 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 1030, hard: 3640 }
+        moreRewardCost: { normal: 1030, hard: 3640 },
+        clearGold: { normal: 1234, hard: 1234 }
       },
       {
         gateId: 2,
@@ -526,7 +555,8 @@ export const RAID_DATA = {
           { name: '업화의 쐐기돌', quantity: { normal: 6, hard: 12 }, category: '고유' },
           { name: '순환 돌파석', quantity: { normal: 7, hard: 9 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 2400, hard: 5880 }
+        moreRewardCost: { normal: 2400, hard: 5880 },
+        clearGold: { normal: 1234, hard: 1234 }
       }
     ]
   },
@@ -547,7 +577,8 @@ export const RAID_DATA = {
           { name: '운명의 파편', quantity: { normal: 5980, hard: 8000 }, category: '강화재료' },
           { name: '카르마의 잔영', quantity: { normal: 4, hard: 8 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 3240, hard: 4500 }
+        moreRewardCost: { normal: 3240, hard: 4500 },
+        clearGold: { normal: 1234, hard: 1234 }
       },
       {
         gateId: 2,
@@ -560,7 +591,8 @@ export const RAID_DATA = {
           { name: '카르마의 잔영', quantity: { normal: 6, hard: 12 }, category: '고유' },
           { name: '순환 돌파석', quantity: { normal: 7, hard: 9 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 4830, hard: 7200 }
+        moreRewardCost: { normal: 4830, hard: 7200 },
+        clearGold: { normal: 1234, hard: 1234 }
       }
     ]
   },
@@ -582,7 +614,8 @@ export const RAID_DATA = {
           { name: '낙뢰의 뿔', quantity: { normal: 3 }, category: '고유' },
           { name: '우뢰의 뇌옥', quantity: { hard: 3 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 2400, hard: 2700 }
+        moreRewardCost: { normal: 2400, hard: 2700 },
+        clearGold: { normal: 1234, hard: 1234 }
       },
       {
         gateId: 2,
@@ -595,7 +628,8 @@ export const RAID_DATA = {
           { name: '낙뢰의 뿔', quantity: { normal: 5 }, category: '고유' },
           { name: '우뢰의 뇌옥', quantity: { hard: 5 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 3200, hard: 4100 }
+        moreRewardCost: { normal: 3200, hard: 4100 },
+        clearGold: { normal: 1234, hard: 1234 }
       },
             {
         gateId: 3,
@@ -609,7 +643,8 @@ export const RAID_DATA = {
           { name: '우뢰의 뇌옥', quantity: { hard: 10 }, category: '고유' },
           { name: '순환 돌파석', quantity: { normal: 7, hard: 10 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 4200, hard: 5800 }
+        moreRewardCost: { normal: 4200, hard: 5800 },
+        clearGold: { normal: 1234, hard: 1234 }
       }
     ]
   },
@@ -631,7 +666,8 @@ export const RAID_DATA = {
           { name: '아크 그리드 코어', quantity: { normal: 1 }, category: '고유', gradeInfo: { normal: '[영웅~고대]' } },
           { name: '아크 그리드 코어', quantity: { hard: 1 }, category: '고유', gradeInfo: { hard: '[전설~고대]' } },
         ],
-        moreRewardCost: { normal: 4000, hard: 4800 }
+        moreRewardCost: { normal: 4000, hard: 4800 },
+        clearGold: { normal: 1234, hard: 1234 }
       },
       {
         gateId: 2,
@@ -645,7 +681,8 @@ export const RAID_DATA = {
           { name: '아크 그리드 코어', quantity: { hard: 1 }, category: '고유', gradeInfo: { hard: '[전설~고대]' } },
           { name: '순환 돌파석', quantity: { normal: 10, hard: 13 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 6560, hard: 8640 }
+        moreRewardCost: { normal: 6560, hard: 8640 },
+        clearGold: { normal: 1234, hard: 1234 }
       }
     ]
   },
@@ -667,7 +704,8 @@ export const RAID_DATA = {
           { name: '아크 그리드 코어', quantity: { normal: 2 }, category: '고유', gradeInfo: { normal: '[영웅~고대]' } },
           { name: '아크 그리드 코어', quantity: { hard: 2 }, category: '고유', gradeInfo: { hard: '[전설~고대]' } },
         ],
-        moreRewardCost: { normal: 4480, hard: 5440 }
+        moreRewardCost: { normal: 4480, hard: 5440 },
+        clearGold: { normal: 1234, hard: 1234 }
       },
       {
         gateId: 2,
@@ -681,7 +719,8 @@ export const RAID_DATA = {
           { name: '아크 그리드 코어', quantity: { hard: 2 }, category: '고유', gradeInfo: { hard: '[전설~고대]' } },
           { name: '순환 돌파석', quantity: { normal: 12, hard: 16 }, category: '고유' },
         ],
-        moreRewardCost: { normal: 8320, hard: 11200 }
+        moreRewardCost: { normal: 8320, hard: 11200 },
+        clearGold: { normal: 1234, hard: 1234 }
       }
     ]
   },
