@@ -173,7 +173,7 @@ const useScheduler = () => {
         name: profile.CharacterName,
         className: profile.CharacterClassName,
         serverName: profile.ServerName,
-        itemLevel: Math.floor(parseFloat(profile.ItemAvgLevel.replace(',', ''))),
+        itemLevel: parseFloat(profile.ItemAvgLevel.replace(',', '')),
         classIcon: getIcon('CHARACTER', profile.CharacterClassName)
       };
 
@@ -200,6 +200,50 @@ const useScheduler = () => {
   // 캐릭터 제거
   const removeCharacter = (characterId) => {
     setCharacters(prev => prev.filter(char => char.id !== characterId));
+  };
+
+  // 모든 캐릭터 정보 갱신
+  const refreshAllCharacters = async () => {
+    if (characters.length === 0) return;
+
+    setLoading(true);
+    try {
+      const updatedCharacters = await Promise.allSettled(
+        characters.map(async (character) => {
+          try {
+            const profile = await getCharacterProfile(character.name);
+            return {
+              ...character,
+              className: profile.CharacterClassName,
+              serverName: profile.ServerName,
+              itemLevel: parseFloat(profile.ItemAvgLevel.replace(',', '')),
+              classIcon: getIcon('CHARACTER', profile.CharacterClassName),
+              updatedAt: new Date().toISOString()
+            };
+          } catch (error) {
+            console.error(`캐릭터 ${character.name} 갱신 실패:`, error);
+            return character; // 갱신 실패 시 기존 데이터 유지
+          }
+        })
+      );
+
+      // 성공한 결과만 반영
+      const refreshedCharacters = updatedCharacters.map((result, index) =>
+        result.status === 'fulfilled' ? result.value : characters[index]
+      );
+
+      setCharacters(refreshedCharacters);
+
+      // 갱신 시간 저장
+      localStorage.setItem('scheduler_last_refresh', new Date().toISOString());
+
+      return refreshedCharacters;
+    } catch (error) {
+      console.error('캐릭터 갱신 실패:', error);
+      throw new Error('캐릭터 정보 갱신에 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   // 스케줄 업데이트
@@ -419,6 +463,7 @@ const useScheduler = () => {
     loading,
     addCharacter,
     removeCharacter,
+    refreshAllCharacters,
     updateSchedule,
     resetAllSchedules,
     // 드래그 앤 드롭 관련

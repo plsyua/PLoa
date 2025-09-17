@@ -1,7 +1,9 @@
-import { User, CheckSquare, Square, Trash2, Users, GripVertical } from 'lucide-react';
+import { User, CheckSquare, Square, Trash2, Users } from 'lucide-react';
 import { DAILY_CONTENT, WEEKLY_CONTENT, ABYSS_DUNGEON_CONTENT, LEGION_RAID_CONTENT, EPIC_RAID_CONTENT, KAZEROTH_RAID_CONTENT } from '../../data/contentData';
 import { getRaidDifficultyInfo } from '../../utils/difficultyUtils';
 import { isContentAvailableToday } from '../../utils/dateUtils';
+import { RAID_DATA } from '../../data/raidData';
+import { getIcon } from '../../data/icons';
 
 const CharacterCard = ({ character, onUpdateSchedule, onRemoveCharacter, isManageMode, onDragStart, onDragEnd, isDragging, transformStyle = {}, isMoving = false }) => {
   
@@ -49,40 +51,19 @@ const CharacterCard = ({ character, onUpdateSchedule, onRemoveCharacter, isManag
     }
   };
 
-  // 진행률 계산 (UI에 표시되는 컨텐츠만 포함)
-  const calculateProgress = () => {
-    let totalTasks = 0;
-    let completedTasks = 0;
+  // 골드 계산 (엔드 컨텐츠 레이드만 포함)
+  const calculateGoldInfo = () => {
+    let totalGold = 0;
+    let remainingGold = 0;
 
-    // 1. 일일 컨텐츠 (오늘 진행 가능한 것만)
-    Object.values(DAILY_CONTENT)
-      .filter(content => isContentAvailableToday(content))
-      .forEach(content => {
-        const scheduleData = character.schedule[content.id];
-        totalTasks += 1;
-        if (scheduleData?.completed) completedTasks += 1;
-      });
-
-    // 2. 주간 컨텐츠 (주간 에포나)
-    Object.values(WEEKLY_CONTENT).forEach(content => {
-      const scheduleData = character.schedule[content.id];
-      if (content.maxCount > 1) {
-        totalTasks += content.maxCount;
-        completedTasks += scheduleData?.completed || 0;
-      } else {
-        totalTasks += 1;
-        if (scheduleData?.completed) completedTasks += 1;
-      }
-    });
-
-    // 3. 엔드 컨텐츠 (UI와 동일한 로직으로 상위 3개만)
+    // 엔드 컨텐츠 (UI와 동일한 로직으로 상위 3개만)
     const allRaids = [
       ...Object.values(ABYSS_DUNGEON_CONTENT),
-      ...Object.values(LEGION_RAID_CONTENT), 
+      ...Object.values(LEGION_RAID_CONTENT),
       ...Object.values(EPIC_RAID_CONTENT),
       ...Object.values(KAZEROTH_RAID_CONTENT)
     ];
-    
+
     const eligibleRaids = allRaids
       .map(raidData => {
         const { difficulty, canParticipate } = getRaidDifficultyInfo(character.itemLevel, raidData);
@@ -92,16 +73,36 @@ const CharacterCard = ({ character, onUpdateSchedule, onRemoveCharacter, isManag
       .sort((a, b) => (b.difficulty?.minLevel || 0) - (a.difficulty?.minLevel || 0))
       .slice(0, 3);
 
-    eligibleRaids.forEach(({ difficulty }) => {
+    eligibleRaids.forEach(({ raidData, difficulty }) => {
       const scheduleData = character.schedule[difficulty.id];
-      totalTasks += 1;
-      if (scheduleData?.completed) completedTasks += 1;
+
+      // raidData.js에서 해당 레이드의 클리어 골드 정보 가져오기
+      const raid = RAID_DATA[raidData.id];
+      if (raid && raid.gates) {
+        // 각 관문의 클리어 골드 합산 (해당 난이도)
+        const difficultyKey = difficulty.difficulty === 'hard' ? 'hard' : 'normal';
+        raid.gates.forEach(gate => {
+          const clearGold = gate.clearGold?.[difficultyKey] || 0;
+          totalGold += clearGold;
+
+          // 미완료된 경우 남은 골드에 추가
+          if (!scheduleData?.completed) {
+            remainingGold += clearGold;
+          }
+        });
+      }
     });
 
-    return totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+    return {
+      totalGold,
+      remainingGold,
+      percentage: totalGold > 0 ? Math.round(((totalGold - remainingGold) / totalGold) * 100) : 0,
+      remainingPercentage: totalGold > 0 ? Math.round((remainingGold / totalGold) * 100) : 0
+    };
   };
 
-  const progress = calculateProgress();
+  const goldInfo = calculateGoldInfo();
+  const goldIcon = getIcon('SYSTEM', '골드');
 
   return (
     <div 
@@ -156,16 +157,6 @@ const CharacterCard = ({ character, onUpdateSchedule, onRemoveCharacter, isManag
         </button>
       )}
       
-      {/* 드래그 핸들 (관리 모드에서만 표시) */}
-      {isManageMode && (
-        <div className="flex items-center justify-center py-2 mb-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-md border border-blue-200 dark:border-blue-700">
-          <GripVertical 
-            className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 cursor-grab transition-colors" 
-            size={18}
-          />
-          <span className="text-xs text-blue-600 dark:text-blue-400 ml-2 font-medium">드래그하여 순서 변경</span>
-        </div>
-      )}
 
       {/* 캐릭터 헤더 */}
       <div className="flex items-center gap-3 mb-4">
@@ -189,7 +180,7 @@ const CharacterCard = ({ character, onUpdateSchedule, onRemoveCharacter, isManag
         <div className="flex-1">
           <h3 className="font-medium text-gray-900 dark:text-white">{character.name}</h3>
           <div className="text-sm text-gray-500 dark:text-gray-400">
-            {[character.serverName, character.className, `Lv.${character.itemLevel}`]
+            {[character.className, `Lv.${character.itemLevel}`]
               .filter(Boolean)
               .join(' • ')}
           </div>
@@ -358,15 +349,15 @@ const CharacterCard = ({ character, onUpdateSchedule, onRemoveCharacter, isManag
                     {isCompleted ? <CheckSquare size={18} className="text-green-500" /> : <Square size={18} />}
                   </button>
                   <div className="flex items-center gap-2">
-                    <span className={`${isCompleted ? 'line-through text-gray-400' : 'text-gray-600 dark:text-gray-400'}`}>
-                      {difficulty.name}
-                    </span>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      difficulty.difficulty === 'hard' 
+                      difficulty.difficulty === 'hard'
                         ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                         : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
                     }`}>
                       {difficulty.difficulty === 'hard' ? '하드' : '노말'}
+                    </span>
+                    <span className={`${isCompleted ? 'line-through text-gray-400' : 'text-gray-600 dark:text-gray-400'}`}>
+                      {difficulty.name}
                     </span>
                   </div>
                 </div>
@@ -376,16 +367,31 @@ const CharacterCard = ({ character, onUpdateSchedule, onRemoveCharacter, isManag
         </div>
       </div>
 
-      {/* 진행률 표시 */}
+      {/* 골드 표시 */}
       <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between text-sm mb-2">
-          <span className="text-gray-600 dark:text-gray-400">진행률</span>
-          <span className="text-gray-900 dark:text-white font-medium">{progress}%</span>
+          <span className="text-gray-600 dark:text-gray-400">광산</span>
+          <div className="flex items-center gap-1">
+            <span className={`text-gray-900 dark:text-white font-medium ${
+              goldInfo.remainingGold === 0 ? 'line-through text-green-600 dark:text-green-400' : ''
+            }`}>
+              {goldInfo.remainingGold.toLocaleString()} / {goldInfo.totalGold.toLocaleString()}
+            </span>
+            {goldIcon && (
+              <img
+                src={goldIcon}
+                alt="골드"
+                className="w-4 h-4"
+              />
+            )}
+          </div>
         </div>
         <div className="bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-          <div 
-            className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
-            style={{ width: `${progress}%` }}
+          <div
+            className={`h-2 rounded-full transition-all duration-300 ${
+              goldInfo.remainingGold === 0 ? 'bg-green-500' : 'bg-yellow-500'
+            }`}
+            style={{ width: `${goldInfo.remainingPercentage}%` }}
           ></div>
         </div>
       </div>

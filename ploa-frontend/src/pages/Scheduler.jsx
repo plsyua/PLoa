@@ -1,17 +1,19 @@
-import { useState } from 'react';
-import { Plus, Calendar, RotateCcw, AlertCircle, Settings, Users } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Plus, Calendar, RotateCcw, AlertCircle, Settings, Users, RefreshCw } from 'lucide-react';
 import Header from '../components/layout/Header';
 import CharacterCard from '../components/scheduler/CharacterCard';
 import useScheduler from '../hooks/useScheduler';
 import { getCharacterSiblings } from '../services/lostarkApi';
+import { getIcon } from '../data/icons';
 
 const Scheduler = () => {
-  const { 
-    characters, 
-    loading, 
-    addCharacter, 
-    removeCharacter, 
-    updateSchedule, 
+  const {
+    characters,
+    loading,
+    addCharacter,
+    removeCharacter,
+    refreshAllCharacters,
+    updateSchedule,
     resetAllSchedules,
     // 드래그 앤 드롭 관련
     draggedCharacter,
@@ -40,6 +42,50 @@ const Scheduler = () => {
   const [selectedExpeditionChars, setSelectedExpeditionChars] = useState([]);
   const [expeditionLoading, setExpeditionLoading] = useState(false);
   const [expeditionError, setExpeditionError] = useState('');
+
+  // 캐릭터 갱신 관련 상태
+  const [refreshCooldown, setRefreshCooldown] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [refreshError, setRefreshError] = useState('');
+
+  // 쿨다운 초기화 및 타이머 관리
+  useEffect(() => {
+    const checkCooldown = () => {
+      const lastRefresh = localStorage.getItem('scheduler_last_refresh');
+      if (lastRefresh) {
+        const lastRefreshTime = new Date(lastRefresh).getTime();
+        const now = new Date().getTime();
+        const timeDiff = Math.floor((now - lastRefreshTime) / 1000);
+        const cooldownTime = 300; // 5분 = 300초
+
+        if (timeDiff < cooldownTime) {
+          setRefreshCooldown(cooldownTime - timeDiff);
+        }
+      }
+    };
+
+    checkCooldown();
+  }, []);
+
+  // 쿨다운 타이머
+  useEffect(() => {
+    let interval;
+    if (refreshCooldown > 0) {
+      interval = setInterval(() => {
+        setRefreshCooldown(prev => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [refreshCooldown]);
 
   // 캐릭터 추가 처리
   const handleAddCharacter = async () => {
@@ -80,12 +126,18 @@ const Scheduler = () => {
   // 원정대 불러오기 처리
   const handleExpeditionSearch = async () => {
     if (!expeditionCharacterName.trim()) return;
-    
+
     setExpeditionError('');
     setExpeditionLoading(true);
     try {
       const siblings = await getCharacterSiblings(expeditionCharacterName.trim());
-      setExpeditionCharacters(siblings);
+      // 아이템 레벨 순으로 정렬 (높은 레벨부터)
+      const sortedSiblings = siblings.sort((a, b) => {
+        const levelA = parseFloat(a.ItemAvgLevel?.replace(',', '') || '0');
+        const levelB = parseFloat(b.ItemAvgLevel?.replace(',', '') || '0');
+        return levelB - levelA;
+      });
+      setExpeditionCharacters(sortedSiblings);
       setSelectedExpeditionChars([]);
     } catch (error) {
       console.error('원정대 조회 실패:', error);
@@ -108,7 +160,7 @@ const Scheduler = () => {
   // 원정대 캐릭터 일괄 추가
   const handleAddExpeditionCharacters = async () => {
     if (selectedExpeditionChars.length === 0) return;
-    
+
     setExpeditionLoading(true);
     try {
       for (const character of selectedExpeditionChars) {
@@ -117,7 +169,7 @@ const Scheduler = () => {
           await addCharacter(character.CharacterName);
         }
       }
-      
+
       // 모달 닫기 및 상태 초기화
       setShowExpeditionModal(false);
       setExpeditionCharacterName('');
@@ -130,6 +182,30 @@ const Scheduler = () => {
     } finally {
       setExpeditionLoading(false);
     }
+  };
+
+  // 캐릭터 갱신 처리
+  const handleRefreshCharacters = async () => {
+    if (refreshCooldown > 0 || isRefreshing || characters.length === 0) return;
+
+    setIsRefreshing(true);
+    setRefreshError('');
+    try {
+      await refreshAllCharacters();
+      setRefreshCooldown(300); // 5분 쿨다운 시작
+    } catch (error) {
+      console.error('캐릭터 갱신 실패:', error);
+      setRefreshError('캐릭터 정보 갱신에 실패했습니다.');
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  // 쿨다운 시간을 MM:SS 형식으로 포맷
+  const formatCooldownTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   return (
@@ -166,20 +242,45 @@ const Scheduler = () => {
             </button>
             {/* 관리 모드 안내 문구 */}
             {isManageMode && (
-              <div className="px-3 py-1 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md">
+              <div className="px-4 py-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md">
                 <span className="text-sm text-blue-700 dark:text-blue-300">
-                  관리 모드: 캐릭터를 드래그하여 순서 변경, 삭제 버튼으로 삭제
+                  관리 모드: 캐릭터를 드래그 & 드롭 하여 순서 변경, 삭제 버튼으로 삭제
                 </span>
               </div>
             )}
           </div>
           
           <div className="flex items-center gap-2">
+            {/* 캐릭터 갱신 버튼 */}
+            {characters.length > 0 && (
+              <button
+                onClick={handleRefreshCharacters}
+                disabled={refreshCooldown > 0 || isRefreshing || loading}
+                className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
+                  refreshCooldown > 0 || isRefreshing || loading
+                    ? 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                    : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                }`}
+                title={
+                  refreshCooldown > 0
+                    ? `갱신 가능까지 남은 시간: ${formatCooldownTime(refreshCooldown)}`
+                    : isRefreshing
+                    ? '갱신 중...'
+                    : '캐릭터 정보 갱신'
+                }
+              >
+                <RefreshCw
+                  size={16}
+                  className={isRefreshing ? 'animate-spin' : ''}
+                />
+                갱신
+              </button>
+            )}
             <button
               onClick={() => setIsManageMode(!isManageMode)}
               className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
-                isManageMode 
-                  ? 'bg-blue-600 text-white' 
+                isManageMode
+                  ? 'bg-blue-600 text-white'
                   : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
               }`}
             >
@@ -404,7 +505,7 @@ const Scheduler = () => {
             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">원정대 불러오기</h3>
             
             {/* 캐릭터명 입력 */}
-            <div className="mb-4">
+            <div className="mb-4 flex gap-3">
               <input
                 type="text"
                 value={expeditionCharacterName}
@@ -418,13 +519,13 @@ const Scheduler = () => {
                   }
                 }}
                 placeholder="원정대 캐릭터명을 입력하세요"
-                className="w-full px-3 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                className="flex-1 px-3 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                 disabled={expeditionLoading}
               />
               <button
                 onClick={handleExpeditionSearch}
                 disabled={!expeditionCharacterName.trim() || expeditionLoading}
-                className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
               >
                 {expeditionLoading ? '검색 중...' : '검색'}
               </button>
@@ -448,36 +549,48 @@ const Scheduler = () => {
                   {expeditionCharacters.map((character, index) => {
                     const isAlreadyAdded = characters.some(char => char.name === character.CharacterName);
                     const isSelected = selectedExpeditionChars.some(char => char.CharacterName === character.CharacterName);
-                    
+                    const characterIcon = getIcon('CHARACTER', character.CharacterClassName);
+
                     return (
                       <div
                         key={index}
+                        onClick={() => !isAlreadyAdded && toggleExpeditionCharacter(character)}
                         className={`flex items-center justify-between p-3 border rounded-md transition-colors ${
-                          isAlreadyAdded 
-                            ? 'bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600' 
+                          isAlreadyAdded
+                            ? 'bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 cursor-not-allowed'
                             : isSelected
-                            ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-600'
-                            : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-750'
+                            ? 'bg-green-50 dark:bg-green-900/20 border-green-300 dark:border-green-600 cursor-pointer'
+                            : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-750 cursor-pointer'
                         }`}
                       >
                         <div className="flex items-center gap-3">
-                          <input
-                            type="checkbox"
-                            checked={isSelected}
-                            onChange={() => !isAlreadyAdded && toggleExpeditionCharacter(character)}
-                            disabled={isAlreadyAdded}
-                            className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 disabled:opacity-50"
-                          />
+                          {/* 캐릭터 아이콘 */}
+                          {characterIcon && (
+                            <img
+                              src={characterIcon}
+                              alt={character.CharacterClassName}
+                              className="w-8 h-8 rounded-full object-cover"
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                              }}
+                            />
+                          )}
                           <div>
                             <span className={`font-medium ${
-                              isAlreadyAdded 
-                                ? 'text-gray-500 dark:text-gray-400' 
+                              isAlreadyAdded
+                                ? 'text-gray-500 dark:text-gray-400'
+                                : isSelected
+                                ? 'text-green-700 dark:text-green-300'
                                 : 'text-gray-900 dark:text-white'
                             }`}>
                               {character.CharacterName}
                             </span>
-                            <div className="text-sm text-gray-500 dark:text-gray-400">
-                              {[character.ServerName, character.CharacterClassName, `Lv.${Math.floor(parseFloat(character.ItemAvgLevel?.replace(',', '') || '0'))}`]
+                            <div className={`text-sm ${
+                              isSelected
+                                ? 'text-green-600 dark:text-green-400'
+                                : 'text-gray-500 dark:text-gray-400'
+                            }`}>
+                              {[character.CharacterClassName, `Lv.${parseFloat(character.ItemAvgLevel?.replace(',', '') || '0')}`]
                                 .filter(Boolean)
                                 .join(' • ')}
                             </div>
