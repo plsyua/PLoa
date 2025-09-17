@@ -135,6 +135,7 @@ export const LOSTARK_ICONS = {
   }
 };
 
+// 각인 동적 관리
 const engravingModules = import.meta.glob('../assets/images/engravings/*.webp', { eager: true });
 
 for (const path in engravingModules) {
