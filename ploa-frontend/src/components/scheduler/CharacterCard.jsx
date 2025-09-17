@@ -199,15 +199,23 @@ const CharacterCard = ({ character, onUpdateSchedule, onRemoveCharacter, isManag
               const isCompleted = scheduleData.completed || false;
               
               return (
-                <div key={content.id} className="flex items-center gap-2 text-sm">
+                <div
+                  key={content.id}
+                  className="flex items-center gap-2 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded px-2 py-1 -mx-2 -my-1 transition-colors h-7"
+                  onClick={(e) => {
+                    if (isManageMode) {
+                      e.stopPropagation();
+                    }
+                    toggleDailyContent(content.id);
+                  }}
+                  onMouseDown={(e) => isManageMode && e.stopPropagation()}
+                  draggable={false}
+                >
                   <button
                     onClick={(e) => {
-                      if (isManageMode) {
-                        e.stopPropagation();
-                      }
+                      e.stopPropagation(); // 부모 div 클릭과 중복 방지
                       toggleDailyContent(content.id);
                     }}
-                    onMouseDown={(e) => isManageMode && e.stopPropagation()}
                     className="text-gray-400 hover:text-blue-500"
                     draggable={false}
                   >
@@ -279,15 +287,23 @@ const CharacterCard = ({ character, onUpdateSchedule, onRemoveCharacter, isManag
               const isCompleted = scheduleData.completed;
               
               return (
-                <div key={content.id} className="flex items-center gap-2 text-sm">
+                <div
+                  key={content.id}
+                  className="flex items-center gap-2 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded px-2 py-1 -mx-2 -my-1 transition-colors h-7"
+                  onClick={(e) => {
+                    if (isManageMode) {
+                      e.stopPropagation();
+                    }
+                    toggleWeeklyContent(content.id);
+                  }}
+                  onMouseDown={(e) => isManageMode && e.stopPropagation()}
+                  draggable={false}
+                >
                   <button
                     onClick={(e) => {
-                      if (isManageMode) {
-                        e.stopPropagation();
-                      }
+                      e.stopPropagation(); // 부모 div 클릭과 중복 방지
                       toggleWeeklyContent(content.id);
                     }}
-                    onMouseDown={(e) => isManageMode && e.stopPropagation()}
                     className="text-gray-400 hover:text-blue-500"
                     draggable={false}
                   >
@@ -334,32 +350,38 @@ const CharacterCard = ({ character, onUpdateSchedule, onRemoveCharacter, isManag
               const isCompleted = scheduleData.completed;
               
               return (
-                <div key={raidData.id} className="flex items-center gap-2 text-sm">
+                <div
+                  key={raidData.id}
+                  className="flex items-center gap-2 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded px-2 py-1 -mx-2 -my-1 transition-colors h-7"
+                  onClick={(e) => {
+                    if (isManageMode) {
+                      e.stopPropagation();
+                    }
+                    toggleWeeklyContent(difficulty.id);
+                  }}
+                  onMouseDown={(e) => isManageMode && e.stopPropagation()}
+                  draggable={false}
+                >
                   <button
                     onClick={(e) => {
-                      if (isManageMode) {
-                        e.stopPropagation();
-                      }
+                      e.stopPropagation(); // 부모 div 클릭과 중복 방지
                       toggleWeeklyContent(difficulty.id);
                     }}
-                    onMouseDown={(e) => isManageMode && e.stopPropagation()}
                     className="text-gray-400 hover:text-blue-500"
                     draggable={false}
                   >
                     {isCompleted ? <CheckSquare size={18} className="text-green-500" /> : <Square size={18} />}
                   </button>
-                  <div className="flex items-center gap-2">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      difficulty.difficulty === 'hard'
-                        ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                        : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-                    }`}>
-                      {difficulty.difficulty === 'hard' ? '하드' : '노말'}
-                    </span>
-                    <span className={`${isCompleted ? 'line-through text-gray-400' : 'text-gray-600 dark:text-gray-400'}`}>
-                      {difficulty.name}
-                    </span>
-                  </div>
+                  <span className={`px-2 rounded-full text-xs font-medium ${
+                    difficulty.difficulty === 'hard'
+                      ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                      : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                  }`}>
+                    {difficulty.difficulty === 'hard' ? '하드' : '노말'}
+                  </span>
+                  <span className={`${isCompleted ? 'line-through text-gray-400' : 'text-gray-600 dark:text-gray-400'}`}>
+                    {difficulty.name}
+                  </span>
                 </div>
               );
             });
@@ -388,9 +410,7 @@ const CharacterCard = ({ character, onUpdateSchedule, onRemoveCharacter, isManag
         </div>
         <div className="bg-gray-200 dark:bg-gray-700 rounded-full h-2">
           <div
-            className={`h-2 rounded-full transition-all duration-300 ${
-              goldInfo.remainingGold === 0 ? 'bg-green-500' : 'bg-yellow-500'
-            }`}
+            className="h-2 rounded-full transition-all duration-300 bg-yellow-500"
             style={{ width: `${goldInfo.remainingPercentage}%` }}
           ></div>
         </div>
