@@ -10,7 +10,7 @@ PLoa는 로스트아크 유저들이 보다 효율적으로 게임을 즐길 수
 - 📊 **시장 시세**: 실시간 아이템 가격 조회 및 히스토리 분석  
 - 🧮 **계산기**: 골드 효율, 강화 확률, 각종 게임 내 수치 계산
 - 📈 **원정대 시스템**: 여러 캐릭터 통합 관리
-- 📱 **CLOVA OCR 기능**: 스크린샷 기반 자동 닉네임 인식 및 검색
+- 📱 **파티 서치 기능**: 스크린샷 기반 자동 닉네임 인식 및 검색
 - ⚡ **API 캐싱 시스템**: 메모리 + LocalStorage 이중 캐싱으로 50-80% 성능 향상
 - 🎨 **향상된 UI/UX**: 레이드 아이콘 통합 및 직관적인 인터페이스
 
@@ -49,8 +49,7 @@ PLoa는 로스트아크 유저들이 보다 효율적으로 게임을 즐길 수
 - **npm** v10.5.0 이상
 - **Git** (버전 관리)
 - **VS Code** (권장 IDE)
-- **NAVER Cloud Platform 계정** (OCR 기능 선택사항)
-
+- 
 ### 🔧 설치 및 설정
 
 #### 1. 저장소 클론
@@ -74,15 +73,6 @@ cd ploa-frontend
 npm install
 ```
 
-#### 4. NAVER CLOVA OCR API 설정
-
-OCR 기능을 사용하려면 NAVER CLOVA OCR API 키가 필요합니다.
-
-**API 키 발급:**
-1. [NAVER Cloud Platform](https://www.ncloud.com/)에서 회원가입
-2. Console > AI·Application > OCR > General OCR 서비스 신청
-3. API 키 발급 (X-NCP-APIGW-API-KEY-ID, X-NCP-APIGW-API-KEY)
-
 **환경변수 설정:**
 ```bash
 # 루트 디렉토리에 .env 파일 생성
@@ -91,35 +81,21 @@ touch .env
 
 **.env 파일 내용:**
 ```bash
-# NAVER CLOVA OCR API 설정
-NAVER_OCR_API_URL=https://naveropenapi.apigw.ntruss.com/vision/v1/ocr
-NAVER_OCR_SECRET_KEY=발급받은_SECRET_KEY
-
 # Lost Ark API 설정 (ploa-frontend/.env)
 VITE_LOSTARK_API_KEY=발급받은_Lost_Ark_API_키
 VITE_LOSTARK_API_URL=https://developer-lostark.game.onstove.com
 ```
 
-> **💡 참고**: 
-> - OCR 기능을 사용하지 않아도 기본적인 캐릭터 검색은 가능합니다.
-> - CLOVA OCR은 한국어 인식률이 매우 높아 게임 닉네임 인식에 최적화되어 있습니다.
-> - API 사용량에 따라 과금될 수 있으니 NAVER Cloud Platform 요금 정책을 확인하세요.
-
 ### 🔑 환경변수 설정
 
-Lost Ark Open API와 NAVER CLOVA OCR API를 사용하기 위해 환경변수를 설정해야 합니다.
+Lost Ark Open API를 사용하기 위해 환경변수를 설정해야 합니다.
 
 #### 1. Lost Ark API 키 발급
 1. [Lost Ark 개발자 포털](https://developer-lostark.game.onstove.com/)에 접속
 2. 회원가입 후 API 키 발급 요청
 3. 승인 후 API 키 확인
 
-#### 2. NAVER CLOVA OCR API 키 발급 (선택사항)
-1. [NAVER Cloud Platform](https://www.ncloud.com/)에서 회원가입
-2. Console > AI·Application > OCR > General OCR 서비스 신청
-3. API 키 발급 (X-NCP-APIGW-API-KEY-ID, X-NCP-APIGW-API-KEY)
-
-#### 3. 환경변수 파일 생성
+#### 2. 환경변수 파일 생성
 ```bash
 # 루트 디렉토리에 .env 파일 생성
 touch .env
@@ -130,22 +106,13 @@ touch .env
 cd ..
 ```
 
-#### 4. .env 파일 설정
-**루트 디렉토리 .env:**
-```bash
-# NAVER CLOVA OCR API 설정 (선택사항)
-NAVER_OCR_API_URL=https://naveropenapi.apigw.ntruss.com/vision/v1/ocr
-NAVER_OCR_SECRET_KEY=발급받은_SECRET_KEY
-```
-
+#### 3. .env 파일 설정
 **ploa-frontend/.env:**
 ```bash
 # Lost Ark API 설정
 VITE_LOSTARK_API_KEY=발급받은_Lost_Ark_API_키
 VITE_LOSTARK_API_URL=https://developer-lostark.game.onstove.com
 ```
-
-> **⚠️ 보안 주의**: .env 파일은 절대 Git에 커밋하지 마세요!
 
 ### 🏃‍♂️ 실행 방법
 
@@ -199,10 +166,8 @@ PLoa/
 │   │   └── assets/            # 정적 자산 (레이드 아이콘 포함)
 │   ├── package.json           # 프론트엔드 의존성
 │   └── vite.config.js         # Vite 설정
-├── 📁 cropped_images/          # CLOVA OCR 처리된 이미지 저장
-├── 📁 ocr_responses/          # CLOVA OCR API 응답 저장
 ├── 📁 uploads/                # 업로드된 원본 이미지
-├── 📄 proxy-server.js         # Express 프록시 서버 + CLOVA OCR 연동
+├── 📄 proxy-server.js         # Express 프록시 서버 + OCR 연동
 ├── 📄 package.json           # 서버 의존성
 ├── 📄 .env                    # 환경변수 (미포함, 직접 설정 필요)
 ├── 📄 CLAUDE.md              # AI 개발 가이드
@@ -211,7 +176,7 @@ PLoa/
 
 ### 🔧 주요 파일 설명
 
-- **proxy-server.js**: Lost Ark API 프록시, CLOVA OCR 연동, 이미지 업로드 처리
+- **proxy-server.js**: Lost Ark API 프록시, OCR 연동, 이미지 업로드 처리
 - **ploa-frontend/src/services/lostarkApi.js**: Lost Ark API 호출 함수들 (캐싱 시스템 포함)
 - **ploa-frontend/src/utils/apiCache.js**: API 요청 캐싱 시스템 (메모리 + LocalStorage)
 - **ploa-frontend/src/data/raidData.js**: 레이드 데이터 및 아이콘 정의
@@ -271,28 +236,7 @@ npm install
 - API 요청 제한(100 req/min) 초과 여부 확인
 - Lost Ark 서버 점검 시간 확인
 
-#### 3. OCR 기능 오류
-**NAVER CLOVA OCR 관련 문제 해결:**
-
-```bash
-# 1. API 키 설정 확인
-echo $NAVER_OCR_SECRET_KEY
-
-# 2. 네트워크 연결 테스트
-curl -X POST "https://naveropenapi.apigw.ntruss.com/vision/v1/ocr" \
-  -H "X-NCP-APIGW-API-KEY: $NAVER_OCR_SECRET_KEY" \
-  -H "Content-Type: application/json"
-
-# 3. 로그 확인
-npm start  # 프록시 서버 실행 후 로그 확인
-```
-
-**폴백 모드:**
-- CLOVA OCR API가 설정되지 않아도 모의 닉네임 데이터로 기능 테스트 가능
-- 실제 OCR 기능은 API 키 설정 후 사용 가능
-- API 호출 실패 시 자동으로 모의 닉네임 반환
-
-#### 4. 포트 충돌
+#### 3. 포트 충돌
 - 프론트엔드(5173) 또는 프록시 서버(3001) 포트가 사용 중인 경우
 - 다른 포트로 변경하거나 기존 프로세스 종료
 
@@ -309,6 +253,4 @@ npm start  # 프록시 서버 실행 후 로그 확인
 
 ## 📞 문의 및 기여
 
-프로젝트에 대한 문의사항이나 기여를 원하시면 GitHub Issues를 통해 연락해 주세요.
-
-**Happy Coding! 🎮⚔️**
+프로젝트에 대한 문의사항이나 기여를 원하시면 bjfruity@gmail.com 를 통해 연락해 주세요.
